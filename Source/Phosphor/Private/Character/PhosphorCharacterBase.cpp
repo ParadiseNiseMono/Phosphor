@@ -1,0 +1,20 @@
+// copyright Paradise_NiseMono
+
+
+#include "Character/PhosphorCharacterBase.h"
+
+APhosphorCharacterBase::APhosphorCharacterBase()
+{
+	PrimaryActorTick.bCanEverTick = false;
+
+	Weapon=CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
+	Weapon->SetupAttachment(GetMesh(), "WeaponHandSocket");
+	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void APhosphorCharacterBase::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
+
