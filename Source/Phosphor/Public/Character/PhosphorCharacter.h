@@ -13,5 +13,7 @@ UCLASS()
 class PHOSPHOR_API APhosphorCharacter : public APhosphorCharacterBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	APhosphorCharacter();
 };

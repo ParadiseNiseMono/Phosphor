@@ -11,13 +11,15 @@
  */
 class UInputMappingContext;
 class UInputAction;
-struct FInputActionValue; 
+struct FInputActionValue;
+class IEnemyInterface;
 UCLASS()
 class PHOSPHOR_API APhosphorPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:
 	APhosphorPlayerController();
+	virtual void PlayerTick(float DeltaTime) override;
 protected:
 	virtual void BeginPlay()override;
 	virtual void SetupInputComponent()override;
@@ -29,4 +31,9 @@ private:
 	TObjectPtr<UInputAction> MoveAction;
 
 	void move(const FInputActionValue& InputActionValue);
+
+	void CursorTrace();
+	
+	TScriptInterface<IEnemyInterface> LastActor;
+	TScriptInterface<IEnemyInterface> ThisActor;
 };

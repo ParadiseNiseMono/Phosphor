@@ -3,10 +3,18 @@
 #include "Player/PhosphorPlayerController.h"
 #include <EnhancedInputSubsystems.h>
 #include "EnhancedInputComponent.h"
+#include "Interaction/EnemyInterface.h"
 
 APhosphorPlayerController::APhosphorPlayerController()
 {
 	bReplicates = true;
+}
+
+void APhosphorPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+
+	CursorTrace();
 }
 
 void APhosphorPlayerController::BeginPlay()
@@ -50,5 +58,63 @@ void APhosphorPlayerController::move(const FInputActionValue& InputActionValue)
 	{
 		ControlledPawn->AddMovementInput(ForwardVector,InputAxisValue.Y);
 		ControlledPawn->AddMovementInput(RightVector,InputAxisValue.X);
+	}
+}
+
+void APhosphorPlayerController::CursorTrace()
+{
+	FHitResult HitResult;
+	GetHitResultUnderCursor(ECC_Visibility,false,HitResult);
+	if (!HitResult.bBlockingHit) return;
+
+	LastActor=ThisActor;
+	ThisActor=HitResult.GetActor();
+
+	/*
+	 *Line trace from cursor.Here has several scenarios
+	 *A.LastActor null and ThisActor null
+	 *Do nothing
+	 * B. LastActor null and ThisActor valid
+	 * HightLight ThisActor
+	 * C. LastActor valid and ThisActor null
+	 * UnHightLight LastActor
+	 * D.Both actors are valid,but ThisActor!=LastActor
+	 * UnHightLight LastActor,and HightLight ThisActor
+	 * E. Both actors are valid,and are same actor
+	 * do nothing
+	 */
+
+	if (LastActor==nullptr)
+	{
+		if (ThisActor!=nullptr)
+		{
+			//case B
+			ThisActor->HightLightActor();
+		}
+		else
+		{
+			//case A
+		}
+	}else if(LastActor!=nullptr)
+	{
+		if (ThisActor==nullptr)
+		{
+			//case C
+			LastActor->UnHightLightActor();
+		}
+		else
+		{
+			//both actors are valid
+			if (LastActor!=ThisActor)
+			{
+				//case D
+				LastActor->UnHightLightActor();
+				ThisActor->HightLightActor();
+			}
+			else
+			{
+				//case E
+			}
+		}
 	}
 }
