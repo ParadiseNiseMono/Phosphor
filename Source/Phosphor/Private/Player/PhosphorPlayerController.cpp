@@ -89,7 +89,7 @@ void APhosphorPlayerController::CursorTrace()
 		if (ThisActor!=nullptr)
 		{
 			//case B
-			ThisActor->HightLightActor();
+			ThisActor->HighLightActor();
 		}
 		else
 		{
@@ -100,7 +100,7 @@ void APhosphorPlayerController::CursorTrace()
 		if (ThisActor==nullptr)
 		{
 			//case C
-			LastActor->UnHightLightActor();
+			LastActor->UnHighLightActor();
 		}
 		else
 		{
@@ -108,8 +108,8 @@ void APhosphorPlayerController::CursorTrace()
 			if (LastActor!=ThisActor)
 			{
 				//case D
-				LastActor->UnHightLightActor();
-				ThisActor->HightLightActor();
+				LastActor->UnHighLightActor();
+				ThisActor->HighLightActor();
 			}
 			else
 			{

@@ -16,9 +16,7 @@ class PHOSPHOR_API APhosphorEnemy : public APhosphorCharacterBase,public IEnemyI
 	GENERATED_BODY()
 
 public:
-	virtual void HightLightActor() override;
-	virtual void UnHightLightActor() override;
-
-	UPROPERTY(BlueprintReadOnly)
-	bool bHightLighted = false;
+	APhosphorEnemy();
+	virtual void HighLightActor() override;
+	virtual void UnHighLightActor() override;
 };

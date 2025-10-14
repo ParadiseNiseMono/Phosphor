@@ -2,17 +2,24 @@
 
 
 #include "Character/PhosphorEnemy.h"
+#include "Phosphor/Phosphor.h"
 
-void APhosphorEnemy::HightLightActor()
+APhosphorEnemy::APhosphorEnemy()
 {
-	check(GEngine != nullptr);
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Highlighted Actor: %s"), *GetName()));
-	bHightLighted = true;
+	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility,ECR_Block);
 }
 
-void APhosphorEnemy::UnHightLightActor()
+void APhosphorEnemy::HighLightActor()
 {
-	check(GEngine != nullptr);
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("UnHighlighted Actor: %s"), *GetName()));
-	bHightLighted = false;
+	GetMesh()->SetRenderCustomDepth(true);
+	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
+	
+	Weapon->SetRenderCustomDepth(true);
+	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
+}
+
+void APhosphorEnemy::UnHighLightActor()
+{
+	GetMesh()->SetRenderCustomDepth(false);
+	Weapon->SetRenderCustomDepth(false);
 }
