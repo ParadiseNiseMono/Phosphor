@@ -12,6 +12,11 @@ APhosphorCharacterBase::APhosphorCharacterBase()
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+UAbilitySystemComponent* APhosphorCharacterBase::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
 void APhosphorCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();

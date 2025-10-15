@@ -4,31 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
-#include "GameFramework/Character.h"
-#include "PhosphorCharacterBase.generated.h"
+#include "GameFramework/PlayerState.h"
+#include "PhosphorPlayerState.generated.h"
 
+/**
+ * 
+ */
 class UAbilitySystemComponent;
 class UAttributeSet;
 UCLASS()
-class PHOSPHOR_API APhosphorCharacterBase : public ACharacter,public IAbilitySystemInterface
+class PHOSPHOR_API APhosphorPlayerState : public APlayerState,public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
-	APhosphorCharacterBase();
+	APhosphorPlayerState();
+	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent()const override;
 	UAttributeSet* GetAttributeSet() const {return AttributeSet;}
+
 protected:
-	virtual void BeginPlay() override;
-
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	TObjectPtr<USkeletalMeshComponent> Weapon;
-
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
-
-	
 };

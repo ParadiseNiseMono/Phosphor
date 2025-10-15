@@ -17,6 +17,11 @@ class PHOSPHOR_API APhosphorEnemy : public APhosphorCharacterBase,public IEnemyI
 
 public:
 	APhosphorEnemy();
+	
+	/*EnemyInterface*/
 	virtual void HighLightActor() override;
 	virtual void UnHighLightActor() override;
+	/*end EnemyInterface*/
+protected:
+	virtual void BeginPlay() override;
 };
