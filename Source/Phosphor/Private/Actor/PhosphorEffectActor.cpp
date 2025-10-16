@@ -35,6 +35,7 @@ void APhosphorEffectActor::OnOverLap(UPrimitiveComponent* OverLappedComponent, A
 		const UPhosphorAttributeSet* PhosphorAttributeSet=Cast<UPhosphorAttributeSet>(ASCInterface->GetAbilitySystemComponent()->GetAttributeSet(UPhosphorAttributeSet::StaticClass()));
 		UPhosphorAttributeSet* MutablePhosphorAttributeSet=const_cast<UPhosphorAttributeSet*>(PhosphorAttributeSet);
 		MutablePhosphorAttributeSet->SetHealth(PhosphorAttributeSet->GetHealth() +25.0f);
+		MutablePhosphorAttributeSet->SetMana(PhosphorAttributeSet->GetMana() -15.0f);
 		Destroy();
 	}
 	

@@ -24,8 +24,11 @@ void APhosphorPlayerController::BeginPlay()
 	check(PhosphorContext);
 
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	check(Subsystem);
-	Subsystem->AddMappingContext(PhosphorContext, 0);
+	if (Subsystem)
+	{
+		Subsystem->AddMappingContext(PhosphorContext, 0);
+	}
+
 
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;
