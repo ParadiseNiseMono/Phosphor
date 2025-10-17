@@ -13,6 +13,42 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+
+USTRUCT(BlueprintType)
+struct FEffectProperties
+{
+	GENERATED_BODY()
+	FEffectProperties(){}
+
+	FGameplayEffectContextHandle EffectContextHandle;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category ="Effect Properties")
+	TObjectPtr<UAbilitySystemComponent> SourceASC=nullptr;
+	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category ="Effect Properties")
+	TObjectPtr<AActor> SourceAvatarActor=nullptr;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category ="Effect Properties")
+	TObjectPtr<AController> SourceController=nullptr;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category ="Effect Properties")
+	TObjectPtr<ACharacter> SourceCharacter=nullptr;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category ="Effect Properties")
+	TObjectPtr<UAbilitySystemComponent> TargetASC=nullptr;
+	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category ="Effect Properties")
+	TObjectPtr<AActor> TargetAvatarActor=nullptr;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category ="Effect Properties")
+	TObjectPtr<AController> TargetController=nullptr;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category ="Effect Properties")
+	TObjectPtr<ACharacter> TargetCharacter=nullptr;
+	
+};
+
+
 /**
  * 
  */
@@ -23,6 +59,10 @@ class PHOSPHOR_API UPhosphorAttributeSet : public UAttributeSet
 public:
 	UPhosphorAttributeSet();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+
+	virtual void PostGameplayEffectExecute(const  FGameplayEffectModCallbackData& Data) override;
 
 	UPROPERTY(BlueprintReadOnly,ReplicatedUsing=OnRep_Health,Category="Vital Attritubes")
 	FGameplayAttributeData Health;
@@ -51,4 +91,8 @@ public:
 
 	UFUNCTION()
 	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const;
+
+protected:
+
+	void SetEffectProperties(const FGameplayEffectModCallbackData& Data,FEffectProperties& Props) const;
 };

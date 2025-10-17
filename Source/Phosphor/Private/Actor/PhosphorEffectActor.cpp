@@ -2,7 +2,7 @@
 
 
 #include "Actor/PhosphorEffectActor.h"
-
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemInterface.h"
 #include "AbilitySystem/PhosphorAttributeSet.h"
 #include "Components/SphereComponent.h"
@@ -11,40 +11,80 @@ APhosphorEffectActor::APhosphorEffectActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
-	SetRootComponent(StaticMesh);
-	
-	SphereComponent=CreateDefaultSubobject<USphereComponent>("Sphere");
-	SphereComponent->SetupAttachment(StaticMesh);
+	SetRootComponent(CreateDefaultSubobject<USceneComponent>("SceneComponent"));
 }
 
 void APhosphorEffectActor::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &APhosphorEffectActor::OnOverLap);
-	SphereComponent->OnComponentEndOverlap.AddDynamic(this, &APhosphorEffectActor::EndOverLap);
 }
 
-void APhosphorEffectActor::OnOverLap(UPrimitiveComponent* OverLappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool FromSweep, const FHitResult& SweepResult)
+void APhosphorEffectActor::ApplyEffectToTarget(AActor* ActorToTarget, TSubclassOf<UGameplayEffect> EffectToApply)
 {
-	//TODO: Change this to apply a Gameplay Effect.For now, using const_cast to hack!
-	if (IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(OtherActor))
+	UAbilitySystemComponent* TargetASC= UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(ActorToTarget);
+	if (TargetASC==nullptr)return;
+
+	check(EffectToApply);
+	FGameplayEffectContextHandle EffectContextHandle= TargetASC->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(this);
+	const FGameplayEffectSpecHandle EffectSpecHandle = TargetASC->MakeOutgoingSpec(EffectToApply,ActorLevel,EffectContextHandle);
+	
+	const FActiveGameplayEffectHandle ActiveEventHandle=TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+
+	const bool bIsInfinite=EffectSpecHandle.Data.Get()->Def.Get()->DurationPolicy==EGameplayEffectDurationType::Infinite;
+	if (bIsInfinite&&InfiniteEffectRemovalPolicy==EEffectRemovalPolicy::RemoveOnEndOverlap)
 	{
-		const UPhosphorAttributeSet* PhosphorAttributeSet=Cast<UPhosphorAttributeSet>(ASCInterface->GetAbilitySystemComponent()->GetAttributeSet(UPhosphorAttributeSet::StaticClass()));
-		UPhosphorAttributeSet* MutablePhosphorAttributeSet=const_cast<UPhosphorAttributeSet*>(PhosphorAttributeSet);
-		MutablePhosphorAttributeSet->SetHealth(PhosphorAttributeSet->GetHealth() +25.0f);
-		MutablePhosphorAttributeSet->SetMana(PhosphorAttributeSet->GetMana() -15.0f);
-		Destroy();
+		ActiveEventHandles.Add(ActiveEventHandle,TargetASC);
 	}
-	
 }
 
-void APhosphorEffectActor::EndOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void APhosphorEffectActor::OnOverlap(AActor* TargetActor)
 {
-	
+	if (InstantEffectApplicationPolicy==EEffectApplicationPolicy::ApplyOnOverlap)
+	{
+		ApplyEffectToTarget(TargetActor,InstantGameplayEffectClass);
+	}
+	if (DurationEffectApplicationPolicy==EEffectApplicationPolicy::ApplyOnOverlap)
+	{
+		ApplyEffectToTarget(TargetActor,DurationGameplayEffectClass);
+	}
+	if (InfiniteEffectApplicationPolicy==EEffectApplicationPolicy::ApplyOnOverlap)
+	{
+		ApplyEffectToTarget(TargetActor,InfiniteGameplayEffectClass);
+	}
 }
+
+void APhosphorEffectActor::OnEndOverlap(AActor* TargetActor)
+{
+	if (InstantEffectApplicationPolicy==EEffectApplicationPolicy::ApplyOnEndOverlap)
+	{
+		ApplyEffectToTarget(TargetActor,InstantGameplayEffectClass);
+	}
+	if (DurationEffectApplicationPolicy==EEffectApplicationPolicy::ApplyOnEndOverlap)
+	{
+		ApplyEffectToTarget(TargetActor,DurationGameplayEffectClass);
+	}
+	if (InfiniteEffectApplicationPolicy==EEffectApplicationPolicy::ApplyOnEndOverlap)
+	{
+		ApplyEffectToTarget(TargetActor,InfiniteGameplayEffectClass);
+	}
+	if (InfiniteEffectRemovalPolicy==EEffectRemovalPolicy::RemoveOnEndOverlap)
+	{
+		UAbilitySystemComponent* TargetASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+		if (TargetASC==nullptr)return;
+
+		TArray<FActiveGameplayEffectHandle> HandlesToBeRemove;
+		for (auto HandlePair : ActiveEventHandles)
+		{
+			TargetASC->RemoveActiveGameplayEffect(HandlePair.Key,1);
+			HandlesToBeRemove.Add(HandlePair.Key);
+		}
+		for (auto& Handle : HandlesToBeRemove)
+		{
+			ActiveEventHandles.FindAndRemoveChecked(Handle);
+		}
+	}
+}
+
 
 
