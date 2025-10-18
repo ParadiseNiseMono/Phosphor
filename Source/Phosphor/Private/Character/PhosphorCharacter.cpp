@@ -4,6 +4,7 @@
 #include "Character/PhosphorCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/PhosphorPlayerController.h"
 #include "Player/PhosphorPlayerState.h"
@@ -42,6 +43,7 @@ void APhosphorCharacter::InitAbilityActorInfo()
 	APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
 	check(PhosphorPlayerState);
 	PhosphorPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(PhosphorPlayerState,this);
+	Cast<UPhosphorAbilitySystemComponent>(PhosphorPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent=PhosphorPlayerState->GetAbilitySystemComponent();
 	AttributeSet=PhosphorPlayerState->GetAttributeSet();
 
@@ -52,4 +54,5 @@ void APhosphorCharacter::InitAbilityActorInfo()
 			PhosphorHUD->InitOverlay(PhosphorPlayerController,PhosphorPlayerState,AbilitySystemComponent,AttributeSet);
 		}
 	}
+	InitializePrimaryAttributes();
 }

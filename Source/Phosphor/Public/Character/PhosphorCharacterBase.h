@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "PhosphorCharacterBase.generated.h"
 
+class UGameplayEffect;
 class UAbilitySystemComponent;
 class UAttributeSet;
 UCLASS()
@@ -30,5 +31,10 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
 
-	
+	virtual void InitAbilityActorInfo();
+
+	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category="Attritubes")
+	TSubclassOf<UGameplayEffect> DefaultPrimaryAttribute;
+
+	void InitializePrimaryAttributes() const;
 };
