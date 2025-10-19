@@ -3,9 +3,12 @@
 
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 
+#include "PhosphorGameplayTags.h"
+
 void UPhosphorAbilitySystemComponent::AbilityActorInfoSet()
 {
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this,&UPhosphorAbilitySystemComponent::EffectApplied);
+
 }
 
 void UPhosphorAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* AbilitySystemComponent,

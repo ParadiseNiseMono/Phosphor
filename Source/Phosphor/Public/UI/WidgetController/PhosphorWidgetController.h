@@ -43,7 +43,8 @@ class PHOSPHOR_API UPhosphorWidgetController : public UObject
 public:
 	UFUNCTION(BlueprintCallable, Category = "WidgetController")
 	void SetControllerParams(const FWidgetControllerParams& WCParams);
-
+	
+	UFUNCTION(BlueprintCallable, Category = "WidgetController")
 	virtual void BroadcastInitialValues();
 	virtual void BindCallbacksToDependencies();
 protected:

@@ -36,6 +36,7 @@ void APhosphorEnemy::UnHighLightActor()
 void APhosphorEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	InitAbilityActorInfo();
 }
 
 void APhosphorEnemy::InitAbilityActorInfo()
