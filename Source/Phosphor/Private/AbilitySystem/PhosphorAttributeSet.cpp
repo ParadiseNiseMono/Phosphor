@@ -11,24 +11,33 @@
 
 UPhosphorAttributeSet::UPhosphorAttributeSet()
 {
-	InitHealth(50.0f);
-	InitMaxHealth(100.0f);
-	InitMana(10.0f);
-	InitMaxMana(50.0f);
+
 }
 
 void UPhosphorAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	/*primary attributes*/
 	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,Strength,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,Intelligence,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,Resilience,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,Vigor,COND_None,REPNOTIFY_Always);
-	
-	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,Health,COND_None,REPNOTIFY_Always);
+
+	/*Secondary Attributes*/
+	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,Armor,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,ArmorPenetration,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,BlockChance,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,CriticalHitChance,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,CriticalHitDamage,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,CriticalHitResistance,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,HealthRegeneration,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,ManaRegeneration,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,MaxHealth,COND_None,REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,Mana,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,MaxMana,COND_None,REPNOTIFY_Always);
+
+	/*Vital Attributes*/
+	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,Health,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,Mana,COND_None,REPNOTIFY_Always);
 }
 
 void UPhosphorAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -99,19 +108,9 @@ void UPhosphorAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,Health,OldHealth);
 }
 
-void UPhosphorAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,MaxHealth,OldMaxHealth);
-}
-
 void UPhosphorAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,Mana,OldMana);
-}
-
-void UPhosphorAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,MaxMana,OldMaxMana);
 }
 
 void UPhosphorAttributeSet::OnRep_Strength(const FGameplayAttributeData& OldStrength) const
@@ -132,4 +131,54 @@ void UPhosphorAttributeSet::OnRep_Resilience(const FGameplayAttributeData& OldRe
 void UPhosphorAttributeSet::OnRep_Vigor(const FGameplayAttributeData& OldVigor) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,Vigor,OldVigor);
+}
+
+void UPhosphorAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,Armor,OldArmor);
+}
+
+void UPhosphorAttributeSet::OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,ArmorPenetration,OldArmorPenetration);
+}
+
+void UPhosphorAttributeSet::OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,BlockChance,OldBlockChance);
+}
+
+void UPhosphorAttributeSet::OnRep_CriticalHitChance(const FGameplayAttributeData& OldCriticalHitChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,CriticalHitChance,OldCriticalHitChance);
+}
+
+void UPhosphorAttributeSet::OnRep_CriticalHitDamage(const FGameplayAttributeData& OldCriticalHitDamage) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,CriticalHitDamage,OldCriticalHitDamage);
+}
+
+void UPhosphorAttributeSet::OnRep_CriticalHitResistance(const FGameplayAttributeData& OldCriticalHitResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,CriticalHitResistance,OldCriticalHitResistance);
+}
+
+void UPhosphorAttributeSet::OnRep_HealthRegeneration(const FGameplayAttributeData& OldHealthRegeneration) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,HealthRegeneration,OldHealthRegeneration);
+}
+
+void UPhosphorAttributeSet::OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,ManaRegeneration,OldManaRegeneration);
+}
+
+void UPhosphorAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,MaxHealth,OldMaxHealth);
+}
+
+void UPhosphorAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,MaxMana,OldMaxMana);
 }

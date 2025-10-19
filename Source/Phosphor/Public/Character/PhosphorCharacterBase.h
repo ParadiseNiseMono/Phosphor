@@ -5,13 +5,14 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
+#include "Interaction/CombatInterface.h"
 #include "PhosphorCharacterBase.generated.h"
 
 class UGameplayEffect;
 class UAbilitySystemComponent;
 class UAttributeSet;
 UCLASS()
-class PHOSPHOR_API APhosphorCharacterBase : public ACharacter,public IAbilitySystemInterface
+class PHOSPHOR_API APhosphorCharacterBase : public ACharacter,public IAbilitySystemInterface,public ICombatInterface
 {
 	GENERATED_BODY()
 
@@ -36,5 +37,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category="Attritubes")
 	TSubclassOf<UGameplayEffect> DefaultPrimaryAttribute;
 
-	void InitializePrimaryAttributes() const;
+	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category="Attritubes")
+	TSubclassOf<UGameplayEffect> DefaultSecondaryAttribute;
+
+	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category="Attritubes")
+	TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
+
+	void ApplyEffectToSelf(const TSubclassOf<UGameplayEffect> GameplayEffectClass,const float Level) const;
+	void InitializeDefaultAttribute() const;
 };

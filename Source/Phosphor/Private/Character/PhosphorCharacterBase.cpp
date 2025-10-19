@@ -28,12 +28,19 @@ void APhosphorCharacterBase::InitAbilityActorInfo()
 {
 }
 
-void APhosphorCharacterBase::InitializePrimaryAttributes() const
+void APhosphorCharacterBase::ApplyEffectToSelf(const TSubclassOf<UGameplayEffect> GameplayEffectClass,const float Level) const
 {
 	check(GetAbilitySystemComponent());
-	check(DefaultPrimaryAttribute);
-	const FGameplayEffectContextHandle ContextHandle=GetAbilitySystemComponent()->MakeEffectContext();
-	const FGameplayEffectSpecHandle SpecHandle=GetAbilitySystemComponent()->MakeOutgoingSpec(DefaultPrimaryAttribute,1.f,ContextHandle);
+	check(GameplayEffectClass);
+	FGameplayEffectContextHandle ContextHandle=GetAbilitySystemComponent()->MakeEffectContext();
+	ContextHandle.AddSourceObject(this);
+	const FGameplayEffectSpecHandle SpecHandle=GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffectClass,Level,ContextHandle);
 	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(),GetAbilitySystemComponent());
 }
 
+void APhosphorCharacterBase::InitializeDefaultAttribute() const
+{
+	ApplyEffectToSelf(DefaultPrimaryAttribute,1.f);
+	ApplyEffectToSelf(DefaultSecondaryAttribute,1.f);
+	ApplyEffectToSelf(DefaultVitalAttributes,1.f);
+}

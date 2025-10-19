@@ -38,6 +38,13 @@ void APhosphorCharacter::OnRep_PlayerState()
 	InitAbilityActorInfo();
 }
 
+int32 APhosphorCharacter::GetPlayerLevel()
+{
+	const APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
+	check(PhosphorPlayerState);
+	return PhosphorPlayerState->GetPlayerLevel();
+}
+
 void APhosphorCharacter::InitAbilityActorInfo()
 {
 	APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
@@ -54,5 +61,5 @@ void APhosphorCharacter::InitAbilityActorInfo()
 			PhosphorHUD->InitOverlay(PhosphorPlayerController,PhosphorPlayerState,AbilitySystemComponent,AttributeSet);
 		}
 	}
-	InitializePrimaryAttributes();
+	InitializeDefaultAttribute();
 }
