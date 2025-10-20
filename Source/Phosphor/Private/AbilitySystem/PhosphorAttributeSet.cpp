@@ -14,10 +14,22 @@ UPhosphorAttributeSet::UPhosphorAttributeSet()
 {
 	const FPhosphorGameplayTags& PhosphorGameplayTags=FPhosphorGameplayTags::Get();
 
+	/*Primary Attributes*/
 	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Primary_Strength,GetStrengthAttribute);
 	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Primary_Intelligence,GetIntelligenceAttribute);
 	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Primary_Resilience,GetResilienceAttribute);
 	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Primary_Vigor,GetVigorAttribute);
+	/*Secondary Attributes*/
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Secondary_Armor,GetArmorAttribute);
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Secondary_ArmorPenetration,GetArmorPenetrationAttribute);
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Secondary_BlockChance,GetBlockChanceAttribute);
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Secondary_CriticalHitChance,GetCriticalHitChanceAttribute);
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Secondary_CriticalHitDamage,GetCriticalHitDamageAttribute);
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Secondary_CriticalHitResistance,GetCriticalHitResistanceAttribute);
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Secondary_HealthRegeneration,GetHealthRegenerationAttribute);
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Secondary_ManaRegeneration,GetManaRegenerationAttribute);
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Secondary_MaxHealth,GetMaxHealthAttribute);
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Secondary_MaxMana,GetMaxManaAttribute);
 }
 
 void UPhosphorAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
