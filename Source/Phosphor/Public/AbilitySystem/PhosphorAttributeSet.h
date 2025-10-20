@@ -48,7 +48,9 @@ struct FEffectProperties
 	
 };
 
-
+//typedef TBaseStaticDelegateInstance<FGameplayAttribute(),FDefaultDelegateUserPolicy>::FFuncPtr FAttributeFuncPtr;
+template<class T>
+using TStaticFuncPtr=typename  TBaseStaticDelegateInstance<T,FDefaultDelegateUserPolicy>::FFuncPtr;
 /**
  * 
  */
@@ -64,6 +66,9 @@ public:
 
 	virtual void PostGameplayEffectExecute(const  FGameplayEffectModCallbackData& Data) override;
 
+
+	TMap<FGameplayTag,TStaticFuncPtr<FGameplayAttribute()>> TagsToAttributes;;
+	
 	/*
 	 * Primary Attributes
 	 */

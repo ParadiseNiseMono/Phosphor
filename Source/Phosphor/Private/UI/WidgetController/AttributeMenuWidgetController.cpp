@@ -12,9 +12,13 @@ void UAttributeMenuWidgetController::BroadcastInitialValues()
 	UPhosphorAttributeSet* AS=CastChecked<UPhosphorAttributeSet>(AttributeSet);
 
 	check(AttributeInfo);
-	FPhosphorAttributeInfo Info= AttributeInfo->FindAttributeInfoForTag(FPhosphorGameplayTags::Get().Attributes_Primary_Strength);
-	Info.AttributeValue= AS->GetStrength();
-	AttributeInfoDelegate.Broadcast(Info);
+
+	for (auto& Pair:AS->TagsToAttributes )
+	{
+		FPhosphorAttributeInfo Info=AttributeInfo->FindAttributeInfoForTag(Pair.Key);
+		Info.AttributeValue=Pair.Value().GetNumericValue(AS);
+		AttributeInfoDelegate.Broadcast(Info);
+	}
 }
 
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()

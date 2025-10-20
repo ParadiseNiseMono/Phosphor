@@ -7,11 +7,17 @@
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
 #include "GameFramework/Character.h"
+#include "PhosphorGameplayTags.h"
 
 
 UPhosphorAttributeSet::UPhosphorAttributeSet()
 {
+	const FPhosphorGameplayTags& PhosphorGameplayTags=FPhosphorGameplayTags::Get();
 
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Primary_Strength,GetStrengthAttribute);
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Primary_Intelligence,GetIntelligenceAttribute);
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Primary_Resilience,GetResilienceAttribute);
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Primary_Vigor,GetVigorAttribute);
 }
 
 void UPhosphorAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
