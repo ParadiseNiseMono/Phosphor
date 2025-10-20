@@ -38,6 +38,7 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayTag& AttributeTag,
 	const FGameplayAttribute& GameplayAttribute) const
 {
+	check(AttributeInfo);
 	FPhosphorAttributeInfo Info=AttributeInfo->FindAttributeInfoForTag(AttributeTag);
 	Info.AttributeValue=GameplayAttribute.GetNumericValue(AttributeSet);
 	AttributeInfoDelegate.Broadcast(Info);
