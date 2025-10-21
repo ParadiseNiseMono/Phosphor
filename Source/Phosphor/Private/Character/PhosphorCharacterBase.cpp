@@ -3,6 +3,7 @@
 
 #include "Character/PhosphorCharacterBase.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 
 APhosphorCharacterBase::APhosphorCharacterBase()
 {
@@ -43,4 +44,12 @@ void APhosphorCharacterBase::InitializeDefaultAttribute() const
 	ApplyEffectToSelf(DefaultPrimaryAttribute,1.f);
 	ApplyEffectToSelf(DefaultSecondaryAttribute,1.f);
 	ApplyEffectToSelf(DefaultVitalAttributes,1.f);
+}
+
+void APhosphorCharacterBase::AddCharacterAbilities()
+{
+	UPhosphorAbilitySystemComponent* ASC=CastChecked<UPhosphorAbilitySystemComponent>(AbilitySystemComponent);
+	if (!HasAuthority()) return;
+	
+	ASC->AddCharacterAbilities(StartUpAbilities);
 }

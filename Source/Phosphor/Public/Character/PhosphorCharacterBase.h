@@ -8,6 +8,7 @@
 #include "Interaction/CombatInterface.h"
 #include "PhosphorCharacterBase.generated.h"
 
+class UGameplayAbility;
 class UGameplayEffect;
 class UAbilitySystemComponent;
 class UAttributeSet;
@@ -45,4 +46,9 @@ protected:
 
 	void ApplyEffectToSelf(const TSubclassOf<UGameplayEffect> GameplayEffectClass,const float Level) const;
 	void InitializeDefaultAttribute() const;
+
+	void AddCharacterAbilities();
+private:
+	UPROPERTY(EditAnywhere,Category="Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> StartUpAbilities;
 };

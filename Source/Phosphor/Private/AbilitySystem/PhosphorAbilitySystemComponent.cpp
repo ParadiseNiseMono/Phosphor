@@ -11,6 +11,17 @@ void UPhosphorAbilitySystemComponent::AbilityActorInfoSet()
 
 }
 
+void UPhosphorAbilitySystemComponent::AddCharacterAbilities(
+	const TArray<TSubclassOf<UGameplayAbility>>& StartUpAbilities)
+{
+	for (TSubclassOf<UGameplayAbility> GameAbility : StartUpAbilities)
+	{
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(GameAbility,1);
+		//GiveAbility(AbilitySpec);
+		GiveAbilityAndActivateOnce(AbilitySpec);
+	}
+}
+
 void UPhosphorAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* AbilitySystemComponent,
                                                     const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle)
 {

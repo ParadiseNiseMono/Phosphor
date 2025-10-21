@@ -28,6 +28,7 @@ void APhosphorCharacter::PossessedBy(AController* NewController)
 	
 	//init ability actor for the server
 	InitAbilityActorInfo();
+	AddCharacterAbilities();
 }
 
 void APhosphorCharacter::OnRep_PlayerState()
