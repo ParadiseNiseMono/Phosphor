@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "PhosphorPlayerController.generated.h"
 
+struct FGameplayTag;
+class UPhosphorInputConfig;
 /**
  * 
  */
@@ -30,10 +32,17 @@ private:
 	UPROPERTY(EditAnyWhere, Category = "Input")
 	TObjectPtr<UInputAction> MoveAction;
 
-	void move(const FInputActionValue& InputActionValue);
+	void Move(const FInputActionValue& InputActionValue);
 
 	void CursorTrace();
 	
 	TScriptInterface<IEnemyInterface> LastActor;
 	TScriptInterface<IEnemyInterface> ThisActor;
+
+	void AbilityInputTagPressed(FGameplayTag InputTag);
+	void AbilityInputTagReleased(FGameplayTag InputTag);
+	void AbilityInputTagHeld(FGameplayTag InputTag);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UPhosphorInputConfig> PhosphorInputConfig;
 };

@@ -2,7 +2,8 @@
 
 #include "Player/PhosphorPlayerController.h"
 #include <EnhancedInputSubsystems.h>
-#include "EnhancedInputComponent.h"
+#include "GameplayTagContainer.h"
+#include "Input/PhosphorInputComponent.h"
 #include "Interaction/EnemyInterface.h"
 
 APhosphorPlayerController::APhosphorPlayerController()
@@ -43,12 +44,14 @@ void APhosphorPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
-	EnhancedInputComponent->BindAction(MoveAction,ETriggerEvent::Triggered,
-		this,&APhosphorPlayerController::move);
+	UPhosphorInputComponent* PhosphorInputComponent = CastChecked<UPhosphorInputComponent>(InputComponent);
+	PhosphorInputComponent->BindAction(MoveAction,ETriggerEvent::Triggered,this,&APhosphorPlayerController::Move);
+
+	PhosphorInputComponent->BindAbilityInputAction(
+		PhosphorInputConfig,this,&ThisClass::AbilityInputTagPressed,&ThisClass::AbilityInputTagReleased,&ThisClass::AbilityInputTagHeld);
 }
 
-void APhosphorPlayerController::move(const FInputActionValue& InputActionValue)
+void APhosphorPlayerController::Move(const FInputActionValue& InputActionValue)
 {
 	const FVector2D InputAxisValue=InputActionValue.Get<FVector2D>();
 	FRotator Rotator=GetControlRotation();
@@ -120,4 +123,19 @@ void APhosphorPlayerController::CursorTrace()
 			}
 		}
 	}
+}
+
+void APhosphorPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	GEngine->AddOnScreenDebugMessage(1,3.f,FColor::Red,*InputTag.ToString());
+}
+
+void APhosphorPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	GEngine->AddOnScreenDebugMessage(2,3.f,FColor::Blue,*InputTag.ToString());
+}
+
+void APhosphorPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
+{
+	GEngine->AddOnScreenDebugMessage(3,3.f,FColor::Green,*InputTag.ToString());
 }
