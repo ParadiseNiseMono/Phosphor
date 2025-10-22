@@ -5,6 +5,8 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayTagContainer.h"
+#include "NavigationPath.h"
+#include "NavigationSystem.h"
 #include "PhosphorGameplayTags.h"
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "Components/SplineComponent.h"
@@ -143,8 +145,41 @@ void APhosphorPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 
 void APhosphorPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	if (GetASC()==nullptr) return;
-	GetASC()->AbilityInputTagReleased(InputTag);
+	if (!InputTag.MatchesTagExact(FPhosphorGameplayTags::Get().InputTag_LMB))
+	{
+		if (GetASC())
+		{
+			GetASC()->AbilityInputTagReleased(InputTag);
+		}
+		return;
+	}
+	if (bTargeting)
+	{
+		if (GetASC())
+		{
+			GetASC()->AbilityInputTagReleased(InputTag);
+		}
+	}
+	else
+	{
+		APawn* ControlledPawn = GetPawn();
+		if (FollowTime<=ShortPressThreshold&&ControlledPawn)
+		{
+			if ( UNavigationPath* NavigationPath= UNavigationSystemV1::FindPathToLocationSynchronously(
+				this,ControlledPawn->GetActorLocation(),CachedDestination))
+			{
+				Spline->ClearSplinePoints();
+				for (const FVector& PointLocation:NavigationPath->PathPoints)
+				{
+					Spline->AddSplinePoint(PointLocation,ESplineCoordinateSpace::World,true);
+					DrawDebugSphere(GetWorld(),PointLocation,10.0f,12,FColor::Red,false,5.f);
+				}
+				bAutoRunning=true;
+			}
+		}
+		FollowTime=0.0f;
+		bTargeting=false;
+	}
 }
 
 void APhosphorPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
