@@ -25,6 +25,7 @@ void APhosphorPlayerController::PlayerTick(float DeltaTime)
 	Super::PlayerTick(DeltaTime);
 
 	CursorTrace();
+	AutoRun();
 }
 
 void APhosphorPlayerController::BeginPlay()
@@ -171,10 +172,14 @@ void APhosphorPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 				Spline->ClearSplinePoints();
 				for (const FVector& PointLocation:NavigationPath->PathPoints)
 				{
-					Spline->AddSplinePoint(PointLocation,ESplineCoordinateSpace::World,true);
+					Spline->AddSplinePoint(PointLocation,ESplineCoordinateSpace::World);
 					DrawDebugSphere(GetWorld(),PointLocation,10.0f,12,FColor::Red,false,5.f);
 				}
-				bAutoRunning=true;
+				if (!NavigationPath->PathPoints.IsEmpty())
+				{
+					CachedDestination=NavigationPath->PathPoints.Last();
+					bAutoRunning=true;
+				}
 			}
 		}
 		FollowTime=0.0f;
@@ -222,4 +227,21 @@ UPhosphorAbilitySystemComponent* APhosphorPlayerController::GetASC()
 		 PhosphorAbilitySystemComponent = Cast<UPhosphorAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
 	}
 	return PhosphorAbilitySystemComponent;
+}
+
+void APhosphorPlayerController::AutoRun()
+{
+	if (!bAutoRunning) return;
+	if (APawn* ControlledPawn= GetPawn())
+	{
+		const FVector LocationOnSpline=Spline->FindLocationClosestToWorldLocation(ControlledPawn->GetActorLocation(),ESplineCoordinateSpace::World);
+		const FVector Direction=Spline->FindDirectionClosestToWorldLocation(LocationOnSpline,ESplineCoordinateSpace::World);
+		ControlledPawn->AddMovementInput(Direction);
+
+		const float DistanToDestination=(LocationOnSpline-CachedDestination).Length();
+		if (DistanToDestination<=AutoRunAcceptanceRadius)
+		{
+			bAutoRunning=false;
+		}
+	}
 }
