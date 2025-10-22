@@ -2,13 +2,20 @@
 
 #include "Player/PhosphorPlayerController.h"
 #include <EnhancedInputSubsystems.h>
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayTagContainer.h"
+#include "PhosphorGameplayTags.h"
+#include "AbilitySystem/PhosphorAbilitySystemComponent.h"
+#include "Components/SplineComponent.h"
+
 #include "Input/PhosphorInputComponent.h"
 #include "Interaction/EnemyInterface.h"
 
 APhosphorPlayerController::APhosphorPlayerController()
 {
 	bReplicates = true;
+	Spline=CreateDefaultSubobject<USplineComponent>("Spline");
 }
 
 void APhosphorPlayerController::PlayerTick(float DeltaTime)
@@ -127,15 +134,57 @@ void APhosphorPlayerController::CursorTrace()
 
 void APhosphorPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	GEngine->AddOnScreenDebugMessage(1,3.f,FColor::Red,*InputTag.ToString());
+	if (InputTag.MatchesTagExact(FPhosphorGameplayTags::Get().InputTag_LMB))
+	{
+		bTargeting=ThisActor ? true : false;
+		bAutoRunning=false;
+	}
 }
 
 void APhosphorPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	GEngine->AddOnScreenDebugMessage(2,3.f,FColor::Blue,*InputTag.ToString());
+	if (GetASC()==nullptr) return;
+	GetASC()->AbilityInputTagReleased(InputTag);
 }
 
 void APhosphorPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-	GEngine->AddOnScreenDebugMessage(3,3.f,FColor::Green,*InputTag.ToString());
+	if (!InputTag.MatchesTagExact(FPhosphorGameplayTags::Get().InputTag_LMB))
+	{
+		if (GetASC())
+		{
+			GetASC()->AbilityInputTagHeld(InputTag);
+		}
+		return;
+	}
+	if (bTargeting)
+	{
+		if (GetASC())
+		{
+			GetASC()->AbilityInputTagHeld(InputTag);
+		}
+	}
+	else
+	{
+		FollowTime+=GetWorld()->GetDeltaSeconds();
+		FHitResult HitResult;
+		if (GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility,false,HitResult))
+		{
+			CachedDestination=HitResult.ImpactPoint;
+		}
+		if (APawn* ControlledPawn=GetPawn())
+		{
+			const FVector WorldDestination=(CachedDestination-ControlledPawn->GetActorLocation()).GetSafeNormal();
+			ControlledPawn->AddMovementInput(WorldDestination);
+		}
+	}
+}
+
+UPhosphorAbilitySystemComponent* APhosphorPlayerController::GetASC()
+{
+	if (PhosphorAbilitySystemComponent==nullptr)
+	{
+		 PhosphorAbilitySystemComponent = Cast<UPhosphorAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
+	}
+	return PhosphorAbilitySystemComponent;
 }

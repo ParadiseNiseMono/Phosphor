@@ -13,5 +13,8 @@ UCLASS()
 class PHOSPHOR_API UPhosphorGameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
-	
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category=Input)
+	FGameplayTag StartUpTag;
 };
