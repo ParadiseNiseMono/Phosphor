@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/PhosphorGameplayAbility.h"
 #include "PhosphorProjectileSpell.generated.h"
 
+class APhosphorProjectile;
 /**
  * 
  */
@@ -16,4 +17,7 @@ class PHOSPHOR_API UPhosphorProjectileSpell : public UPhosphorGameplayAbility
 
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	TSubclassOf<APhosphorProjectile> ProjectileClass;
 };

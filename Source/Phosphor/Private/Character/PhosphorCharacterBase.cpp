@@ -25,6 +25,12 @@ void APhosphorCharacterBase::BeginPlay()
 	
 }
 
+FVector APhosphorCharacterBase::GetCombatSocketLocation()
+{
+	check(Weapon)
+	return Weapon->GetSocketLocation(WeaponTipSocketName);
+}
+
 void APhosphorCharacterBase::InitAbilityActorInfo()
 {
 }
