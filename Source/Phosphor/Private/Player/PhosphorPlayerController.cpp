@@ -79,57 +79,25 @@ void APhosphorPlayerController::Move(const FInputActionValue& InputActionValue)
 
 void APhosphorPlayerController::CursorTrace()
 {
-	FHitResult HitResult;
 	GetHitResultUnderCursor(ECC_Visibility,false,HitResult);
 	if (!HitResult.bBlockingHit) return;
 
 	LastActor=ThisActor;
 	ThisActor=HitResult.GetActor();
-
-	/*
-	 *Line trace from cursor.Here has several scenarios
-	 *A.LastActor null and ThisActor null
-	 *Do nothing
-	 * B. LastActor null and ThisActor valid
-	 * HightLight ThisActor
-	 * C. LastActor valid and ThisActor null
-	 * UnHightLight LastActor
-	 * D.Both actors are valid,but ThisActor!=LastActor
-	 * UnHightLight LastActor,and HightLight ThisActor
-	 * E. Both actors are valid,and are same actor
-	 * do nothing
-	 */
-
+	
 	if (LastActor==nullptr)
 	{
-		if (ThisActor!=nullptr)
-		{
-			//case B
-			ThisActor->HighLightActor();
-		}
-		else
-		{
-			//case A
-		}
+		if (ThisActor!=nullptr)ThisActor->HighLightActor();
 	}else if(LastActor!=nullptr)
 	{
-		if (ThisActor==nullptr)
-		{
-			//case C
-			LastActor->UnHighLightActor();
-		}
+		if (ThisActor==nullptr)LastActor->UnHighLightActor();
 		else
 		{
-			//both actors are valid
 			if (LastActor!=ThisActor)
 			{
 				//case D
 				LastActor->UnHighLightActor();
 				ThisActor->HighLightActor();
-			}
-			else
-			{
-				//case E
 			}
 		}
 	}
@@ -148,32 +116,24 @@ void APhosphorPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
 	if (!InputTag.MatchesTagExact(FPhosphorGameplayTags::Get().InputTag_LMB))
 	{
-		if (GetASC())
-		{
-			GetASC()->AbilityInputTagReleased(InputTag);
-		}
+		if (GetASC())GetASC()->AbilityInputTagReleased(InputTag);
 		return;
 	}
 	if (bTargeting)
 	{
-		if (GetASC())
-		{
-			GetASC()->AbilityInputTagReleased(InputTag);
-		}
+		if (GetASC())GetASC()->AbilityInputTagReleased(InputTag);
 	}
 	else
 	{
 		APawn* ControlledPawn = GetPawn();
 		if (FollowTime<=ShortPressThreshold&&ControlledPawn)
 		{
-			if ( UNavigationPath* NavigationPath= UNavigationSystemV1::FindPathToLocationSynchronously(
-				this,ControlledPawn->GetActorLocation(),CachedDestination))
+			if ( UNavigationPath* NavigationPath= UNavigationSystemV1::FindPathToLocationSynchronously(this,ControlledPawn->GetActorLocation(),CachedDestination))
 			{
 				Spline->ClearSplinePoints();
 				for (const FVector& PointLocation:NavigationPath->PathPoints)
 				{
 					Spline->AddSplinePoint(PointLocation,ESplineCoordinateSpace::World);
-					DrawDebugSphere(GetWorld(),PointLocation,10.0f,12,FColor::Red,false,5.f);
 				}
 				if (!NavigationPath->PathPoints.IsEmpty())
 				{
@@ -191,27 +151,17 @@ void APhosphorPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
 	if (!InputTag.MatchesTagExact(FPhosphorGameplayTags::Get().InputTag_LMB))
 	{
-		if (GetASC())
-		{
-			GetASC()->AbilityInputTagHeld(InputTag);
-		}
+		if (GetASC())GetASC()->AbilityInputTagHeld(InputTag);
 		return;
 	}
 	if (bTargeting)
 	{
-		if (GetASC())
-		{
-			GetASC()->AbilityInputTagHeld(InputTag);
-		}
+		if (GetASC())GetASC()->AbilityInputTagHeld(InputTag);
 	}
 	else
 	{
 		FollowTime+=GetWorld()->GetDeltaSeconds();
-		FHitResult HitResult;
-		if (GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility,false,HitResult))
-		{
-			CachedDestination=HitResult.ImpactPoint;
-		}
+		if (GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility,false,HitResult))CachedDestination=HitResult.ImpactPoint;
 		if (APawn* ControlledPawn=GetPawn())
 		{
 			const FVector WorldDestination=(CachedDestination-ControlledPawn->GetActorLocation()).GetSafeNormal();
@@ -239,9 +189,6 @@ void APhosphorPlayerController::AutoRun()
 		ControlledPawn->AddMovementInput(Direction);
 
 		const float DistanToDestination=(LocationOnSpline-CachedDestination).Length();
-		if (DistanToDestination<=AutoRunAcceptanceRadius)
-		{
-			bAutoRunning=false;
-		}
+		if (DistanToDestination<=AutoRunAcceptanceRadius)bAutoRunning=false;
 	}
 }
