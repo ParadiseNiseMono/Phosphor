@@ -20,4 +20,7 @@ protected:
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TSubclassOf<APhosphorProjectile> ProjectileClass;
+
+	UFUNCTION(BlueprintCallable,Category="Abilities|Phosphor|Projectile Spell")
+	void SpawnProjectile();
 };

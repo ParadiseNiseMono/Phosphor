@@ -13,7 +13,12 @@ void UPhosphorProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle 
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	const bool bIsServer=HasAuthority(&ActivationInfo);
+	
+}
+
+void UPhosphorProjectileSpell::SpawnProjectile()
+{
+	const bool bIsServer=GetAvatarActorFromActorInfo()->HasAuthority();
 	if(!bIsServer) return;
 
 	ICombatInterface* CombatInterface=Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
