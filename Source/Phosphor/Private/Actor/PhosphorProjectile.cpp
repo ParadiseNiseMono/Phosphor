@@ -3,11 +3,14 @@
 
 #include "Actor/PhosphorProjectile.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Components/AudioComponent.h"
+#include "Phosphor/Phosphor.h"
 
 // Sets default values
 APhosphorProjectile::APhosphorProjectile()
@@ -17,6 +20,7 @@ APhosphorProjectile::APhosphorProjectile()
 	bReplicates = true;
 	SphereComponent=CreateDefaultSubobject<USphereComponent>("SphereComponent");
 	SetRootComponent(SphereComponent);
+	SphereComponent->SetCollisionObjectType(ECC_Projectile);
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SphereComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	SphereComponent->SetCollisionResponseToChannel(ECC_WorldDynamic,ECR_Overlap);
@@ -58,6 +62,10 @@ void APhosphorProjectile::OnShpereOverlap(UPrimitiveComponent* OverlappedComp, A
 
 	if (HasAuthority())
 	{
+		if (UAbilitySystemComponent* AbilitySystemComponent=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Other))
+		{
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
+		}
 		Destroy();
 	}
 	else

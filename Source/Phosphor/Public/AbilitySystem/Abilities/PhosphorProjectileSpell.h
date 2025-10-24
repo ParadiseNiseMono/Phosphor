@@ -7,6 +7,7 @@
 #include "PhosphorProjectileSpell.generated.h"
 
 class APhosphorProjectile;
+class UGameplayEffect;
 /**
  * 
  */
@@ -23,4 +24,7 @@ protected:
 
 	UFUNCTION(BlueprintCallable,Category="Abilities|Phosphor|Projectile Spell")
 	void SpawnProjectile(const FVector& ProjectileTargetLocation);
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> DamageEffectClass;
 };

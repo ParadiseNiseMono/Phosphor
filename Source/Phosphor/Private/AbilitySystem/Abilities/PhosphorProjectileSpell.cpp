@@ -3,6 +3,9 @@
 
 #include "AbilitySystem/Abilities/PhosphorProjectileSpell.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 #include "Actor/PhosphorProjectile.h"
 #include "Interaction/CombatInterface.h"
 
@@ -30,7 +33,6 @@ void UPhosphorProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLo
 		FTransform SpawnTransform;
 		SpawnTransform.SetLocation(SocketLocation);
 		SpawnTransform.SetRotation(Rotation.Quaternion());
-		//TODO:Set the Projectile Rotation
 		
 		APhosphorProjectile* PhosphorProjectile=GetWorld()->SpawnActorDeferred<APhosphorProjectile>(
 			ProjectileClass,
@@ -38,7 +40,11 @@ void UPhosphorProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLo
 			GetOwningActorFromActorInfo(),
 			Cast<APawn>(GetOwningActorFromActorInfo()),
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-		//TODO:Give the Projectile a GameplayEffectSpec to causing damage
+
+		const UAbilitySystemComponent* SourceASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
+
+		const FGameplayEffectSpecHandle EffectSpecHandle= SourceASC->MakeOutgoingSpec(DamageEffectClass,GetAbilityLevel(),SourceASC->MakeEffectContext());
+		PhosphorProjectile->DamageEffectSpecHandle=EffectSpecHandle;
 		
 		PhosphorProjectile->FinishSpawning(SpawnTransform);
 	}
