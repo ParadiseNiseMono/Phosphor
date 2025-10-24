@@ -64,3 +64,4 @@ void APhosphorCharacter::InitAbilityActorInfo()
 	}
 	InitializeDefaultAttribute();
 }
+

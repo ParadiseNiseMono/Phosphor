@@ -121,7 +121,7 @@ void APhosphorPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		return;
 	}
 	if (GetASC())GetASC()->AbilityInputTagReleased(InputTag);
-	if (!bTargeting||!bShiftKeyPressed)
+	if (!bTargeting&&!bShiftKeyPressed)
 	{
 		APawn* ControlledPawn = GetPawn();
 		if (FollowTime<=ShortPressThreshold&&ControlledPawn)
