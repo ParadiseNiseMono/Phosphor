@@ -22,5 +22,5 @@ protected:
 	TSubclassOf<APhosphorProjectile> ProjectileClass;
 
 	UFUNCTION(BlueprintCallable,Category="Abilities|Phosphor|Projectile Spell")
-	void SpawnProjectile();
+	void SpawnProjectile(const FVector& ProjectileTargetLocation);
 };

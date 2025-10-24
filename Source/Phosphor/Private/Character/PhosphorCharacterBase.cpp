@@ -4,6 +4,7 @@
 #include "Character/PhosphorCharacterBase.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
+#include "Components/CapsuleComponent.h"
 
 APhosphorCharacterBase::APhosphorCharacterBase()
 {
@@ -12,6 +13,9 @@ APhosphorCharacterBase::APhosphorCharacterBase()
 	Weapon=CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
 	Weapon->SetupAttachment(GetMesh(), "WeaponHandSocket");
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
 }
 
 UAbilitySystemComponent* APhosphorCharacterBase::GetAbilitySystemComponent() const

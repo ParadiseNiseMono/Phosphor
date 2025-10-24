@@ -56,7 +56,8 @@ void APhosphorPlayerController::SetupInputComponent()
 
 	UPhosphorInputComponent* PhosphorInputComponent = CastChecked<UPhosphorInputComponent>(InputComponent);
 	PhosphorInputComponent->BindAction(MoveAction,ETriggerEvent::Triggered,this,&APhosphorPlayerController::Move);
-
+	PhosphorInputComponent->BindAction(ShiftAction,ETriggerEvent::Started,this,&APhosphorPlayerController::ShiftKeyPressed);
+	PhosphorInputComponent->BindAction(ShiftAction,ETriggerEvent::Completed,this,&APhosphorPlayerController::ShiftKeyReleased);
 	PhosphorInputComponent->BindAbilityInputAction(
 		PhosphorInputConfig,this,&ThisClass::AbilityInputTagPressed,&ThisClass::AbilityInputTagReleased,&ThisClass::AbilityInputTagHeld);
 }
@@ -119,11 +120,8 @@ void APhosphorPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		if (GetASC())GetASC()->AbilityInputTagReleased(InputTag);
 		return;
 	}
-	if (bTargeting)
-	{
-		if (GetASC())GetASC()->AbilityInputTagReleased(InputTag);
-	}
-	else
+	if (GetASC())GetASC()->AbilityInputTagReleased(InputTag);
+	if (!bTargeting||!bShiftKeyPressed)
 	{
 		APawn* ControlledPawn = GetPawn();
 		if (FollowTime<=ShortPressThreshold&&ControlledPawn)
@@ -154,7 +152,7 @@ void APhosphorPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 		if (GetASC())GetASC()->AbilityInputTagHeld(InputTag);
 		return;
 	}
-	if (bTargeting)
+	if (bTargeting||bShiftKeyPressed)
 	{
 		if (GetASC())GetASC()->AbilityInputTagHeld(InputTag);
 	}
