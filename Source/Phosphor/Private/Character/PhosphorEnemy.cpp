@@ -4,6 +4,7 @@
 #include "Character/PhosphorEnemy.h"
 
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
+#include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 #include "AbilitySystem/PhosphorAttributeSet.h"
 #include "Components/WidgetComponent.h"
 #include "Phosphor/Phosphor.h"
@@ -72,4 +73,9 @@ void APhosphorEnemy::InitAbilityActorInfo()
 	Cast<UPhosphorAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 
 	InitializeDefaultAttribute();
+}
+
+void APhosphorEnemy::InitializeDefaultAttribute() const
+{
+	UPhosphorAbilitySystemLibrary::InitializeDefaultAbilities(this,CharacterClass,Level,AbilitySystemComponent);
 }
