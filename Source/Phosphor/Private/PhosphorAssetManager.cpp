@@ -3,6 +3,7 @@
 
 #include "PhosphorAssetManager.h"
 #include "PhosphorGameplayTags.h"
+#include "AbilitySystemGlobals.h"
 
 UPhosphorAssetManager& UPhosphorAssetManager::Get()
 {
@@ -17,4 +18,8 @@ void UPhosphorAssetManager::StartInitialLoading()
 	Super::StartInitialLoading();
 
 	FPhosphorGameplayTags::InitializeNativeGameplayTags();
+
+
+	//This is required to use Target Data!
+	UAbilitySystemGlobals::Get().InitGlobalData();
 }
