@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "Character/PhosphorCharacterBase.h"
 #include "Interaction/EnemyInterface.h"
+#include "UI/WidgetController/OverlayWidgetController.h"
 #include "PhosphorEnemy.generated.h"
 
+class UWidgetComponent;
 /**
  * 
  */
@@ -26,6 +28,12 @@ public:
 	/*Combat Interface*/
 	FORCEINLINE virtual int32 GetPlayerLevel() override {return Level;};
 	/*End Combat Interface*/
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnHealthChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnMaxHealthChanged;
 protected:
 	virtual void BeginPlay() override;
 
@@ -33,6 +41,7 @@ protected:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="CharacterDefaultClass")
 	int32 Level=1;
-	
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category="CharacterDefaultClass")
+	TObjectPtr<UWidgetComponent> HealthBar;
 };

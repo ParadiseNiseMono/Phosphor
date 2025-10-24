@@ -21,7 +21,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
-	
+
+	// meta = (ExposeOnSpawn = "true") 讓這個變數可以在藍圖的 SpawnActor 節點上顯示為輸入引腳
 	UPROPERTY(BlueprintReadWrite,meta=(ExposeOnSpawn=true))
 	FGameplayEffectSpecHandle DamageEffectSpecHandle;
 protected:

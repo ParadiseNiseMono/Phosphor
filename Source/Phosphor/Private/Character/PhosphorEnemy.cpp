@@ -5,7 +5,9 @@
 
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "AbilitySystem/PhosphorAttributeSet.h"
+#include "Components/WidgetComponent.h"
 #include "Phosphor/Phosphor.h"
+#include "UI/Widget/PhosphorUserWidget.h"
 
 APhosphorEnemy::APhosphorEnemy()
 {
@@ -15,7 +17,9 @@ APhosphorEnemy::APhosphorEnemy()
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 	AttributeSet=CreateDefaultSubobject<UPhosphorAttributeSet>("AttributeSet");
-	
+
+	HealthBar=CreateDefaultSubobject<UWidgetComponent>("HealthBar");
+	HealthBar->SetupAttachment(GetRootComponent());
 }
 
 void APhosphorEnemy::HighLightActor()
@@ -37,6 +41,29 @@ void APhosphorEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	InitAbilityActorInfo();
+
+
+	if (UPhosphorUserWidget* PhosphorWidget=Cast<UPhosphorUserWidget>(HealthBar->GetUserWidgetObject()))
+	{
+		PhosphorWidget->SetWidgetController(this);
+	}
+	if (const UPhosphorAttributeSet* PhosphorAttributeSet=Cast<UPhosphorAttributeSet>(AttributeSet))
+	{
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(PhosphorAttributeSet->GetHealthAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnHealthChanged.Broadcast(Data.NewValue);
+		}
+	);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(PhosphorAttributeSet->GetMaxHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxHealthChanged.Broadcast(Data.NewValue);
+			}
+		);
+		OnHealthChanged.Broadcast(PhosphorAttributeSet->GetHealth());
+		OnMaxHealthChanged.Broadcast(PhosphorAttributeSet->GetMaxHealth());
+	}
 }
 
 void APhosphorEnemy::InitAbilityActorInfo()
