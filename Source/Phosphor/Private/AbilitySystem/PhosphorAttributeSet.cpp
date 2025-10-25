@@ -9,6 +9,8 @@
 #include "GameFramework/Character.h"
 #include "PhosphorGameplayTags.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "Player/PhosphorPlayerController.h"
 
 
 UPhosphorAttributeSet::UPhosphorAttributeSet()
@@ -105,6 +107,7 @@ void UPhosphorAttributeSet::SetEffectProperties(const FGameplayEffectModCallback
 	}
 }
 
+
 void UPhosphorAttributeSet::PostGameplayEffectExecute(const  FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -145,9 +148,22 @@ void UPhosphorAttributeSet::PostGameplayEffectExecute(const  FGameplayEffectModC
 				TagContainer.AddTag(FPhosphorGameplayTags::Get().Effects_HitReact);
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 			}
+			ShowFloatText(Props,LocalIncomingDamage);
 		}
 	}
 }
+
+void UPhosphorAttributeSet::ShowFloatText(const FEffectProperties& Props, float Damage) const
+{
+	if (Props.SourceCharacter!=Props.TargetCharacter)
+	{
+		if (APhosphorPlayerController* PC=Cast<APhosphorPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter,0)))
+		{
+			PC->ShowDamageNumber(Damage,Props.TargetCharacter);
+		}
+	}
+}
+
 
 void UPhosphorAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)const
 {

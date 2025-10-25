@@ -201,4 +201,6 @@ public:
 protected:
 
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data,FEffectProperties& Props) const;
+
+	void ShowFloatText(const FEffectProperties& Props,float Damage) const;
 };

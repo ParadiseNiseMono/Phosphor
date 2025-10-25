@@ -10,9 +10,11 @@
 #include "PhosphorGameplayTags.h"
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "Components/SplineComponent.h"
+#include "GameFramework/Character.h"
 
 #include "Input/PhosphorInputComponent.h"
 #include "Interaction/EnemyInterface.h"
+#include "UI/Widget/DamageTextComponent.h"
 
 APhosphorPlayerController::APhosphorPlayerController()
 {
@@ -26,6 +28,18 @@ void APhosphorPlayerController::PlayerTick(float DeltaTime)
 
 	CursorTrace();
 	AutoRun();
+}
+
+void APhosphorPlayerController::ShowDamageNumber_Implementation(const float Damage,ACharacter* Target)
+{
+	if (IsValid(Target) && DamageTextComponentClass)
+	{
+		UDamageTextComponent* DamageText=NewObject<UDamageTextComponent>(Target,DamageTextComponentClass);
+		DamageText->RegisterComponent();
+		DamageText->AttachToComponent(Target->GetRootComponent(),FAttachmentTransformRules::KeepRelativeTransform);
+		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		DamageText->SetDamageText(Damage);
+	}
 }
 
 void APhosphorPlayerController::BeginPlay()

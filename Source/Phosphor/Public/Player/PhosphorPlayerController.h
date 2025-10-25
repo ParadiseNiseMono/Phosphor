@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "PhosphorPlayerController.generated.h"
 
+class UDamageTextComponent;
 struct FGameplayTag;
 class UPhosphorInputConfig;
 /**
@@ -25,6 +26,9 @@ class PHOSPHOR_API APhosphorPlayerController : public APlayerController
 public:
 	APhosphorPlayerController();
 	virtual void PlayerTick(float DeltaTime) override;
+
+	UFUNCTION(Client,Reliable)
+	void ShowDamageNumber(const float Damage,ACharacter* Target);
 protected:
 	virtual void BeginPlay()override;
 	virtual void SetupInputComponent()override;
@@ -76,4 +80,7 @@ private:
 	TObjectPtr<USplineComponent> Spline;
 
 	void AutoRun();
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 };
