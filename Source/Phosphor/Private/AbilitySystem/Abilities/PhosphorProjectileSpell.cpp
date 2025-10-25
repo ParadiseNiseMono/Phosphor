@@ -5,9 +5,9 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 #include "Actor/PhosphorProjectile.h"
 #include "Interaction/CombatInterface.h"
+#include "Phosphor/Public/PhosphorGameplayTags.h"
 
 
 void UPhosphorProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -44,6 +44,9 @@ void UPhosphorProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLo
 		const UAbilitySystemComponent* SourceASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
 
 		const FGameplayEffectSpecHandle EffectSpecHandle= SourceASC->MakeOutgoingSpec(DamageEffectClass,GetAbilityLevel(),SourceASC->MakeEffectContext());
+
+		FPhosphorGameplayTags GameplayTag=FPhosphorGameplayTags::Get();
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle,GameplayTag.Damage,50.f);
 		PhosphorProjectile->DamageEffectSpecHandle=EffectSpecHandle;
 		
 		PhosphorProjectile->FinishSpawning(SpawnTransform);

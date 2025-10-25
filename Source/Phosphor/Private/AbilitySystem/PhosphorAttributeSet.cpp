@@ -120,6 +120,18 @@ void UPhosphorAttributeSet::PostGameplayEffectExecute(const  FGameplayEffectModC
 	{
 		SetMana(FMath::Clamp(GetMana(),0.f,GetMaxMana()));
 	}
+	if (Data.EvaluatedData.Attribute==GetInComingDamageAttribute())
+	{
+		const float LocalIncomingDamage=GetInComingDamage();
+		SetInComingDamage(0.f);
+		if (LocalIncomingDamage>0.f)
+		{
+			const float NewHealth=GetHealth()-LocalIncomingDamage;
+			SetHealth(FMath::Clamp(NewHealth,0.f,GetMaxHealth()));
+
+			const bool bFatal=NewHealth<=0;
+		}
+	}
 }
 
 void UPhosphorAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)const
