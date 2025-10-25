@@ -27,6 +27,11 @@ UAbilitySystemComponent* APhosphorCharacterBase::GetAbilitySystemComponent() con
 	return AbilitySystemComponent;
 }
 
+UAnimMontage* APhosphorCharacterBase::GetHitReactMontage_Implementation()
+{
+	return HitReactMontage;
+}
+
 void APhosphorCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();

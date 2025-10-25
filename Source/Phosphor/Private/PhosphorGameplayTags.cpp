@@ -41,4 +41,7 @@ void FPhosphorGameplayTags::InitializeNativeGameplayTags()
 
 	/*Damage*/
 	GameplayTags.Damage= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage"), FString("For Incoming Damage"));
+
+	/*Effects*/
+	GameplayTags.Effects_HitReact= UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Effects.HitReact"), FString("React of Hit"));
 }

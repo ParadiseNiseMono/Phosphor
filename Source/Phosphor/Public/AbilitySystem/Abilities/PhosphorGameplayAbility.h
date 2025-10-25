@@ -17,4 +17,7 @@ class PHOSPHOR_API UPhosphorGameplayAbility : public UGameplayAbility
 public:
 	UPROPERTY(EditDefaultsOnly, Category=Input)
 	FGameplayTag StartUpTag;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	FScalableFloat Damage;
 };

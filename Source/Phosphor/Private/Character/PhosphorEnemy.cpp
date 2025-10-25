@@ -3,10 +3,12 @@
 
 #include "Character/PhosphorEnemy.h"
 
+#include "PhosphorGameplayTags.h"
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 #include "AbilitySystem/PhosphorAttributeSet.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Phosphor/Phosphor.h"
 #include "UI/Widget/PhosphorUserWidget.h"
 
@@ -38,9 +40,16 @@ void APhosphorEnemy::UnHighLightActor()
 	Weapon->SetRenderCustomDepth(false);
 }
 
+void APhosphorEnemy::HitReactTagChanged(const FGameplayTag CallBackTag, int32 NewCount)
+{
+	bHitReacting=NewCount > 0;
+	GetCharacterMovement()->MaxWalkSpeed=bHitReacting ? 0.0f : BaseWalkSpeed;
+}
+
 void APhosphorEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	GetCharacterMovement()->MaxWalkSpeed=BaseWalkSpeed;
 	InitAbilityActorInfo();
 
 
@@ -62,6 +71,12 @@ void APhosphorEnemy::BeginPlay()
 				OnMaxHealthChanged.Broadcast(Data.NewValue);
 			}
 		);
+		
+		AbilitySystemComponent->RegisterGameplayTagEvent(FPhosphorGameplayTags::Get().Effects_HitReact,EGameplayTagEventType::NewOrRemoved).AddUObject(
+			this,
+			&APhosphorEnemy::HitReactTagChanged
+		);
+		
 		OnHealthChanged.Broadcast(PhosphorAttributeSet->GetHealth());
 		OnMaxHealthChanged.Broadcast(PhosphorAttributeSet->GetMaxHealth());
 	}
