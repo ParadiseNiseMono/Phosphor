@@ -29,4 +29,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "PhosphorAbilitySystemLibrary|CharacterClassDefaults")
 	static void GiveStartUpAbilities(const UObject* WorldContextObject,UAbilitySystemComponent* ASC);
+
+	UFUNCTION(BlueprintCallable, Category = "PhosphorAbilitySystemLibrary|CharacterClassDefaults")
+	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
 };

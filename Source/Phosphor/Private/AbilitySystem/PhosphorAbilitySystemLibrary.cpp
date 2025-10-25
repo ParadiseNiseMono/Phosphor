@@ -46,13 +46,10 @@ UAttributeMenuWidgetController* UPhosphorAbilitySystemLibrary::GetAttributeMenuW
 
 void UPhosphorAbilitySystemLibrary::InitializeDefaultAbilities(const UObject* WorldContextObject,ECharacterClass CharacterClass, float Level,UAbilitySystemComponent* ASC)
 {
-	APhosphorGameModeBase* PhosphorGameModeBase= Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
-	if (PhosphorGameModeBase==nullptr) return;
-
 	AActor* AvatarActor=ASC->GetAvatarActor();
 
-	UCharacterClassInfo* CharacterClassInfo=PhosphorGameModeBase->CharacterClassInfo;
-	FCharacterClassDefaultInfo ClassDefaultInfo=PhosphorGameModeBase->CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
+	UCharacterClassInfo* CharacterClassInfo=GetCharacterClassInfo(WorldContextObject);
+	FCharacterClassDefaultInfo ClassDefaultInfo=CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
 
 
 	FGameplayEffectContextHandle PrimaryAttributesContextHandle = ASC->MakeEffectContext();
@@ -74,14 +71,19 @@ void UPhosphorAbilitySystemLibrary::InitializeDefaultAbilities(const UObject* Wo
 void UPhosphorAbilitySystemLibrary::GiveStartUpAbilities(const UObject* WorldContextObject,
 	UAbilitySystemComponent* ASC)
 {
-	APhosphorGameModeBase* PhosphorGameModeBase= Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
-	if (PhosphorGameModeBase==nullptr) return;
-
-	UCharacterClassInfo* CharacterClassInfo=PhosphorGameModeBase->CharacterClassInfo;
+	UCharacterClassInfo* CharacterClassInfo=GetCharacterClassInfo(WorldContextObject);
 
 	for (TSubclassOf<UGameplayAbility> GameAbility:CharacterClassInfo->Abilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(GameAbility,1);
 		ASC->GiveAbility(AbilitySpec);
 	}
+}
+
+UCharacterClassInfo* UPhosphorAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
+{
+	APhosphorGameModeBase* PhosphorGameModeBase= Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (PhosphorGameModeBase==nullptr) return nullptr;
+
+	return PhosphorGameModeBase->CharacterClassInfo;
 }
