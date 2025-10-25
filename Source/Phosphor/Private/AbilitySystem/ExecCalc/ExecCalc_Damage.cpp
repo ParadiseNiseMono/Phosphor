@@ -4,17 +4,22 @@
 #include "AbilitySystem/ExecCalc/ExecCalc_Damage.h"
 
 #include "AbilitySystemComponent.h"
+#include "PhosphorGameplayTags.h"
 #include "AbilitySystem/PhosphorAttributeSet.h"
 
 struct PhosphorDamageStatics
 {
 
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Armor);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(BlockChance);
 	
 	PhosphorDamageStatics()
 	{
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UPhosphorAttributeSet,Armor,Target,false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPhosphorAttributeSet,BlockChance,Target,false);
 	}
+
+	
 };
 
 static const PhosphorDamageStatics& DamageStatics()
@@ -26,6 +31,7 @@ static const PhosphorDamageStatics& DamageStatics()
 UExecCalc_Damage::UExecCalc_Damage()
 {
 	RelevantAttributesToCapture.Add(DamageStatics().ArmorDef);
+	RelevantAttributesToCapture.Add(DamageStatics().BlockChanceDef);
 }
 
 void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
@@ -46,11 +52,18 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	EvaluateParameters.SourceTags=SourceTags;
 	EvaluateParameters.TargetTags=TargetTags;
 
-	float Armor=0.0f;
-	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().ArmorDef,EvaluateParameters,Armor);
-	Armor=FMath::Max<float>(0.0f,Armor);
-	++Armor;
+	//Get Damage set  by Caller Magnitude
+	float Damage=Spec.GetSetByCallerMagnitude(FPhosphorGameplayTags::Get().Damage);
 
-	const FGameplayModifierEvaluatedData EvaluatedData(DamageStatics().ArmorProperty,EGameplayModOp::Additive,Armor);
+	//Capture BlockChance on Target,and determine if there was a successful block.
+	//If block,halve the damage.
+	float TargetBlockChance=0.f;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().BlockChanceDef,EvaluateParameters,TargetBlockChance);
+	TargetBlockChance=FMath::Max(TargetBlockChance,0.f);
+
+	const bool bBlocked=FMath::FRandRange(1.f,100.f)<TargetBlockChance;
+	Damage=bBlocked ? Damage/2 : Damage;
+	
+	const FGameplayModifierEvaluatedData EvaluatedData(UPhosphorAttributeSet::GetInComingDamageAttribute(),EGameplayModOp::Additive,Damage);
 	OutExecutionOutput.AddOutputModifier(EvaluatedData);
 }
