@@ -157,7 +157,7 @@ void UPhosphorAttributeSet::ShowFloatText(const FEffectProperties& Props, float 
 {
 	if (Props.SourceCharacter!=Props.TargetCharacter)
 	{
-		if (APhosphorPlayerController* PC=Cast<APhosphorPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter,0)))
+		if (APhosphorPlayerController* PC=Cast<APhosphorPlayerController>(Props.SourceController))
 		{
 			PC->ShowDamageNumber(Damage,Props.TargetCharacter);
 		}
