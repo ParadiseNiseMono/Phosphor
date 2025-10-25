@@ -70,3 +70,18 @@ void UPhosphorAbilitySystemLibrary::InitializeDefaultAbilities(const UObject* Wo
 	const FGameplayEffectSpecHandle VitalAttributeSpecHandle = ASC->MakeOutgoingSpec(CharacterClassInfo->VitalAttributes,Level,VitalAttributesContextHandle);
 	ASC->ApplyGameplayEffectSpecToSelf(*VitalAttributeSpecHandle.Data.Get());
 }
+
+void UPhosphorAbilitySystemLibrary::GiveStartUpAbilities(const UObject* WorldContextObject,
+	UAbilitySystemComponent* ASC)
+{
+	APhosphorGameModeBase* PhosphorGameModeBase= Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (PhosphorGameModeBase==nullptr) return;
+
+	UCharacterClassInfo* CharacterClassInfo=PhosphorGameModeBase->CharacterClassInfo;
+
+	for (TSubclassOf<UGameplayAbility> GameAbility:CharacterClassInfo->Abilities)
+	{
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(GameAbility,1);
+		ASC->GiveAbility(AbilitySpec);
+	}
+}

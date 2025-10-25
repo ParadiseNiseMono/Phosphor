@@ -32,6 +32,27 @@ UAnimMontage* APhosphorCharacterBase::GetHitReactMontage_Implementation()
 	return HitReactMontage;
 }
 
+void APhosphorCharacterBase::Die()
+{
+	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	MulticastHandleDeath();
+}
+
+void APhosphorCharacterBase::MulticastHandleDeath_Implementation()
+{
+	Weapon->SetSimulatePhysics(true);
+	Weapon->SetEnableGravity(true);
+	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic,ECR_Block);
+	
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Dissolve();
+}
+
 void APhosphorCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -71,4 +92,20 @@ void APhosphorCharacterBase::AddCharacterAbilities()
 	if (!HasAuthority()) return;
 	
 	ASC->AddCharacterAbilities(StartUpAbilities);
+}
+
+void APhosphorCharacterBase::Dissolve()
+{
+	if (IsValid(DissolveMaterialInstance))
+	{
+		UMaterialInstanceDynamic* MaterialInstanceDynamic=UMaterialInstanceDynamic::Create(DissolveMaterialInstance,this);
+		GetMesh()->SetMaterial(0, MaterialInstanceDynamic);
+		StartDissolveTimeline(MaterialInstanceDynamic);
+	}
+	if (IsValid(WeaponDissolveMaterialInstance))
+	{
+		UMaterialInstanceDynamic* MaterialInstanceDynamic=UMaterialInstanceDynamic::Create(WeaponDissolveMaterialInstance,this);
+		Weapon->SetMaterial(0, MaterialInstanceDynamic);
+		StartWeaponDissolveTimeline(MaterialInstanceDynamic);
+	}
 }

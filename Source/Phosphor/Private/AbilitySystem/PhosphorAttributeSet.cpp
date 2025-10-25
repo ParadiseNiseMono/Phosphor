@@ -8,6 +8,7 @@
 #include "GameplayEffectExtension.h"
 #include "GameFramework/Character.h"
 #include "PhosphorGameplayTags.h"
+#include "Interaction/CombatInterface.h"
 
 
 UPhosphorAttributeSet::UPhosphorAttributeSet()
@@ -130,6 +131,20 @@ void UPhosphorAttributeSet::PostGameplayEffectExecute(const  FGameplayEffectModC
 			SetHealth(FMath::Clamp(NewHealth,0.f,GetMaxHealth()));
 
 			const bool bFatal=NewHealth<=0;
+			if (bFatal)
+			{
+				ICombatInterface* CombatInterface=Cast<ICombatInterface>(Props.TargetAvatarActor);
+				if (CombatInterface)
+				{
+					CombatInterface->Die();
+				}
+			}
+			else
+			{
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FPhosphorGameplayTags::Get().Effects_HitReact);
+				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			}
 		}
 	}
 }

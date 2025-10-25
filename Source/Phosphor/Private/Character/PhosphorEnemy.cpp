@@ -40,6 +40,12 @@ void APhosphorEnemy::UnHighLightActor()
 	Weapon->SetRenderCustomDepth(false);
 }
 
+void APhosphorEnemy::Die()
+{
+	SetLifeSpan(LifeSpan);
+	Super::Die();
+}
+
 void APhosphorEnemy::HitReactTagChanged(const FGameplayTag CallBackTag, int32 NewCount)
 {
 	bHitReacting=NewCount > 0;
@@ -51,6 +57,7 @@ void APhosphorEnemy::BeginPlay()
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed=BaseWalkSpeed;
 	InitAbilityActorInfo();
+	UPhosphorAbilitySystemLibrary::GiveStartUpAbilities(this,AbilitySystemComponent);	
 
 
 	if (UPhosphorUserWidget* PhosphorWidget=Cast<UPhosphorUserWidget>(HealthBar->GetUserWidgetObject()))
