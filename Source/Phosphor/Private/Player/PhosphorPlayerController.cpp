@@ -30,7 +30,7 @@ void APhosphorPlayerController::PlayerTick(float DeltaTime)
 	AutoRun();
 }
 
-void APhosphorPlayerController::ShowDamageNumber_Implementation(const float Damage,ACharacter* Target)
+void APhosphorPlayerController::ShowDamageNumber_Implementation(const float Damage,ACharacter* Target,bool bBlockHit,bool bCriticalHit)
 {
 	if (IsValid(Target) && DamageTextComponentClass)
 	{
@@ -38,7 +38,7 @@ void APhosphorPlayerController::ShowDamageNumber_Implementation(const float Dama
 		DamageText->RegisterComponent();
 		DamageText->AttachToComponent(Target->GetRootComponent(),FAttachmentTransformRules::KeepRelativeTransform);
 		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-		DamageText->SetDamageText(Damage);
+		DamageText->SetDamageText(Damage,bBlockHit,bCriticalHit);
 	}
 }
 
