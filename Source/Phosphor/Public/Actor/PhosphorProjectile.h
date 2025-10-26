@@ -32,6 +32,7 @@ protected:
 	void OnShpereOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 private:
 	bool bHit=false;
+	bool bIsCauser=false;
 
 	UPROPERTY(EditAnywhere)
 	float LifeSpan=10.f;

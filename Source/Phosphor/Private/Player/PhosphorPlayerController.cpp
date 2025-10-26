@@ -32,7 +32,7 @@ void APhosphorPlayerController::PlayerTick(float DeltaTime)
 
 void APhosphorPlayerController::ShowDamageNumber_Implementation(const float Damage,ACharacter* Target,bool bBlockHit,bool bCriticalHit)
 {
-	if (IsValid(Target) && DamageTextComponentClass)
+	if (IsValid(Target) && DamageTextComponentClass&&IsLocalController())
 	{
 		UDamageTextComponent* DamageText=NewObject<UDamageTextComponent>(Target,DamageTextComponentClass);
 		DamageText->RegisterComponent();

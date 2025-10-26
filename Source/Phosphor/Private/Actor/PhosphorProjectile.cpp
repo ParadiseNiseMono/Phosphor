@@ -44,11 +44,11 @@ void APhosphorProjectile::BeginPlay()
 
 void APhosphorProjectile::Destroyed()
 {
-	if (!bHit&&!HasAuthority())
+	if (!bHit&&!HasAuthority()&&!bIsCauser)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,GetActorLocation(),FRotator::ZeroRotator);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation());
-		LoopingSoundComponent->Stop();
+		if (LoopingSoundComponent) LoopingSoundComponent->Stop();
 	}
 	Super::Destroyed();
 }
@@ -56,12 +56,20 @@ void APhosphorProjectile::Destroyed()
 void APhosphorProjectile::OnShpereOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other,
                                           UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,GetActorLocation(),FRotator::ZeroRotator);
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation());
-	if (LoopingSoundComponent)
+	if (DamageEffectSpecHandle.Data.IsValid() && DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser()==Other)
 	{
-		LoopingSoundComponent->Stop();
+		bIsCauser=true;
+		return;
 	}
+		
+
+	if (!bHit)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,GetActorLocation(),FRotator::ZeroRotator);
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation());
+		if (LoopingSoundComponent)LoopingSoundComponent->Stop();
+	}
+
 
 	if (HasAuthority())
 	{

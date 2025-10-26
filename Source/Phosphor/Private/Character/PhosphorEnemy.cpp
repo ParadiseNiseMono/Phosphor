@@ -57,8 +57,10 @@ void APhosphorEnemy::BeginPlay()
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed=BaseWalkSpeed;
 	InitAbilityActorInfo();
-	UPhosphorAbilitySystemLibrary::GiveStartUpAbilities(this,AbilitySystemComponent);	
-
+	if (HasAuthority())
+	{
+		UPhosphorAbilitySystemLibrary::GiveStartUpAbilities(this,AbilitySystemComponent);	
+	}
 
 	if (UPhosphorUserWidget* PhosphorWidget=Cast<UPhosphorUserWidget>(HealthBar->GetUserWidgetObject()))
 	{
@@ -94,7 +96,10 @@ void APhosphorEnemy::InitAbilityActorInfo()
 	AbilitySystemComponent->InitAbilityActorInfo(this,this);
 	Cast<UPhosphorAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 
-	InitializeDefaultAttribute();
+	if (HasAuthority())
+	{
+		InitializeDefaultAttribute();
+	}
 }
 
 void APhosphorEnemy::InitializeDefaultAttribute() const

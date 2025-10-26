@@ -9,16 +9,16 @@ struct FPhosphorGameplayEffectContext :public FGameplayEffectContext
 	GENERATED_BODY()
 
 public:
-	FORCEINLINE bool IsBlockHit() const {return bIsBlockHit;}
-	FORCEINLINE bool IsCriticalHit() const {return bIsCriticalHit;}
+	bool IsBlockHit() const {return bIsBlockHit;}
+	bool IsCriticalHit() const {return bIsCriticalHit;}
 
-	FORCEINLINE void SetIsCriticalHit(bool InIsCriticalHit) {bIsCriticalHit=InIsCriticalHit;}
-	FORCEINLINE void SetIsBlockHit(bool InIsBlockHit) {bIsBlockHit=InIsBlockHit;}
+	void SetIsCriticalHit(bool InIsCriticalHit) {bIsCriticalHit=InIsCriticalHit;}
+	void SetIsBlockHit(bool InIsBlockHit) {bIsBlockHit=InIsBlockHit;}
 	
 	/** Returns the actual struct used for serialization, subclasses must override this! */
 	virtual UScriptStruct* GetScriptStruct() const
 	{
-		return StaticStruct();
+		return FGameplayEffectContext::GetScriptStruct();
 	}
 
 	
