@@ -48,10 +48,14 @@ public:
 	FGameplayTag InputTag_4;
 
 	FGameplayTag Damage;
+	FGameplayTag Damage_Fire;
+
+	TArray<FGameplayTag> DamageTypes;
 
 	/*Effects*/
 	FGameplayTag Effects_HitReact;
 protected:
+	
 
 private:
 	static FPhosphorGameplayTags GameplayTags;

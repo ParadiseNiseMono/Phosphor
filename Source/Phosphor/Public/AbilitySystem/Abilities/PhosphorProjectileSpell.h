@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystem/Abilities/PhosphorGameplayAbility.h"
+#include "AbilitySystem/Abilities/PhosphorDamageGameplayAbility.h"
 #include "PhosphorProjectileSpell.generated.h"
 
 class APhosphorProjectile;
@@ -12,7 +12,7 @@ class UGameplayEffect;
  * 
  */
 UCLASS()
-class PHOSPHOR_API UPhosphorProjectileSpell : public UPhosphorGameplayAbility
+class PHOSPHOR_API UPhosphorProjectileSpell : public UPhosphorDamageGameplayAbility
 {
 	GENERATED_BODY()
 
@@ -22,9 +22,6 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TSubclassOf<APhosphorProjectile> ProjectileClass;
 
-	UFUNCTION(BlueprintCallable,Category="Abilities|Phosphor|Projectile Spell")
+	UFUNCTION(BlueprintCallable,Category="Abilities|Projectile Spell")
 	void SpawnProjectile(const FVector& ProjectileTargetLocation);
-
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> DamageEffectClass;
 };

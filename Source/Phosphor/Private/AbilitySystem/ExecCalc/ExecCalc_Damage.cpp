@@ -74,7 +74,12 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	const UCharacterClassInfo* CharacterClassInfo=UPhosphorAbilitySystemLibrary::GetCharacterClassInfo(SourceAvatar);
 
 	//Get Damage set  by Caller Magnitude
-	float Damage=Spec.GetSetByCallerMagnitude(FPhosphorGameplayTags::Get().Damage);
+	float Damage=0;
+	for (FGameplayTag Tag:FPhosphorGameplayTags::Get().DamageTypes)
+	{
+		const float DamageTypeValue=Spec.GetSetByCallerMagnitude(Tag);
+		Damage+=DamageTypeValue;
+	}
 
 	float SourceCriticalHitChance=0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitChanceDef,EvaluateParameters,SourceCriticalHitChance);

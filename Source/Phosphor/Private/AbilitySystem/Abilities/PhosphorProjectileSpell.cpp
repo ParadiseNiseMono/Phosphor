@@ -56,8 +56,12 @@ void UPhosphorProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLo
 		const FGameplayEffectSpecHandle EffectSpecHandle= SourceASC->MakeOutgoingSpec(DamageEffectClass,GetAbilityLevel(),EffectContextHandle);
 
 		FPhosphorGameplayTags GameplayTag=FPhosphorGameplayTags::Get();
-		const float ScaledDamage=Damage.GetValueAtLevel(GetAbilityLevel());
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle,GameplayTag.Damage,ScaledDamage);
+		
+		for (auto& Pair : DamageTypes)
+		{
+			const float ScaledDamage=Pair.Value.GetValueAtLevel(GetAbilityLevel());
+			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle,Pair.Key,ScaledDamage);
+		}
 		PhosphorProjectile->DamageEffectSpecHandle=EffectSpecHandle;
 		
 		PhosphorProjectile->FinishSpawning(SpawnTransform);
