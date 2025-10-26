@@ -75,9 +75,9 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	//Get Damage set  by Caller Magnitude
 	float Damage=0;
-	for (FGameplayTag Tag:FPhosphorGameplayTags::Get().DamageTypes)
+	for (const auto& Pair:FPhosphorGameplayTags::Get().DamageTypesToResistances)
 	{
-		const float DamageTypeValue=Spec.GetSetByCallerMagnitude(Tag);
+		const float DamageTypeValue=Spec.GetSetByCallerMagnitude(Pair.Key);
 		Damage+=DamageTypeValue;
 	}
 
