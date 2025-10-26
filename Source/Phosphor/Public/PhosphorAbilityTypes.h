@@ -41,12 +41,14 @@ protected:
 	bool bIsBlockHit=false;
 	bool bIsCriticalHit=false;
 };
-template<>
-struct TStructOpsTypeTraits<FPhosphorGameplayEffectContext> : public TStructOpsTypeTraitsBase2<FPhosphorGameplayEffectContext>
+template<> // 表示這是一個模板特化
+struct TStructOpsTypeTraits<FPhosphorGameplayEffectContext> : public TStructOpsTypeTraitsBase2<FPhosphorGameplayEffectContext> // 為 FAuraGameplayEffectContext 特化
 {
 	enum
 	{
+		// 【必須】告訴系統：這個 Struct 有自訂的 NetSerialize 函式
 		WithNetSerialize = true,
+		// 【推薦】告訴系統：這個 Struct 可以被安全地複製 (需要配合 Duplicate 或拷貝建構函式)
 		WithCopy=true
 	};
 };
