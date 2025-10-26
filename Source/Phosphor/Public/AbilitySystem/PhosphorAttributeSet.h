@@ -202,5 +202,5 @@ protected:
 
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data,FEffectProperties& Props) const;
 
-	void ShowFloatText(const FEffectProperties& Props,float Damage) const;
+	void ShowFloatText(const FEffectProperties& Props,float Damage,bool bBlockHit,bool bCriticalHit) const;
 };

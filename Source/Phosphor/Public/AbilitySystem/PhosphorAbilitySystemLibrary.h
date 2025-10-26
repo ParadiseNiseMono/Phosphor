@@ -7,6 +7,7 @@
 #include "Data/CharacterClassInfo.h"
 #include "PhosphorAbilitySystemLibrary.generated.h"
 
+struct FGameplayEffectContextHandle;
 class UAbilitySystemComponent;
 class UAttributeMenuWidgetController;
 class UOverlayWidgetController;
@@ -32,4 +33,16 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "PhosphorAbilitySystemLibrary|CharacterClassDefaults")
 	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintPure, Category = "PhosphorAbilitySystemLibrary|GameplayEffects")
+	static bool IsBlockHit(const FGameplayEffectContextHandle& ContextHandle);
+
+	UFUNCTION(BlueprintPure, Category = "PhosphorAbilitySystemLibrary|GameplayEffects")
+	static bool IsCriticalHit(const FGameplayEffectContextHandle& ContextHandle);
+
+	UFUNCTION(BlueprintCallable, Category = "PhosphorAbilitySystemLibrary|GameplayEffects")
+	static void SetIsBlockHit(UPARAM(ref) FGameplayEffectContextHandle& ContextHandle, bool bInIsBlockHit);
+
+	UFUNCTION(BlueprintCallable, Category = "PhosphorAbilitySystemLibrary|GameplayEffects")
+	static void SetIsCriticalHit(UPARAM(ref) FGameplayEffectContextHandle& ContextHandle, bool bInIsCriticalHit);
 };

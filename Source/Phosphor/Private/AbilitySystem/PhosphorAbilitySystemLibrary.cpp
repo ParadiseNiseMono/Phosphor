@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 
+#include "PhosphorAbilityTypes.h"
 #include "Game/PhosphorGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/PhosphorPlayerState.h"
@@ -86,4 +87,38 @@ UCharacterClassInfo* UPhosphorAbilitySystemLibrary::GetCharacterClassInfo(const 
 	if (PhosphorGameModeBase==nullptr) return nullptr;
 
 	return PhosphorGameModeBase->CharacterClassInfo;
+}
+
+bool UPhosphorAbilitySystemLibrary::IsBlockHit(const FGameplayEffectContextHandle& ContextHandle)
+{
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		return PhosphorGameplayEffectContext->IsBlockHit();
+	}
+	return false;
+}
+
+bool UPhosphorAbilitySystemLibrary::IsCriticalHit(const FGameplayEffectContextHandle& ContextHandle)
+{
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		return PhosphorGameplayEffectContext->IsCriticalHit();
+	}
+	return false;
+}
+
+void UPhosphorAbilitySystemLibrary::SetIsBlockHit(FGameplayEffectContextHandle& ContextHandle, bool bInIsBlockHit)
+{
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		PhosphorGameplayEffectContext->SetIsBlockHit(bInIsBlockHit);
+	}
+}
+
+void UPhosphorAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& ContextHandle, bool bInIsCriticalHit)
+{
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		PhosphorGameplayEffectContext->SetIsCriticalHit(bInIsCriticalHit);
+	}
 }

@@ -4,6 +4,7 @@
 #include "AbilitySystem/ExecCalc/ExecCalc_Damage.h"
 
 #include "AbilitySystemComponent.h"
+#include "PhosphorAbilityTypes.h"
 #include "PhosphorGameplayTags.h"
 #include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 #include "AbilitySystem/PhosphorAttributeSet.h"
@@ -97,6 +98,11 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	const bool bCritical=FMath::FRandRange(1.f,100.f)<EffectiveCriticalHitChance;
 	Damage=bCritical ? Damage*2+SourceCriticalHitDamage : Damage;
 
+	FGameplayEffectContextHandle EffectContextHandle=Spec.GetContext();
+	
+	UPhosphorAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle,bCritical);
+	
+
 	//Capture BlockChance on Target,and determine if there was a successful block.
 
 	float TargetBlockChance=0.f;
@@ -114,6 +120,8 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	float SourceArmorPenetration=0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().ArmorPenetrationDef,EvaluateParameters,SourceArmorPenetration);
 	SourceArmorPenetration=FMath::Max(SourceArmorPenetration,0.f);
+
+	UPhosphorAbilitySystemLibrary::SetIsBlockHit(EffectContextHandle,bBlocked);
 	
 	const FRealCurve* ArmorPenetrationCurve=CharacterClassInfo->DamageCalculationCoefficient->FindCurve(FName("ArmorPenetration"),FString(""));
 	const float ArmorPenetrationCoefficient= ArmorPenetrationCurve->Eval(SourceCombatInterFace->GetPlayerLevel());

@@ -8,6 +8,7 @@
 #include "GameplayEffectExtension.h"
 #include "GameFramework/Character.h"
 #include "PhosphorGameplayTags.h"
+#include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/PhosphorPlayerController.h"
@@ -148,12 +149,14 @@ void UPhosphorAttributeSet::PostGameplayEffectExecute(const  FGameplayEffectModC
 				TagContainer.AddTag(FPhosphorGameplayTags::Get().Effects_HitReact);
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 			}
-			ShowFloatText(Props,LocalIncomingDamage);
+			const bool bBlockHit=UPhosphorAbilitySystemLibrary::IsBlockHit(Props.EffectContextHandle);
+			const bool bCriticalHit=UPhosphorAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
+			ShowFloatText(Props,LocalIncomingDamage,bBlockHit,bCriticalHit);
 		}
 	}
 }
 
-void UPhosphorAttributeSet::ShowFloatText(const FEffectProperties& Props, float Damage) const
+void UPhosphorAttributeSet::ShowFloatText(const FEffectProperties& Props, float Damage,bool bBlockHit,bool bCriticalHit) const
 {
 	if (Props.SourceCharacter!=Props.TargetCharacter)
 	{
