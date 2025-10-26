@@ -34,6 +34,11 @@ UPhosphorAttributeSet::UPhosphorAttributeSet()
 	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Secondary_ManaRegeneration,GetManaRegenerationAttribute);
 	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Secondary_MaxHealth,GetMaxHealthAttribute);
 	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Secondary_MaxMana,GetMaxManaAttribute);
+	/*Resistance Attributes*/
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Resistance_Fire,GetFireResistanceAttribute);
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Resistance_Lighting,GetLightingResistanceAttribute);
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Resistance_Arcane,GetArcaneResistanceAttribute);
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Resistance_Physical,GetPhysicalResistanceAttribute);
 }
 
 void UPhosphorAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -56,6 +61,12 @@ void UPhosphorAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,ManaRegeneration,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,MaxHealth,COND_None,REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,MaxMana,COND_None,REPNOTIFY_Always);
+
+	/*Resistance Attributes*/
+	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,FireResistance,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,LightingResistance,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,ArcaneResistance,COND_None,REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,PhysicalResistance,COND_None,REPNOTIFY_Always);
 
 	/*Vital Attributes*/
 	DOREPLIFETIME_CONDITION_NOTIFY(UPhosphorAttributeSet,Health,COND_None,REPNOTIFY_Always);
@@ -246,4 +257,24 @@ void UPhosphorAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMax
 void UPhosphorAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,MaxMana,OldMaxMana);
+}
+
+void UPhosphorAttributeSet::OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,FireResistance,OldFireResistance);
+}
+
+void UPhosphorAttributeSet::OnRep_LightingResistance(const FGameplayAttributeData& OldLightingResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,LightingResistance,OldLightingResistance);
+}
+
+void UPhosphorAttributeSet::OnRep_ArcaneResistance(const FGameplayAttributeData& OldArcaneResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,ArcaneResistance,OldArcaneResistance);
+}
+
+void UPhosphorAttributeSet::OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UPhosphorAttributeSet,PhysicalResistance,OldPhysicalResistance);
 }

@@ -144,6 +144,25 @@ public:
 	ATTRIBUTE_ACCESSORS(UPhosphorAttributeSet,Mana);
 
 	/*
+	 * Resistance Attributes
+	 */
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing=OnRep_FireResistance,Category="Resistance Attritubes")
+	FGameplayAttributeData FireResistance;
+	ATTRIBUTE_ACCESSORS(UPhosphorAttributeSet,FireResistance);
+
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing=OnRep_LightingResistance,Category="Resistance Attritubes")
+	FGameplayAttributeData LightingResistance;
+	ATTRIBUTE_ACCESSORS(UPhosphorAttributeSet,LightingResistance);
+
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing=OnRep_ArcaneResistance,Category="Resistance Attritubes")
+	FGameplayAttributeData ArcaneResistance;
+	ATTRIBUTE_ACCESSORS(UPhosphorAttributeSet,ArcaneResistance);
+
+	UPROPERTY(BlueprintReadOnly,ReplicatedUsing=OnRep_PhysicalResistance,Category="Resistance Attritubes")
+	FGameplayAttributeData PhysicalResistance;
+	ATTRIBUTE_ACCESSORS(UPhosphorAttributeSet,PhysicalResistance);
+	
+	/*
 	 * Meta Attributes
 	 */
 	UPROPERTY(BlueprintReadOnly,Category="Meta Attributes")
@@ -198,6 +217,17 @@ public:
 	UFUNCTION()
 	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const;
 
+	UFUNCTION()
+	void OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance) const;
+
+	UFUNCTION()
+	void OnRep_LightingResistance(const FGameplayAttributeData& OldLightingResistance) const;
+
+	UFUNCTION()
+	void OnRep_ArcaneResistance(const FGameplayAttributeData& OldArcaneResistance) const;
+
+	UFUNCTION()
+	void OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance) const;
 protected:
 
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data,FEffectProperties& Props) const;
