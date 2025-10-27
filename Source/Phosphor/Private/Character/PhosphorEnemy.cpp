@@ -7,6 +7,9 @@
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 #include "AbilitySystem/PhosphorAttributeSet.h"
+#include "AI/PhosphorAIController.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Phosphor/Phosphor.h"
@@ -23,6 +26,17 @@ APhosphorEnemy::APhosphorEnemy()
 
 	HealthBar=CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent());
+}
+
+void APhosphorEnemy::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (!HasAuthority()) return;
+	PhosphorAIController=Cast<APhosphorAIController>(NewController);
+
+	PhosphorAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+	PhosphorAIController->RunBehaviorTree(BehaviorTree);
 }
 
 void APhosphorEnemy::HighLightActor()

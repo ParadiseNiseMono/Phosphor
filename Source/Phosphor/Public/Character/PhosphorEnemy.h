@@ -10,6 +10,8 @@
 #include "PhosphorEnemy.generated.h"
 
 class UWidgetComponent;
+class UBehaviorTree;
+class APhosphorAIController;
 /**
  * 
  */
@@ -20,6 +22,7 @@ class PHOSPHOR_API APhosphorEnemy : public APhosphorCharacterBase,public IEnemyI
 
 public:
 	APhosphorEnemy();
+	virtual void PossessedBy(AController* NewController) override;
 	
 	/*EnemyInterface*/
 	virtual void HighLightActor() override;
@@ -62,5 +65,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category="CharacterDefaultClass")
 	TObjectPtr<UWidgetComponent> HealthBar;
 
+	UPROPERTY(EditAnywhere,Category="AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+
+	UPROPERTY()
+	TObjectPtr<APhosphorAIController> PhosphorAIController;
 	
 };
