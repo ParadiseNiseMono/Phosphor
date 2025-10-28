@@ -19,9 +19,10 @@ void APhosphorEffectActor::BeginPlay()
 	Super::BeginPlay();
 }
 
-void APhosphorEffectActor::ApplyEffectToTarget(AActor* ActorToTarget, TSubclassOf<UGameplayEffect> EffectToApply)
+void APhosphorEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> EffectToApply)
 {
-	UAbilitySystemComponent* TargetASC= UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(ActorToTarget);
+	if (TargetActor->ActorHasTag(FName("Enemy"))&&!bApplyEffectsToEnemies) return;
+	UAbilitySystemComponent* TargetASC= UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
 	if (TargetASC==nullptr)return;
 
 	check(EffectToApply);
@@ -36,10 +37,15 @@ void APhosphorEffectActor::ApplyEffectToTarget(AActor* ActorToTarget, TSubclassO
 	{
 		ActiveEventHandles.Add(ActiveEventHandle,TargetASC);
 	}
+	if (bDestroyOnEffectApplication&&!bIsInfinite)
+	{
+		Destroy();
+	}
 }
 
 void APhosphorEffectActor::OnOverlap(AActor* TargetActor)
 {
+	if (TargetActor->ActorHasTag(FName("Enemy"))&&!bApplyEffectsToEnemies) return;
 	if (InstantEffectApplicationPolicy==EEffectApplicationPolicy::ApplyOnOverlap)
 	{
 		ApplyEffectToTarget(TargetActor,InstantGameplayEffectClass);
@@ -56,6 +62,7 @@ void APhosphorEffectActor::OnOverlap(AActor* TargetActor)
 
 void APhosphorEffectActor::OnEndOverlap(AActor* TargetActor)
 {
+	if (TargetActor->ActorHasTag(FName("Enemy"))&&!bApplyEffectsToEnemies) return;
 	if (InstantEffectApplicationPolicy==EEffectApplicationPolicy::ApplyOnEndOverlap)
 	{
 		ApplyEffectToTarget(TargetActor,InstantGameplayEffectClass);

@@ -24,6 +24,11 @@ APhosphorEnemy::APhosphorEnemy()
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 	AttributeSet=CreateDefaultSubobject<UPhosphorAttributeSet>("AttributeSet");
 
+	bUseControllerRotationPitch=false;
+	bUseControllerRotationYaw=false;
+	bUseControllerRotationRoll=false;
+	GetCharacterMovement()->bOrientRotationToMovement=true;
+	
 	HealthBar=CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent());
 }
@@ -37,6 +42,8 @@ void APhosphorEnemy::PossessedBy(AController* NewController)
 
 	PhosphorAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 	PhosphorAIController->RunBehaviorTree(BehaviorTree);
+	PhosphorAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"),false);
+	PhosphorAIController->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"),CharacterClass != ECharacterClass::Warrior);
 }
 
 void APhosphorEnemy::HighLightActor()
@@ -64,6 +71,7 @@ void APhosphorEnemy::HitReactTagChanged(const FGameplayTag CallBackTag, int32 Ne
 {
 	bHitReacting=NewCount > 0;
 	GetCharacterMovement()->MaxWalkSpeed=bHitReacting ? 0.0f : BaseWalkSpeed;
+	PhosphorAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"),bHitReacting);
 }
 
 void APhosphorEnemy::BeginPlay()
