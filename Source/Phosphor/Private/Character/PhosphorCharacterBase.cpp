@@ -3,6 +3,7 @@
 
 #include "Character/PhosphorCharacterBase.h"
 #include "AbilitySystemComponent.h"
+#include "PhosphorGameplayTags.h"
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Phosphor/Phosphor.h"
@@ -65,10 +66,23 @@ void APhosphorCharacterBase::BeginPlay()
 	
 }
 
-FVector APhosphorCharacterBase::GetCombatSocketLocation_Implementation()
+FVector APhosphorCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
-	check(Weapon)
-	return Weapon->GetSocketLocation(WeaponTipSocketName);
+	const FPhosphorGameplayTags& GameplayTags=FPhosphorGameplayTags::Get();
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_Weapon))
+	{
+		return Weapon->GetSocketLocation(WeaponTipSocketName);
+	}
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_LeftHand))
+	{
+		return GetMesh()->GetSocketLocation(LeftHandSocketName);
+	}
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_Attack_RightHand))
+	{
+		return GetMesh()->GetSocketLocation(RightHandSocketName);
+	}
+	return FVector();
+	
 }
 
 bool APhosphorCharacterBase::IsDead_Implementation() const
