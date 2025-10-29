@@ -67,6 +67,16 @@ void APhosphorEnemy::Die()
 	Super::Die();
 }
 
+void APhosphorEnemy::SetCombatTarget_Implementation(AActor* InCombatTarget)
+{
+	CombatTarget=InCombatTarget;
+}
+
+AActor* APhosphorEnemy::GetCombatTarget_Implementation() const
+{
+	return CombatTarget;
+}
+
 void APhosphorEnemy::HitReactTagChanged(const FGameplayTag CallBackTag, int32 NewCount)
 {
 	bHitReacting=NewCount > 0;
