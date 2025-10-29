@@ -5,6 +5,7 @@
 
 #include "PhosphorAbilityTypes.h"
 #include "Game/PhosphorGameModeBase.h"
+#include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/PhosphorPlayerState.h"
 #include "UI/HUD/PhosphorHUD.h"
@@ -70,14 +71,23 @@ void UPhosphorAbilitySystemLibrary::InitializeDefaultAbilities(const UObject* Wo
 }
 
 void UPhosphorAbilitySystemLibrary::GiveStartUpAbilities(const UObject* WorldContextObject,
-	UAbilitySystemComponent* ASC)
+	UAbilitySystemComponent* ASC,ECharacterClass CharacterClass)
 {
 	UCharacterClassInfo* CharacterClassInfo=GetCharacterClassInfo(WorldContextObject);
-
-	for (TSubclassOf<UGameplayAbility> GameAbility:CharacterClassInfo->Abilities)
+	if (CharacterClassInfo==nullptr) return;
+	for (TSubclassOf<UGameplayAbility> GameAbility:CharacterClassInfo->CommonAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(GameAbility,1);
 		ASC->GiveAbility(AbilitySpec);
+	}
+	const FCharacterClassDefaultInfo& CharacterClassDefaultInfo= CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
+	for (TSubclassOf<UGameplayAbility> AbilityClass: CharacterClassDefaultInfo.StartUpAbilities)
+	{
+		if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(ASC->GetAvatarActor()))
+		{
+			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass,CombatInterface->GetPlayerLevel());
+			ASC->GiveAbility(AbilitySpec);
+		}
 	}
 }
 

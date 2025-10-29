@@ -81,7 +81,7 @@ void APhosphorEnemy::BeginPlay()
 	InitAbilityActorInfo();
 	if (HasAuthority())
 	{
-		UPhosphorAbilitySystemLibrary::GiveStartUpAbilities(this,AbilitySystemComponent);	
+		UPhosphorAbilitySystemLibrary::GiveStartUpAbilities(this,AbilitySystemComponent,CharacterClass);	
 	}
 
 	if (UPhosphorUserWidget* PhosphorWidget=Cast<UPhosphorUserWidget>(HealthBar->GetUserWidgetObject()))
