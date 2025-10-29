@@ -38,6 +38,11 @@ void APhosphorCharacterBase::Die()
 	MulticastHandleDeath();
 }
 
+TArray<FTaggedMontages> APhosphorCharacterBase::GetAttackMontages_Implementation()
+{
+	return AttackMontages;
+}
+
 void APhosphorCharacterBase::MulticastHandleDeath_Implementation()
 {
 	Weapon->SetSimulatePhysics(true);
