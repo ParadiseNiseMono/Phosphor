@@ -51,6 +51,7 @@ void APhosphorCharacterBase::MulticastHandleDeath_Implementation()
 	
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Dissolve();
+	bDead=true;
 }
 
 void APhosphorCharacterBase::BeginPlay()
@@ -59,10 +60,20 @@ void APhosphorCharacterBase::BeginPlay()
 	
 }
 
-FVector APhosphorCharacterBase::GetCombatSocketLocation()
+FVector APhosphorCharacterBase::GetCombatSocketLocation_Implementation()
 {
 	check(Weapon)
 	return Weapon->GetSocketLocation(WeaponTipSocketName);
+}
+
+bool APhosphorCharacterBase::IsDead_Implementation() const
+{
+	return bDead;
+}
+
+AActor* APhosphorCharacterBase::GetAvatar_Implementation()
+{
+	return this;
 }
 
 void APhosphorCharacterBase::InitAbilityActorInfo()
