@@ -15,16 +15,14 @@ void UPhosphorProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle 
                                                const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
 	
 }
 
-void UPhosphorProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
+void UPhosphorProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation,const FVector& SocketLocation)
 {
 	const bool bIsServer=GetAvatarActorFromActorInfo()->HasAuthority();
 	if(!bIsServer) return;
 	
-	const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo());
 	FRotator Rotation=(ProjectileTargetLocation-SocketLocation).Rotation();
 	//Rotation.Pitch=0.0f;
 	FTransform SpawnTransform;

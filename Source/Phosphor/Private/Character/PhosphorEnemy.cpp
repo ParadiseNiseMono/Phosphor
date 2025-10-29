@@ -81,7 +81,10 @@ void APhosphorEnemy::HitReactTagChanged(const FGameplayTag CallBackTag, int32 Ne
 {
 	bHitReacting=NewCount > 0;
 	GetCharacterMovement()->MaxWalkSpeed=bHitReacting ? 0.0f : BaseWalkSpeed;
-	PhosphorAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"),bHitReacting);
+	if (PhosphorAIController&&PhosphorAIController->GetBlackboardComponent())
+	{
+		PhosphorAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"),bHitReacting);
+	}
 }
 
 void APhosphorEnemy::BeginPlay()
