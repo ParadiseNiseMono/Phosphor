@@ -153,3 +153,13 @@ void UPhosphorAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* Wo
 		}
 	}
 }
+
+bool UPhosphorAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondActor)
+{
+	const bool bFirstIsPlayer=FirstActor->ActorHasTag("Player");
+	const bool bSecondIsPlayer=SecondActor->ActorHasTag("Player");
+	const bool bFirstIsEnemy=FirstActor->ActorHasTag("Enemy");
+	const bool bSecondIsEnemy=SecondActor->ActorHasTag("Enemy");
+
+	return !((bFirstIsPlayer&&bSecondIsPlayer)||(bFirstIsEnemy&&bSecondIsEnemy));
+}
