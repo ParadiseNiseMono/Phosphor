@@ -37,7 +37,7 @@ APhosphorProjectile::APhosphorProjectile()
 void APhosphorProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	SphereComponent->OnComponentBeginOverlap.AddDynamic(this,&APhosphorProjectile::OnShpereOverlap);
+	SphereComponent->OnComponentBeginOverlap.AddDynamic(this,&APhosphorProjectile::OnSphereOverlap);
 
 	LoopingSoundComponent= UGameplayStatics::SpawnSoundAttached(ImpactSound,GetRootComponent());
 	SetLifeSpan(LifeSpan);
@@ -54,10 +54,10 @@ void APhosphorProjectile::Destroyed()
 	Super::Destroyed();
 }
 
-void APhosphorProjectile::OnShpereOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+void APhosphorProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
                                           UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (DamageEffectSpecHandle.Data.IsValid() && DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser()==OtherActor)
+	if (!DamageEffectSpecHandle.Data.IsValid() || DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser()==OtherActor)
 	{
 		bIsCauser=true;
 		return;

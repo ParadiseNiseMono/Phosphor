@@ -64,6 +64,10 @@ void APhosphorEnemy::UnHighLightActor()
 void APhosphorEnemy::Die()
 {
 	SetLifeSpan(LifeSpan);
+	if (PhosphorAIController)
+	{
+		PhosphorAIController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"),true);
+	}
 	Super::Die();
 }
 
