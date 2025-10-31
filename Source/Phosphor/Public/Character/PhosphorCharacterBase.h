@@ -8,6 +8,7 @@
 #include "Interaction/CombatInterface.h"
 #include "PhosphorCharacterBase.generated.h"
 
+class UNiagaraSystem;
 class UGameplayAbility;
 class UGameplayEffect;
 class UAbilitySystemComponent;
@@ -30,6 +31,7 @@ public:
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual void Die() override;
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
+	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
 	/*End Combat Interface*/
 	
 	UFUNCTION(NetMulticast, Reliable)
@@ -93,6 +95,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
 	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "Combat")
+	TObjectPtr<UNiagaraSystem> BloodEffect;
 private:
 	UPROPERTY(EditAnywhere,Category="Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartUpAbilities;

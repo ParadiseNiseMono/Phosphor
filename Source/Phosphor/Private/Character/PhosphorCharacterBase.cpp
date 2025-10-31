@@ -44,6 +44,11 @@ TArray<FTaggedMontage> APhosphorCharacterBase::GetAttackMontages_Implementation(
 	return AttackMontages;
 }
 
+UNiagaraSystem* APhosphorCharacterBase::GetBloodEffect_Implementation()
+{
+	return BloodEffect;
+}
+
 void APhosphorCharacterBase::MulticastHandleDeath_Implementation()
 {
 	Weapon->SetSimulatePhysics(true);
