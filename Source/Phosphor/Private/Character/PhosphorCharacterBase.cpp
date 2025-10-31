@@ -39,7 +39,7 @@ void APhosphorCharacterBase::Die()
 	MulticastHandleDeath();
 }
 
-TArray<FTaggedMontages> APhosphorCharacterBase::GetAttackMontages_Implementation()
+TArray<FTaggedMontage> APhosphorCharacterBase::GetAttackMontages_Implementation()
 {
 	return AttackMontages;
 }

@@ -10,7 +10,7 @@
 class UAnimMontage;
 
 USTRUCT(BlueprintType)
-struct FTaggedMontages
+struct FTaggedMontage
 {
 	GENERATED_BODY()
 
@@ -57,5 +57,5 @@ public:
 	AActor* GetAvatar();
 
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
-	TArray<FTaggedMontages> GetAttackMontages();
+	TArray<FTaggedMontage> GetAttackMontages();
 };

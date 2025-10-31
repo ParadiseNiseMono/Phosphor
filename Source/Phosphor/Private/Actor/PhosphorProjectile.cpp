@@ -9,6 +9,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
+#include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 #include "Components/AudioComponent.h"
 #include "Phosphor/Phosphor.h"
 
@@ -53,16 +54,16 @@ void APhosphorProjectile::Destroyed()
 	Super::Destroyed();
 }
 
-void APhosphorProjectile::OnShpereOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other,
+void APhosphorProjectile::OnShpereOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
                                           UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (DamageEffectSpecHandle.Data.IsValid() && DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser()==Other)
+	if (DamageEffectSpecHandle.Data.IsValid() && DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser()==OtherActor)
 	{
 		bIsCauser=true;
 		return;
 	}
 		
-
+	if (!UPhosphorAbilitySystemLibrary::IsNotFriend(DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser(),OtherActor))return;	
 	if (!bHit)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,GetActorLocation(),FRotator::ZeroRotator);
@@ -73,7 +74,7 @@ void APhosphorProjectile::OnShpereOverlap(UPrimitiveComponent* OverlappedComp, A
 
 	if (HasAuthority())
 	{
-		if (UAbilitySystemComponent* AbilitySystemComponent=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Other))
+		if (UAbilitySystemComponent* AbilitySystemComponent=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
 			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
 		}

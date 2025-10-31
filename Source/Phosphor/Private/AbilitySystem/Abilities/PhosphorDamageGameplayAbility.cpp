@@ -5,6 +5,8 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "Fonts/UnicodeBlockRange.h"
+#include "Interaction/CombatInterface.h"
 
 
 void UPhosphorDamageGameplayAbility::CauseDamage(AActor* Target)
@@ -16,4 +18,15 @@ void UPhosphorDamageGameplayAbility::CauseDamage(AActor* Target)
 		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle,Pair.Key,ScaledDamage);
 	}
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(),UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target));
+}
+
+FTaggedMontage UPhosphorDamageGameplayAbility::GetRandomTaggedMontageFromArray(
+	const TArray<FTaggedMontage>& TaggedMontages) const
+{
+	if (TaggedMontages.Num()>0)
+	{
+		const int32 RandomIndex=FMath::RandRange(0,TaggedMontages.Num()-1);
+		return TaggedMontages[RandomIndex];
+	}
+	return FTaggedMontage();
 }
