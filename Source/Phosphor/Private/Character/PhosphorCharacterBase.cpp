@@ -6,6 +6,7 @@
 #include "PhosphorGameplayTags.h"
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Phosphor/Phosphor.h"
 
 APhosphorCharacterBase::APhosphorCharacterBase()
@@ -63,6 +64,8 @@ FTaggedMontage APhosphorCharacterBase::GetTaggedMontageByTag_Implementation(cons
 
 void APhosphorCharacterBase::MulticastHandleDeath_Implementation()
 {
+	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(),GetActorRotation());
+	
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetEnableGravity(true);
 	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
