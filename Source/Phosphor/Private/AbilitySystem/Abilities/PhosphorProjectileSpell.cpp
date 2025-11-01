@@ -18,12 +18,16 @@ void UPhosphorProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle 
 	
 }
 
-void UPhosphorProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation,const FVector& SocketLocation)
+void UPhosphorProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation,const FVector& SocketLocation,bool bOverridePitch,float PitchOverride)
 {
 	const bool bIsServer=GetAvatarActorFromActorInfo()->HasAuthority();
 	if(!bIsServer) return;
 	
 	FRotator Rotation=(ProjectileTargetLocation-SocketLocation).Rotation();
+	if (bOverridePitch)
+	{
+		Rotation.Pitch=PitchOverride;
+	}
 	//Rotation.Pitch=0.0f;
 	FTransform SpawnTransform;
 	SpawnTransform.SetLocation(SocketLocation);

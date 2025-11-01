@@ -3,8 +3,6 @@
 
 #include "AbilitySystem/Abilities/PhosphorSummonAbility.h"
 
-#include "Kismet/KismetSystemLibrary.h"
-
 TArray<FVector> UPhosphorSummonAbility::GetSpawnLocations()
 {
 	const FVector Forward=GetAvatarActorFromActorInfo()->GetActorForwardVector();
@@ -19,17 +17,23 @@ TArray<FVector> UPhosphorSummonAbility::GetSpawnLocations()
 	for (int i = 0; i < NumMinions; i++)
 	{
 		const FVector Direction=LeftOfSpread.RotateAngleAxis(i*DeltaSpread,FVector::UpVector);
-		const FVector ChosenLocation=Location+Direction*FMath::RandRange(MinSpawnDistance,MaxSpawnDistance);
-		DrawDebugSphere(GetWorld(),ChosenLocation,18.f,12,FColor::Green,false,3.f);
+		FVector ChosenLocation=Location+Direction*FMath::RandRange(MinSpawnDistance,MaxSpawnDistance);
+
+		FHitResult Hit;
+		GetWorld()->LineTraceSingleByChannel(
+			Hit,ChosenLocation+FVector(0.f,0.f,400.f),ChosenLocation-FVector(0.f,0.f,400.f),ECC_Visibility);
+		if (Hit.bBlockingHit)
+		{
+			ChosenLocation=Hit.ImpactPoint;
+		}
 		SpawnLocations.Add(ChosenLocation);
-		UKismetSystemLibrary::DrawDebugArrow(
-		GetAvatarActorFromActorInfo(),
-		Location,
-		Location+Direction*MaxSpawnDistance,
-		4.f,
-		FColor::Red,
-		3.f);
 	}
 
 	return SpawnLocations;
+}
+
+TSubclassOf<APawn> UPhosphorSummonAbility::GetRandomMinionClass()
+{
+	const int32 Selection=FMath::RandRange(0,MinionClasses.Num()-1);
+	return MinionClasses[Selection];
 }

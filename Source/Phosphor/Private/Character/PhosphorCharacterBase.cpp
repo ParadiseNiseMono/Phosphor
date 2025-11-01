@@ -62,6 +62,16 @@ FTaggedMontage APhosphorCharacterBase::GetTaggedMontageByTag_Implementation(cons
 	return FTaggedMontage();
 }
 
+int32 APhosphorCharacterBase::GetMinionCount_Implementation()
+{
+	return MinionCount;
+}
+
+void APhosphorCharacterBase::IncrementMinionCount_Implementation(int32 Amount)
+{
+	MinionCount += Amount;
+}
+
 void APhosphorCharacterBase::MulticastHandleDeath_Implementation()
 {
 	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(),GetActorRotation());
