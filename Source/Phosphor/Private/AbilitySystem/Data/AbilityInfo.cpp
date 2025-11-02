@@ -7,9 +7,9 @@
 
 FPhosphorAbilityInfo UAbilityInfo::FindAbilityInfoByTag(const FGameplayTag& AbilityTag, bool bLogNotFound) const
 {
-	for (const FPhosphorAbilityInfo& Info : AbilityInformation)
+	for (const FPhosphorAbilityInfo& Info : AbilityInformation)	
 	{
-		if (Info.AbilityTag.MatchesTagExact(AbilityTag))
+		if (Info.AbilityTag==AbilityTag)
 		{
 			return Info;
 		}

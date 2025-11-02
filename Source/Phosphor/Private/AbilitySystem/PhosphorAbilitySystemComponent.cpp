@@ -10,7 +10,6 @@
 void UPhosphorAbilitySystemComponent::AbilityActorInfoSet()
 {
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this,&UPhosphorAbilitySystemComponent::ClientEffectApplied);
-
 }
 
 void UPhosphorAbilitySystemComponent::AddCharacterAbilities(
@@ -88,7 +87,7 @@ FGameplayTag UPhosphorAbilitySystemComponent::GetAbilityTagFromSpec(const FGamep
 
 FGameplayTag UPhosphorAbilitySystemComponent::GetInputTagFromSpec(const FGameplayAbilitySpec& Spec)
 {
-	for(FGameplayTag Tag:Spec.Ability.Get()->AbilityTags)
+	for(FGameplayTag Tag:Spec.DynamicAbilityTags)
 	{
 		if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag("InputTag")))
 		{
@@ -98,6 +97,17 @@ FGameplayTag UPhosphorAbilitySystemComponent::GetInputTagFromSpec(const FGamepla
 	return FGameplayTag();
 }
 
+void UPhosphorAbilitySystemComponent::OnRep_ActivateAbilities()
+{
+	Super::OnRep_ActivateAbilities();
+
+	if (!bStartupAbilitiesGiven)
+	{
+		bStartupAbilitiesGiven=true;
+		AbilitiesGivenDelegate.Broadcast(this);
+	}
+}
+
 void UPhosphorAbilitySystemComponent::ClientEffectApplied_Implementation(UAbilitySystemComponent* AbilitySystemComponent,
                                                                          const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle)
 {
@@ -105,5 +115,4 @@ void UPhosphorAbilitySystemComponent::ClientEffectApplied_Implementation(UAbilit
 	GameplayEffectSpec.GetAllAssetTags(TagContainer);
 
 	EffectAssetTags.Broadcast(TagContainer);
-
 }
