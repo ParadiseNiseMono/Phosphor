@@ -6,6 +6,8 @@
 #include "UI/WidgetController/PhosphorWidgetController.h"
 #include "OverlayWidgetController.generated.h"
 
+class UAbilityInfo;
+
 USTRUCT(BlueprintType)
 struct FUIWidgetRow : public FTableRowBase
 {
@@ -56,6 +58,9 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category="Widget Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category="Widget Data")
+	TObjectPtr<UAbilityInfo> AbilityInfo;
 	
 
 	template<typename  T>
