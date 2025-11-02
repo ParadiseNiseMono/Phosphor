@@ -5,7 +5,7 @@
 
 #include "Phosphor/PhosphorLogChannels.h"
 
-FPhosphorAbilityInfo UAbilityInfo::FindAbilityByTag(const FGameplayTag& AbilityTag, bool bLogNotFound) const
+FPhosphorAbilityInfo UAbilityInfo::FindAbilityInfoByTag(const FGameplayTag& AbilityTag, bool bLogNotFound) const
 {
 	for (const FPhosphorAbilityInfo& Info : AbilityInformation)
 	{

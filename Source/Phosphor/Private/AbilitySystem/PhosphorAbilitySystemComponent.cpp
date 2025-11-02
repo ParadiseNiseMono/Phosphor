@@ -5,6 +5,7 @@
 
 #include "PhosphorGameplayTags.h"
 #include "AbilitySystem/Abilities/PhosphorGameplayAbility.h"
+#include "Phosphor/PhosphorLogChannels.h"
 
 void UPhosphorAbilitySystemComponent::AbilityActorInfoSet()
 {
@@ -24,6 +25,8 @@ void UPhosphorAbilitySystemComponent::AddCharacterAbilities(
 			GiveAbility(AbilitySpec);
 		}
 	}
+	bStartupAbilitiesGiven=true;
+	AbilitiesGivenDelegate.Broadcast(this);
 }
 
 void UPhosphorAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag)
@@ -56,8 +59,47 @@ void UPhosphorAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag
 	}
 }
 
+void UPhosphorAbilitySystemComponent::ForEachAbility(const FForEachAbility& Delegate)
+{
+	FScopedAbilityListLock ActiveScopeLock(*this);
+	for (const FGameplayAbilitySpec& Spec : GetActivatableAbilities())
+	{
+		if (!Delegate.ExecuteIfBound(Spec))
+		{
+			UE_LOG(LogPhosphor, Error, TEXT("Failed to execute delegate in %hs"),__FUNCTION__);
+		}
+	}
+}
+
+FGameplayTag UPhosphorAbilitySystemComponent::GetAbilityTagFromSpec(const FGameplayAbilitySpec& Spec)
+{
+	if (Spec.Ability)
+	{
+		for (FGameplayTag Tag:Spec.Ability.Get()->AbilityTags)
+		{
+			if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag("Abilities")))
+			{
+				return Tag;
+			}
+		}
+	}
+	return FGameplayTag();
+}
+
+FGameplayTag UPhosphorAbilitySystemComponent::GetInputTagFromSpec(const FGameplayAbilitySpec& Spec)
+{
+	for(FGameplayTag Tag:Spec.Ability.Get()->AbilityTags)
+	{
+		if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag("InputTag")))
+		{
+			return Tag;
+		}
+	}
+	return FGameplayTag();
+}
+
 void UPhosphorAbilitySystemComponent::ClientEffectApplied_Implementation(UAbilitySystemComponent* AbilitySystemComponent,
-                                                    const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle)
+                                                                         const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle)
 {
 	FGameplayTagContainer TagContainer;
 	GameplayEffectSpec.GetAllAssetTags(TagContainer);

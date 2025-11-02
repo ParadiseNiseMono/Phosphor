@@ -6,6 +6,8 @@
 #include "UI/WidgetController/PhosphorWidgetController.h"
 #include "OverlayWidgetController.generated.h"
 
+struct FPhosphorAbilityInfo;
+class UPhosphorAbilitySystemComponent;
 class UAbilityInfo;
 
 USTRUCT(BlueprintType)
@@ -29,6 +31,7 @@ struct FUIWidgetRow : public FTableRowBase
 class UPhosphorUserWidget;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature,FUIWidgetRow,Row);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature,const FPhosphorAbilityInfo&, Info);
 
 /**
  * 
@@ -55,6 +58,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|Message")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category="GAS|Message")
+	FAbilityInfoSignature AbilityInfoDelegate;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category="Widget Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
@@ -62,9 +68,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category="Widget Data")
 	TObjectPtr<UAbilityInfo> AbilityInfo;
 	
-
 	template<typename  T>
 	T* GetDataTableRowByTag(UDataTable* DataTable,const FGameplayTag& Tag);
+
+	void OnInitializeStartupAbilities(UPhosphorAbilitySystemComponent* PhosphorAbilitySystemComponent);
 };
 
 template <typename T>

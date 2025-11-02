@@ -37,5 +37,5 @@ public:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category="Ability Info")
 	TArray<FPhosphorAbilityInfo> AbilityInformation;
 
-	FPhosphorAbilityInfo FindAbilityByTag(const FGameplayTag& AbilityTag,bool bLogNotFound=false) const;
+	FPhosphorAbilityInfo FindAbilityInfoByTag(const FGameplayTag& AbilityTag,bool bLogNotFound=false) const;
 };

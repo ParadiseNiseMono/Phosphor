@@ -5,6 +5,7 @@
 
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "AbilitySystem/PhosphorAttributeSet.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 
 void UOverlayWidgetController::BroadcastInitialValues()
 {
@@ -48,7 +49,18 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 				OnMaxManaChanged.Broadcast(Data.NewValue);
 			}
 		);
-	Cast<UPhosphorAbilitySystemComponent>(AbilitySystemComponent)->EffectAssetTags.AddLambda(
+
+	if (UPhosphorAbilitySystemComponent* PhosphorAbilitySystemComponent=Cast<UPhosphorAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		if (PhosphorAbilitySystemComponent->bStartupAbilitiesGiven)
+		{
+			OnInitializeStartupAbilities(PhosphorAbilitySystemComponent);
+		}
+		else
+		{
+			PhosphorAbilitySystemComponent->AbilitiesGivenDelegate.AddUObject(this,&UOverlayWidgetController::OnInitializeStartupAbilities);
+		}
+		PhosphorAbilitySystemComponent->EffectAssetTags.AddLambda(
 		[this](const FGameplayTagContainer& AssetTags)
 		{
 			for (const FGameplayTag& Tag : AssetTags)
@@ -63,5 +75,21 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			}
 		}
 	);
+	}
+}
+
+void UOverlayWidgetController::OnInitializeStartupAbilities(UPhosphorAbilitySystemComponent* PhosphorAbilitySystemComponent)
+{
+	//TODO Get information about all given abilities,lookup their Ability Info and Broadcast it to Widget.
+	if (!PhosphorAbilitySystemComponent->bStartupAbilitiesGiven) return;
+
+	FForEachAbility BroadcastDelegate;
+	BroadcastDelegate.BindLambda([this,PhosphorAbilitySystemComponent](const FGameplayAbilitySpec& Spec)
+	{
+		FPhosphorAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(PhosphorAbilitySystemComponent->GetAbilityTagFromSpec(Spec));
+		Info.InputTag=PhosphorAbilitySystemComponent->GetInputTagFromSpec(Spec);
+		AbilityInfoDelegate.Broadcast(Info);
+	});
+	PhosphorAbilitySystemComponent->ForEachAbility(BroadcastDelegate);
 }
 
