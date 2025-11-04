@@ -6,6 +6,8 @@
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "AbilitySystem/PhosphorAttributeSet.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
+#include "AbilitySystem/Data/LevelUpInfo.h"
+#include "Player/PhosphorPlayerState.h"
 
 void UOverlayWidgetController::BroadcastInitialValues()
 {
@@ -19,6 +21,10 @@ void UOverlayWidgetController::BroadcastInitialValues()
 
 void UOverlayWidgetController::BindCallbacksToDependencies()
 {
+	APhosphorPlayerState* PhosphorPlayerState=CastChecked<APhosphorPlayerState>(PlayerState);
+	
+	PhosphorPlayerState->OnXPChangedDelegate.AddUObject(this,&UOverlayWidgetController::OnXPChanged);
+
 	const UPhosphorAttributeSet* PhosphorAttributeSet=CastChecked<UPhosphorAttributeSet>(AttributeSet);
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
@@ -49,7 +55,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 				OnMaxManaChanged.Broadcast(Data.NewValue);
 			}
 		);
-
+	
 	if (UPhosphorAbilitySystemComponent* PhosphorAbilitySystemComponent=Cast<UPhosphorAbilitySystemComponent>(AbilitySystemComponent))
 	{
 		if (PhosphorAbilitySystemComponent->bStartupAbilitiesGiven)
@@ -91,5 +97,29 @@ void UOverlayWidgetController::OnInitializeStartupAbilities(UPhosphorAbilitySyst
 		AbilityInfoDelegate.Broadcast(Info);
 	});
 	PhosphorAbilitySystemComponent->ForEachAbility(BroadcastDelegate);
+}
+
+void UOverlayWidgetController::OnXPChanged(const int32 NewXP) const
+{
+	const APhosphorPlayerState* PhosphorPlayerState=CastChecked<APhosphorPlayerState>(PlayerState);
+	const ULevelUpInfo* LevelUpInfo=PhosphorPlayerState->LevelUpInfo;
+
+	checkf(LevelUpInfo,TEXT("LevelUpInfo is null"));
+
+	const int32 Level = LevelUpInfo->FindLevelForXP(NewXP);
+	const int32 MaxLevel=LevelUpInfo->LevelUpInformation.Num();
+
+	if (Level<=MaxLevel&&Level>0)
+	{
+		const int32 LevelUpRequirement=LevelUpInfo->LevelUpInformation[Level].LevelUpRequirement;
+		const int32 PreviousLevelUpRequirement=LevelUpInfo->LevelUpInformation[Level-1].LevelUpRequirement;
+
+		const int32 DeltaLevelUpRequirement=LevelUpRequirement-PreviousLevelUpRequirement;
+		const int32 XPForThisLevel=NewXP-PreviousLevelUpRequirement;
+
+		const float XPBarPercent = static_cast<float>(XPForThisLevel)/static_cast<float>(DeltaLevelUpRequirement);
+
+		OnXPPercentChangedDelegate.Broadcast(XPBarPercent);
+	}
 }
 

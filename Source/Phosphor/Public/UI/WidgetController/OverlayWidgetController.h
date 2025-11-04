@@ -61,6 +61,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|Message")
 	FAbilityInfoSignature AbilityInfoDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
+	FOnAttributeChangedSignature OnXPPercentChangedDelegate;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category="Widget Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
@@ -72,8 +75,9 @@ protected:
 	T* GetDataTableRowByTag(UDataTable* DataTable,const FGameplayTag& Tag);
 
 	void OnInitializeStartupAbilities(UPhosphorAbilitySystemComponent* PhosphorAbilitySystemComponent);
-};
 
+	void OnXPChanged(const int32 NewXP) const;
+};
 template <typename T>
 T* UOverlayWidgetController::GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag)
 {
