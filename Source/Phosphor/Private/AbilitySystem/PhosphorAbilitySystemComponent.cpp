@@ -28,6 +28,16 @@ void UPhosphorAbilitySystemComponent::AddCharacterAbilities(
 	AbilitiesGivenDelegate.Broadcast(this);
 }
 
+void UPhosphorAbilitySystemComponent::AddCharacterPassiveAbilities(
+	const TArray<TSubclassOf<UGameplayAbility>>& StartUpPassiveAbilities)
+{
+	for (const TSubclassOf<UGameplayAbility> GameAbility : StartUpPassiveAbilities)
+	{
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(GameAbility,1);
+		GiveAbilityAndActivateOnce(AbilitySpec);
+	}
+}
+
 void UPhosphorAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag)
 {
 	if (!InputTag.IsValid())return;

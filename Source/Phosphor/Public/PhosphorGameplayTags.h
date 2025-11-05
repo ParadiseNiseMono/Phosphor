@@ -40,6 +40,8 @@ public:
 	FGameplayTag Attributes_Resistance_Arcane;
 	FGameplayTag Attributes_Resistance_Physical;
 
+	FGameplayTag Attributes_Meta_IncomingXP;
+
 	/*Vital Attributes*/
 	//FGameplayTag Attributes_Vital_Health;
 	//FGameplayTag Attributes_Vital_Mana;

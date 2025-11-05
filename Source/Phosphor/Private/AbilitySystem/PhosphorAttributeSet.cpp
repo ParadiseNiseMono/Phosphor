@@ -11,6 +11,7 @@
 #include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "Phosphor/PhosphorLogChannels.h"
 #include "Player/PhosphorPlayerController.h"
 
 
@@ -117,6 +118,7 @@ void UPhosphorAttributeSet::SetEffectProperties(const FGameplayEffectModCallback
 		Props.TargetCharacter=Cast<ACharacter>(Props.TargetAvatarActor);
 		Props.TargetASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.TargetAvatarActor);
 	}
+	
 }
 
 
@@ -130,7 +132,6 @@ void UPhosphorAttributeSet::PostGameplayEffectExecute(const  FGameplayEffectModC
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(),0.f,GetMaxHealth()));
-		UE_LOG(LogTemp,Warning,TEXT("Changed Health on %s,Health:%f"),*Props.TargetAvatarActor.GetName(),GetHealth());
 	}
 	if (Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
@@ -164,6 +165,12 @@ void UPhosphorAttributeSet::PostGameplayEffectExecute(const  FGameplayEffectModC
 			const bool bCriticalHit=UPhosphorAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
 			ShowFloatText(Props,LocalIncomingDamage,bBlockHit,bCriticalHit);
 		}
+	}
+	if (Data.EvaluatedData.Attribute == GetInComingXPAttribute())
+	{
+		const float LocalIncomingXP=GetInComingXP();
+		SetInComingXP(0.f);
+		UE_LOG(LogPhosphor,Log,TEXT("Get In Coming XP :{%f}"),LocalIncomingXP);
 	}
 }
 

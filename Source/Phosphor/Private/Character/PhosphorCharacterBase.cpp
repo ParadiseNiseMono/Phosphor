@@ -161,6 +161,7 @@ void APhosphorCharacterBase::AddCharacterAbilities()
 	if (!HasAuthority()) return;
 	
 	ASC->AddCharacterAbilities(StartUpAbilities);
+	ASC->AddCharacterPassiveAbilities(StartUpPassiveAbilities);
 }
 
 void APhosphorCharacterBase::Dissolve()
