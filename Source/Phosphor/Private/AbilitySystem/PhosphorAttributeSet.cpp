@@ -154,6 +154,7 @@ void UPhosphorAttributeSet::PostGameplayEffectExecute(const  FGameplayEffectModC
 				{
 					CombatInterface->Die();
 				}
+				SendXPEvent(Props);
 			}
 			else
 			{
@@ -190,6 +191,22 @@ void UPhosphorAttributeSet::ShowFloatText(const FEffectProperties& Props, float 
 	}
 }
 
+void UPhosphorAttributeSet::SendXPEvent(const FEffectProperties& Props)
+{
+	if (ICombatInterface* CombatInterface=Cast<ICombatInterface>(Props.TargetCharacter))
+	{
+		const int32 TargetLevel=CombatInterface->GetPlayerLevel();
+		const ECharacterClass TargetClass=ICombatInterface::Execute_GetCharacterClass(Props.TargetCharacter);
+		const int32 XPReward = UPhosphorAbilitySystemLibrary::GetXPRewardForClassAndLevel(Props.TargetCharacter,TargetClass,TargetLevel);
+
+		const FPhosphorGameplayTags& GameplayTags=FPhosphorGameplayTags::Get();
+		FGameplayEventData Payload;
+		Payload.EventTag=GameplayTags.Attributes_Meta_IncomingXP;
+		Payload.EventMagnitude=XPReward;
+		
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceCharacter,GameplayTags.Attributes_Meta_IncomingXP,Payload);
+	}	
+}
 
 void UPhosphorAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)const
 {
