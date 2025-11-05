@@ -91,6 +91,18 @@ void UPhosphorAbilitySystemLibrary::GiveStartUpAbilities(const UObject* WorldCon
 	}
 }
 
+int32 UPhosphorAbilitySystemLibrary::GetXPRewardForClassAndLevel(const UObject* WorldContextObject,
+	ECharacterClass CharacterClass, int32 CharacterLevel)
+{
+	UCharacterClassInfo* CharacterClassInfo=GetCharacterClassInfo(WorldContextObject);
+	if (CharacterClassInfo==nullptr) return 0;
+
+	const FCharacterClassDefaultInfo Info = CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
+	const float XPReward=Info.XPReward.GetValueAtLevel(CharacterLevel);
+
+	return static_cast<int32>(XPReward);
+}
+
 UCharacterClassInfo* UPhosphorAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
 {
 	APhosphorGameModeBase* PhosphorGameModeBase= Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
@@ -163,3 +175,5 @@ bool UPhosphorAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* Seco
 
 	return !((bFirstIsPlayer&&bSecondIsPlayer)||(bFirstIsEnemy&&bSecondIsEnemy));
 }
+
+

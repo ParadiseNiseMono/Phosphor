@@ -72,6 +72,11 @@ void APhosphorCharacterBase::IncrementMinionCount_Implementation(int32 Amount)
 	MinionCount += Amount;
 }
 
+ECharacterClass APhosphorCharacterBase::GetCharacterClass_Implementation()
+{
+	return CharacterClass;
+}
+
 void APhosphorCharacterBase::MulticastHandleDeath_Implementation()
 {
 	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(),GetActorRotation());

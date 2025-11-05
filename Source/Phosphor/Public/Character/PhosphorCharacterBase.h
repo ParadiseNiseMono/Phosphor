@@ -6,6 +6,7 @@
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
+#include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "PhosphorCharacterBase.generated.h"
 
 class UNiagaraSystem;
@@ -35,6 +36,7 @@ public:
 	virtual FTaggedMontage GetTaggedMontageByTag_Implementation(const FGameplayTag& MontageTag) override;
 	virtual int32 GetMinionCount_Implementation() override;
 	virtual void IncrementMinionCount_Implementation(int32 Amount) override;
+	virtual ECharacterClass GetCharacterClass_Implementation() override;
 	/*End Combat Interface*/
 	
 	UFUNCTION(NetMulticast, Reliable)
@@ -67,6 +69,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="CharacterDefaultClass")
+	ECharacterClass CharacterClass=ECharacterClass::Warrior;
 
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;

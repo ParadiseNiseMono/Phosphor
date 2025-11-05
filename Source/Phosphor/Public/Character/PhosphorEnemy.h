@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Character/PhosphorCharacterBase.h"
 #include "Interaction/EnemyInterface.h"
-#include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "PhosphorEnemy.generated.h"
 
@@ -64,8 +63,7 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="CharacterDefaultClass")
 	int32 Level=1;
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="CharacterDefaultClass")
-	ECharacterClass CharacterClass=ECharacterClass::Warrior;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category="CharacterDefaultClass")
 	TObjectPtr<UWidgetComponent> HealthBar;

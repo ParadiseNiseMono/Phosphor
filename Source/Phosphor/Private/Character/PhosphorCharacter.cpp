@@ -20,6 +20,8 @@ APhosphorCharacter::APhosphorCharacter()
 	bUseControllerRotationPitch=false;
 	bUseControllerRotationYaw=false;
 	bUseControllerRotationRoll=false;
+
+	CharacterClass=ECharacterClass::Elemantalist;
 }
 
 void APhosphorCharacter::PossessedBy(AController* NewController)
