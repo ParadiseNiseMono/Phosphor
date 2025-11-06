@@ -41,6 +41,13 @@ void APhosphorCharacter::OnRep_PlayerState()
 	InitAbilityActorInfo();
 }
 
+void APhosphorCharacter::AddToXP_Implementation(int32 InXP)
+{
+	APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
+	check(PhosphorPlayerState);
+	PhosphorPlayerState->AddToXP(InXP);
+}
+
 int32 APhosphorCharacter::GetPlayerLevel()
 {
 	const APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();

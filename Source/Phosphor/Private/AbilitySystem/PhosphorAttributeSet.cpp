@@ -10,6 +10,7 @@
 #include "PhosphorGameplayTags.h"
 #include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 #include "Interaction/CombatInterface.h"
+#include "Interaction/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Phosphor/PhosphorLogChannels.h"
 #include "Player/PhosphorPlayerController.h"
@@ -171,7 +172,12 @@ void UPhosphorAttributeSet::PostGameplayEffectExecute(const  FGameplayEffectModC
 	{
 		const float LocalIncomingXP=GetInComingXP();
 		SetInComingXP(0.f);
-		UE_LOG(LogPhosphor,Log,TEXT("Get In Coming XP :{%f}"),LocalIncomingXP);
+
+		//TODO: See if we should Level up.
+		if (Props.SourceCharacter->Implements<UPlayerInterface>())
+		{
+			IPlayerInterface::Execute_AddToXP(Props.SourceCharacter,LocalIncomingXP);
+		}
 	}
 }
 
