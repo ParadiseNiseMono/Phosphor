@@ -29,6 +29,7 @@ struct FUIWidgetRow : public FTableRowBase
 };
 
 class UPhosphorUserWidget;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChangedSignature, int32, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature,FUIWidgetRow,Row);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature,const FPhosphorAbilityInfo&, Info);
@@ -64,6 +65,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
 	FOnAttributeChangedSignature OnXPPercentChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
+	FOnPlayerStateChangedSignature OnPlayerLevelChangedDelegate;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category="Widget Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;

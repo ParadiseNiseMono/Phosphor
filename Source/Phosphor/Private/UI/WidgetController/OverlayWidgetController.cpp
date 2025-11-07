@@ -25,6 +25,12 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	
 	PhosphorPlayerState->OnXPChangedDelegate.AddUObject(this,&UOverlayWidgetController::OnXPChanged);
 
+	PhosphorPlayerState->OnLevelChangedDelegate.AddLambda(
+		[this](int32 NewLevel)
+	{
+		OnPlayerLevelChangedDelegate.Broadcast(NewLevel);
+	});
+
 	const UPhosphorAttributeSet* PhosphorAttributeSet=CastChecked<UPhosphorAttributeSet>(AttributeSet);
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(

@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
+#include "AbilitySystem/Data/LevelUpInfo.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/PhosphorPlayerController.h"
 #include "Player/PhosphorPlayerState.h"
@@ -51,6 +52,51 @@ void APhosphorCharacter::AddToXP_Implementation(int32 InXP)
 void APhosphorCharacter::LevelUp_Implementation()
 {
 	
+}
+
+int32 APhosphorCharacter::GetXP_Implementation() const
+{
+	const APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
+	check(PhosphorPlayerState);
+	return PhosphorPlayerState->GetPlayerXP();
+}
+
+int32 APhosphorCharacter::FindLevelForXP_Implementation(int32 InXP) const
+{
+	const APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
+	check(PhosphorPlayerState);
+	return PhosphorPlayerState->LevelUpInfo->FindLevelForXP(InXP);
+}
+
+int32 APhosphorCharacter::GetAttributePointsReward_Implementation(int32 Level) const
+{
+	const APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
+	check(PhosphorPlayerState);
+	return PhosphorPlayerState->LevelUpInfo->LevelUpInformation[Level].AttributePointReward;
+}
+
+int32 APhosphorCharacter::GetSpellPointsReward_Implementation(int32 Level) const
+{
+	const APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
+	check(PhosphorPlayerState);
+	return PhosphorPlayerState->LevelUpInfo->LevelUpInformation[Level].SpellPointReward;
+}
+
+void APhosphorCharacter::AddToPlayerLevel_Implementation(int32 InLevel)
+{
+	APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
+	check(PhosphorPlayerState);
+	PhosphorPlayerState->AddLevel(InLevel);
+}
+
+void APhosphorCharacter::AddToAttributePoints_Implementation(int32 InAttributePoints)
+{
+	//TODO: Add AttributePoints to Player State
+}
+
+void APhosphorCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
+{
+	//TODO: Add SpellPoints to Player State
 }
 
 int32 APhosphorCharacter::GetPlayerLevel_Implementation()
