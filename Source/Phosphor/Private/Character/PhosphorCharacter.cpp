@@ -5,14 +5,30 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
+#include "NiagaraComponent.h"
 #include "AbilitySystem/Data/LevelUpInfo.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Player/PhosphorPlayerController.h"
 #include "Player/PhosphorPlayerState.h"
 #include "UI/HUD/PhosphorHUD.h"
 
 APhosphorCharacter::APhosphorCharacter()
 {
+	CameraBoom=CreateDefaultSubobject<USpringArmComponent>("CameraBoom");
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->SetUsingAbsoluteRotation(true);
+	CameraBoom->bDoCollisionTest=false;
+
+	TopDownCameraComponent=CreateDefaultSubobject<UCameraComponent>("TopDownCamera");
+	TopDownCameraComponent->SetupAttachment(CameraBoom,USpringArmComponent::SocketName);
+	TopDownCameraComponent->bUsePawnControlRotation = false;
+	
+	LevelUpNiagaraComponent=CreateDefaultSubobject<UNiagaraComponent>("LevelUpNiagaraComponent");
+	LevelUpNiagaraComponent->SetupAttachment(RootComponent);
+	LevelUpNiagaraComponent->bAutoActivate=false;
+	
 	GetCharacterMovement()->bOrientRotationToMovement=true;
 	GetCharacterMovement()->RotationRate=FRotator(0.0f, 400.0f, 0.0f);
 	GetCharacterMovement()->bConstrainToPlane=true;
@@ -51,9 +67,21 @@ void APhosphorCharacter::AddToXP_Implementation(int32 InXP)
 
 void APhosphorCharacter::LevelUp_Implementation()
 {
-	
+	MulticastLevelUpParticles();
 }
 
+void APhosphorCharacter::MulticastLevelUpParticles_Implementation() const
+{
+	if (IsValid(LevelUpNiagaraComponent))
+	{
+		const FVector CameraLocation=TopDownCameraComponent->GetComponentLocation();
+		const FVector NiagaraLocation=LevelUpNiagaraComponent->GetComponentLocation();
+
+		const FRotator ToCameraRotation=(CameraLocation-NiagaraLocation).Rotation();
+		LevelUpNiagaraComponent->SetWorldRotation(ToCameraRotation);
+		LevelUpNiagaraComponent->Activate(true);
+	}
+}
 int32 APhosphorCharacter::GetXP_Implementation() const
 {
 	const APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
@@ -124,4 +152,6 @@ void APhosphorCharacter::InitAbilityActorInfo()
 	}
 	InitializeDefaultAttribute();
 }
+
+
 
