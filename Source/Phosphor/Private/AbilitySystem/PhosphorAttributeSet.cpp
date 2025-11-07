@@ -191,8 +191,8 @@ void UPhosphorAttributeSet::PostGameplayEffectExecute(const  FGameplayEffectModC
 				IPlayerInterface::Execute_AddToAttributePoints(Props.SourceCharacter,AttributePoints);
 				IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter,SpellPoints);
 
-				SetHealth(GetMaxHealth());
-				SetMana(GetMaxMana());
+				bTopOffHealth=true;
+				bTopOffMana=true;
 				
 				IPlayerInterface::Execute_LevelUp(Props.SourceCharacter);
 			}
@@ -200,6 +200,22 @@ void UPhosphorAttributeSet::PostGameplayEffectExecute(const  FGameplayEffectModC
 			IPlayerInterface::Execute_AddToXP(Props.SourceCharacter,LocalIncomingXP);
 		}
 	}
+}
+
+void UPhosphorAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+	if (Attribute == GetMaxHealthAttribute() && bTopOffHealth)
+	{
+		SetHealth(GetMaxHealth());
+		bTopOffHealth=false;
+	}
+	if (Attribute == GetMaxManaAttribute() && bTopOffMana)
+	{
+		SetMana(GetMaxMana());
+		bTopOffMana=false;
+	}
+	
 }
 
 void UPhosphorAttributeSet::ShowFloatText(const FEffectProperties& Props, float Damage,bool bBlockHit,bool bCriticalHit) const
