@@ -5,7 +5,7 @@
 
 #include "AbilitySystem/PhosphorAttributeSet.h"
 #include "AbilitySystem/Data/AttributeInfo.h"
-#include "PhosphorGameplayTags.h"
+#include "Player/PhosphorPlayerState.h"
 
 void UAttributeMenuWidgetController::BroadcastInitialValues()
 {
@@ -33,6 +33,16 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 			}
 			);
 	}
+
+	APhosphorPlayerState* PhosphorPlayerState=CastChecked<APhosphorPlayerState>(PlayerState);
+	PhosphorPlayerState->OnAttributePointChangedDelegate.AddLambda([this](int32 NewAttributePoint)
+	{
+		OnPlayerAttributePointChangedDelegate.Broadcast(NewAttributePoint);
+	});
+	PhosphorPlayerState->OnSpellPointChangedDelegate.AddLambda([this](int32 NewSpellPoint)
+	{
+		OnPlayerSpellPointChangedDelegate.Broadcast(NewSpellPoint);
+	});
 }
 
 void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayTag& AttributeTag,

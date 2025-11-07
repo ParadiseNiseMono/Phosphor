@@ -114,7 +114,7 @@ void APhosphorCharacter::AddToPlayerLevel_Implementation(int32 InLevel)
 {
 	APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
 	check(PhosphorPlayerState);
-	PhosphorPlayerState->AddLevel(InLevel);
+	PhosphorPlayerState->AddToLevel(InLevel);
 }
 
 void APhosphorCharacter::AddToAttributePoints_Implementation(int32 InAttributePoints)

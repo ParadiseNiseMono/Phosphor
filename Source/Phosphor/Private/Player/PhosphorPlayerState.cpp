@@ -22,6 +22,8 @@ void APhosphorPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 
 	DOREPLIFETIME(APhosphorPlayerState,Level);
 	DOREPLIFETIME(APhosphorPlayerState,XP);
+	DOREPLIFETIME(APhosphorPlayerState,AttributePoint);
+	DOREPLIFETIME(APhosphorPlayerState,SpellPoint);
 }
 
 UAbilitySystemComponent* APhosphorPlayerState::GetAbilitySystemComponent() const
@@ -38,7 +40,17 @@ void APhosphorPlayerState::OnRep_XP(int32 OldXP)
 {
 	OnXPChangedDelegate.Broadcast(XP);
 }
-	
+
+void APhosphorPlayerState::OnRep_AttributePoint(int32 OldAttributePoint)
+{
+	OnAttributePointChangedDelegate.Broadcast(AttributePoint);
+}
+
+void APhosphorPlayerState::OnRep_SpellPoint(int32 OldSpellPoint)
+{
+	OnSpellPointChangedDelegate.Broadcast(SpellPoint);
+}
+
 
 void APhosphorPlayerState::SetXP(const int32 NewXP)
 {
@@ -52,14 +64,38 @@ void APhosphorPlayerState::SetLevel(const int32 NewLevel)
 	OnLevelChangedDelegate.Broadcast(Level);
 }
 
+void APhosphorPlayerState::SetAttributePoint(const int32 NewAttributePoint)
+{
+	AttributePoint=NewAttributePoint;
+	OnAttributePointChangedDelegate.Broadcast(AttributePoint);
+}
+
+void APhosphorPlayerState::SetSpellPoint(const int32 NewSpellPoint)
+{
+	SpellPoint=NewSpellPoint;
+	OnSpellPointChangedDelegate.Broadcast(SpellPoint);
+}
+
 void APhosphorPlayerState::AddToXP(const int32 AddXP)
 {
 	XP+=AddXP;
 	OnXPChangedDelegate.Broadcast(XP);
 }
 
-void APhosphorPlayerState::AddLevel(const int32 AddLevel)
+void APhosphorPlayerState::AddToLevel(const int32 AddLevel)
 {
 	Level+=AddLevel;
 	OnLevelChangedDelegate.Broadcast(Level);
+}
+
+void APhosphorPlayerState::AddToAttributePoint(const int32 AddAttributePoint)
+{
+	AttributePoint+=AddAttributePoint;
+	OnAttributePointChangedDelegate.Broadcast(AttributePoint);
+}
+
+void APhosphorPlayerState::AddToSpellPoint(const int32 AddSpellPoint)
+{
+	SpellPoint+=AddSpellPoint;
+	OnSpellPointChangedDelegate.Broadcast(SpellPoint);
 }

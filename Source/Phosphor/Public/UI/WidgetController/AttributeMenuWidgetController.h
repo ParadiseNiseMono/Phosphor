@@ -24,6 +24,12 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
 	FAttributeInfoSignature AttributeInfoDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category="GAS|PlayerState")
+	FOnPlayerStateChangedSignature OnPlayerAttributePointChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category="GAS|PlayerState")
+	FOnPlayerStateChangedSignature OnPlayerSpellPointChangedDelegate;
 protected:
 
 	UPROPERTY(EditDefaultsOnly)
