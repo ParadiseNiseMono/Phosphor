@@ -48,7 +48,12 @@ void APhosphorCharacter::AddToXP_Implementation(int32 InXP)
 	PhosphorPlayerState->AddToXP(InXP);
 }
 
-int32 APhosphorCharacter::GetPlayerLevel()
+void APhosphorCharacter::LevelUp_Implementation()
+{
+	
+}
+
+int32 APhosphorCharacter::GetPlayerLevel_Implementation()
 {
 	const APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
 	check(PhosphorPlayerState);
