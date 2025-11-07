@@ -3,8 +3,9 @@
 
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 
-#include "PhosphorGameplayTags.h"
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/Abilities/PhosphorGameplayAbility.h"
+#include "Interaction/PlayerInterface.h"
 #include "Phosphor/PhosphorLogChannels.h"
 
 void UPhosphorAbilitySystemComponent::AbilityActorInfoSet()
@@ -105,6 +106,28 @@ FGameplayTag UPhosphorAbilitySystemComponent::GetInputTagFromSpec(const FGamepla
 		}
 	}
 	return FGameplayTag();
+}
+
+void UPhosphorAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag)
+{
+	if (GetAvatarActor()->Implements<UPlayerInterface>())
+	{
+		if (IPlayerInterface::Execute_GetAttributePoints(GetAvatarActor()) > 0)
+		{
+			ServerUpgradeAttribute(AttributeTag);
+		}
+	}
+}
+
+void UPhosphorAbilitySystemComponent::ServerUpgradeAttribute_Implementation(const FGameplayTag& AttributeTag)
+{
+	FGameplayEventData Payload;
+	Payload.EventTag = AttributeTag;
+	Payload.EventMagnitude = 100.0f;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActor(),AttributeTag,Payload);
+
+	IPlayerInterface::Execute_AddToAttributePoints(GetAvatarActor(),-1);
 }
 
 void UPhosphorAbilitySystemComponent::OnRep_ActivateAbilities()

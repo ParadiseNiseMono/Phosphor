@@ -3,6 +3,7 @@
 
 #include "UI/WidgetController/AttributeMenuWidgetController.h"
 
+#include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "AbilitySystem/PhosphorAttributeSet.h"
 #include "AbilitySystem/Data/AttributeInfo.h"
 #include "Player/PhosphorPlayerState.h"
@@ -17,6 +18,8 @@ void UAttributeMenuWidgetController::BroadcastInitialValues()
 	{
 		BroadcastAttributeInfo(Pair.Key,Pair.Value());
 	}
+	APhosphorPlayerState* PhosphorPlayerState=CastChecked<APhosphorPlayerState>(PlayerState);
+	OnPlayerAttributePointChangedDelegate.Broadcast(PhosphorPlayerState->GetPlayerAttributePoint());
 }
 
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()
@@ -39,14 +42,16 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 	{
 		OnPlayerAttributePointChangedDelegate.Broadcast(NewAttributePoint);
 	});
-	PhosphorPlayerState->OnSpellPointChangedDelegate.AddLambda([this](int32 NewSpellPoint)
-	{
-		OnPlayerSpellPointChangedDelegate.Broadcast(NewSpellPoint);
-	});
+}
+
+void UAttributeMenuWidgetController::UpgradeAttribute(const FGameplayTag& AttributeTag)
+{
+	UPhosphorAbilitySystemComponent* PhosphorAbilitySystemComponent=CastChecked<UPhosphorAbilitySystemComponent>(AbilitySystemComponent);
+	PhosphorAbilitySystemComponent->UpgradeAttribute(AttributeTag);
 }
 
 void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayTag& AttributeTag,
-	const FGameplayAttribute& GameplayAttribute) const
+                                                            const FGameplayAttribute& GameplayAttribute) const
 {
 	check(AttributeInfo);
 	FPhosphorAttributeInfo Info=AttributeInfo->FindAttributeInfoForTag(AttributeTag);

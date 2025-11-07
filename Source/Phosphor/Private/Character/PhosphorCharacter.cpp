@@ -119,12 +119,30 @@ void APhosphorCharacter::AddToPlayerLevel_Implementation(int32 InLevel)
 
 void APhosphorCharacter::AddToAttributePoints_Implementation(int32 InAttributePoints)
 {
-	//TODO: Add AttributePoints to Player State
+	APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
+	check(PhosphorPlayerState);
+	PhosphorPlayerState->AddToAttributePoint(InAttributePoints);
 }
 
 void APhosphorCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
 {
-	//TODO: Add SpellPoints to Player State
+	APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
+	check(PhosphorPlayerState);
+	PhosphorPlayerState->AddToSpellPoint(InSpellPoints);
+}
+
+int32 APhosphorCharacter::GetAttributePoints_Implementation()
+{
+	APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
+	check(PhosphorPlayerState);
+	return PhosphorPlayerState->GetPlayerAttributePoint();
+}
+
+int32 APhosphorCharacter::GetSpellPoints_Implementation()
+{
+	APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
+	check(PhosphorPlayerState);
+	return PhosphorPlayerState->GetPlayerSpellPoint();
 }
 
 int32 APhosphorCharacter::GetPlayerLevel_Implementation()

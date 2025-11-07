@@ -8,6 +8,7 @@
 
 class UAttributeInfo;
 struct FPhosphorAttributeInfo;
+struct FGameplayTag;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAttributeInfoSignature, const FPhosphorAttributeInfo&,Info);
 
 /**
@@ -28,8 +29,8 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="GAS|PlayerState")
 	FOnPlayerStateChangedSignature OnPlayerAttributePointChangedDelegate;
 
-	UPROPERTY(BlueprintAssignable, Category="GAS|PlayerState")
-	FOnPlayerStateChangedSignature OnPlayerSpellPointChangedDelegate;
+	UFUNCTION(BlueprintCallable)
+	void UpgradeAttribute(const FGameplayTag& AttributeTag);
 protected:
 
 	UPROPERTY(EditDefaultsOnly)
