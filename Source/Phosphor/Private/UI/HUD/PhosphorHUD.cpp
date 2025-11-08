@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "UI/WidgetController/AttributeMenuWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
+#include "UI/WidgetController/SpellMenuWidgetController.h"
 
 UOverlayWidgetController* APhosphorHUD::GetOverlayWidgetController(const FWidgetControllerParams& WCParams)
 {
@@ -29,6 +30,17 @@ UAttributeMenuWidgetController* APhosphorHUD::GetAttributeMenuWidgetController(c
 		return AttributeMenuWidgetController;
 	}
 	return AttributeMenuWidgetController;
+}
+
+USpellMenuWidgetController* APhosphorHUD::GetSpellMenuWidgetController(const FWidgetControllerParams& WCParams)
+{
+	if (SpellMenuWidgetController==nullptr)
+	{
+		SpellMenuWidgetController = NewObject<USpellMenuWidgetController>(this,SpellMenuWidgetControllerClass);
+		SpellMenuWidgetController->SetControllerParams(WCParams);
+		SpellMenuWidgetController->BindCallbacksToDependencies();
+	}
+	return SpellMenuWidgetController;
 }
 
 void APhosphorHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)

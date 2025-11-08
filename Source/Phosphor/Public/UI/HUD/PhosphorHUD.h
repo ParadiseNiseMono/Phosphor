@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "PhosphorHUD.generated.h"
 
+class USpellMenuWidgetController;
 class UAttributeMenuWidgetController;
 class UAttributeSet;
 class UAbilitySystemComponent;
@@ -30,6 +31,8 @@ public:
 	
 	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const FWidgetControllerParams& WCParams);
 
+	USpellMenuWidgetController* GetSpellMenuWidgetController(const FWidgetControllerParams& WCParams);
+
 	void InitOverlay(APlayerController* PC,APlayerState* PS,UAbilitySystemComponent* ASC,UAttributeSet* AS);
 protected:
 
@@ -48,4 +51,10 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "WidgetController")
 	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
+
+	UPROPERTY()
+	TObjectPtr<USpellMenuWidgetController> SpellMenuWidgetController;
+
+	UPROPERTY(EditAnywhere, Category = "WidgetController")
+	TSubclassOf<USpellMenuWidgetController> SpellMenuWidgetControllerClass;
 };

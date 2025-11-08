@@ -9,11 +9,12 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType, Blueprintable)
 class PHOSPHOR_API USpellMenuWidgetController : public UPhosphorWidgetController
 {
 	GENERATED_BODY()
 
+public:
 	virtual void BroadcastInitialValues() override;
 	virtual void BindCallbacksToDependencies() override;
 };

@@ -11,39 +11,60 @@
 #include "UI/HUD/PhosphorHUD.h"
 #include "UI/WidgetController/PhosphorWidgetController.h"
 
-UOverlayWidgetController* UPhosphorAbilitySystemLibrary::GetOverlayWidgetController(const UObject* WorldContextObject)
+bool UPhosphorAbilitySystemLibrary::MakeWidgetControllerParams(const UObject* WorldContextObject,FWidgetControllerParams& OutWCParams,APhosphorHUD*& OutPhosphorHUD)
 {
 	if (APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContextObject, 0))
 	{
-		if (APhosphorHUD* PhosphorHUD=Cast<APhosphorHUD>(PC->GetHUD()))
+		OutPhosphorHUD=Cast<APhosphorHUD>(PC->GetHUD());
+		if (OutPhosphorHUD)
 		{
 			APhosphorPlayerState* PS=PC->GetPlayerState<APhosphorPlayerState>();
 			UAbilitySystemComponent* ASC=PS->GetAbilitySystemComponent();
 			UAttributeSet* AS=PS->GetAttributeSet();
-			const FWidgetControllerParams WidgetControllerParams(PC,PS,ASC,AS);
-			return  PhosphorHUD->GetOverlayWidgetController(WidgetControllerParams);
+
+			OutWCParams.AbilitySystemComponent = ASC;
+			OutWCParams.AttributeSet=AS;
+			OutWCParams.PlayerState=PS;
+			OutWCParams.PlayerController=PC;
+			return true;
 		}
 	}
+	return false;
+}
 
+UOverlayWidgetController* UPhosphorAbilitySystemLibrary::GetOverlayWidgetController(const UObject* WorldContextObject)
+{
+	FWidgetControllerParams WCParams;
+	APhosphorHUD* PhosphorHUD = nullptr;
+	if (MakeWidgetControllerParams(WorldContextObject,WCParams,PhosphorHUD))
+	{
+		return  PhosphorHUD->GetOverlayWidgetController(WCParams);
+	}
 	return nullptr;
 }
 
 UAttributeMenuWidgetController* UPhosphorAbilitySystemLibrary::GetAttributeMenuWidgetController(
 	const UObject* WorldContextObject)
 {
-	if (APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContextObject, 0))
+	FWidgetControllerParams WCParams;
+	APhosphorHUD* PhosphorHUD = nullptr;
+	if (MakeWidgetControllerParams(WorldContextObject,WCParams,PhosphorHUD))
 	{
-		if (APhosphorHUD* PhosphorHUD=Cast<APhosphorHUD>(PC->GetHUD()))
-		{
-			APhosphorPlayerState* PS=PC->GetPlayerState<APhosphorPlayerState>();
-			UAbilitySystemComponent* ASC=PS->GetAbilitySystemComponent();
-			UAttributeSet* AS=PS->GetAttributeSet();
-			const FWidgetControllerParams WidgetControllerParams(PC,PS,ASC,AS);
-			return  PhosphorHUD->GetAttributeMenuWidgetController(WidgetControllerParams);
-		}
+		return  PhosphorHUD->GetAttributeMenuWidgetController(WCParams);
 	}
-
 	return nullptr;
+}
+
+USpellMenuWidgetController* UPhosphorAbilitySystemLibrary::GetSpellMenuWidgetController(
+	const UObject* WorldContextObject)
+{
+	FWidgetControllerParams WCParams;
+	APhosphorHUD* PhosphorHUD = nullptr;
+	if (MakeWidgetControllerParams(WorldContextObject,WCParams,PhosphorHUD))
+	{
+		return  PhosphorHUD->GetSpellMenuWidgetController(WCParams);
+	}
+	return nullptr;	 
 }
 
 void UPhosphorAbilitySystemLibrary::InitializeDefaultAbilities(const UObject* WorldContextObject,ECharacterClass CharacterClass, float Level,UAbilitySystemComponent* ASC)
