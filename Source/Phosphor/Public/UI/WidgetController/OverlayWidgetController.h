@@ -31,7 +31,6 @@ struct FUIWidgetRow : public FTableRowBase
 class UPhosphorUserWidget;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature,FUIWidgetRow,Row);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature,const FPhosphorAbilityInfo&, Info);
 
 /**
  * 
@@ -58,10 +57,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|Message")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;
-
-	UPROPERTY(BlueprintAssignable, Category="GAS|Message")
-	FAbilityInfoSignature AbilityInfoDelegate;
-
+	
 	UPROPERTY(BlueprintAssignable, Category="GAS|XP")
 	FOnAttributeChangedSignature OnXPPercentChangedDelegate;
 
@@ -71,15 +67,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category="Widget Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category="Widget Data")
-	TObjectPtr<UAbilityInfo> AbilityInfo;
 	
 	template<typename  T>
 	T* GetDataTableRowByTag(UDataTable* DataTable,const FGameplayTag& Tag);
 
-	void OnInitializeStartupAbilities(UPhosphorAbilitySystemComponent* PhosphorAbilitySystemComponent);
-
-	void OnXPChanged(const int32 NewXP) const;
+	void OnXPChanged(const int32 NewXP);
 };
 template <typename T>
 T* UOverlayWidgetController::GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag)

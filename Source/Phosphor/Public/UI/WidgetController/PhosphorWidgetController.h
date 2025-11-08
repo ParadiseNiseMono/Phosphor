@@ -8,10 +8,15 @@
 #include "PhosphorWidgetController.generated.h"
 
 
-
+class UAbilityInfo;
+class UPhosphorAttributeSet;
+class UPhosphorAbilitySystemComponent;
+class APhosphorPlayerState;
+class APhosphorPlayerController;
 class UAttributeSet;
 class UAbilitySystemComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChangedSignature, int32, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature,const FPhosphorAbilityInfo&, Info);
 
 USTRUCT(BlueprintType)
 struct FWidgetControllerParams
@@ -50,8 +55,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "WidgetController")
 	virtual void BroadcastInitialValues();
 	virtual void BindCallbacksToDependencies();
-protected:
 
+	UPROPERTY(BlueprintAssignable, Category="GAS|Message")
+	FAbilityInfoSignature AbilityInfoDelegate;
+
+	void BroadcastAbilityInfo();
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category="Widget Data")
+	TObjectPtr<UAbilityInfo> AbilityInfo;
+	
 	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
 	TObjectPtr<APlayerController> PlayerController;
 
@@ -63,4 +76,24 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
 	TObjectPtr<UAttributeSet> AttributeSet;
+
+	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
+	TObjectPtr<APhosphorPlayerController> PhosphorPlayerController;
+
+	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
+	TObjectPtr<APhosphorPlayerState> PhosphorPlayerState;
+
+	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
+	TObjectPtr<UPhosphorAbilitySystemComponent> PhosphorAbilitySystemComponent;
+
+	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
+	TObjectPtr<UPhosphorAttributeSet> PhosphorAttributeSet;
+
+	APhosphorPlayerController* GetPhosphorPC();
+
+	APhosphorPlayerState* GetPhosphorPS();
+
+	UPhosphorAbilitySystemComponent* GetPhosphorASC();
+
+	UPhosphorAttributeSet* GetPhosphorAS();
 };

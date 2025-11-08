@@ -10,24 +10,19 @@
 
 void UAttributeMenuWidgetController::BroadcastInitialValues()
 {
-	UPhosphorAttributeSet* AS=CastChecked<UPhosphorAttributeSet>(AttributeSet);
-
 	check(AttributeInfo);
 
-	for (auto& Pair:AS->TagsToAttributes )
+	for (auto& Pair:GetPhosphorAS()->TagsToAttributes )
 	{
 		BroadcastAttributeInfo(Pair.Key,Pair.Value());
 	}
-	APhosphorPlayerState* PhosphorPlayerState=CastChecked<APhosphorPlayerState>(PlayerState);
-	OnPlayerAttributePointChangedDelegate.Broadcast(PhosphorPlayerState->GetPlayerAttributePoint());
+	OnPlayerAttributePointChangedDelegate.Broadcast(GetPhosphorPS()->GetPlayerAttributePoint());
 }
 
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 {
-	UPhosphorAttributeSet* AS=CastChecked<UPhosphorAttributeSet>(AttributeSet);
-
 	check(AttributeInfo);
-	for (auto& Pair:AS->TagsToAttributes )
+	for (auto& Pair:GetPhosphorAS()->TagsToAttributes )
 	{
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Pair.Value()).AddLambda(
 			[this,Pair](const FOnAttributeChangeData& Data)
@@ -36,9 +31,7 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 			}
 			);
 	}
-
-	APhosphorPlayerState* PhosphorPlayerState=CastChecked<APhosphorPlayerState>(PlayerState);
-	PhosphorPlayerState->OnAttributePointChangedDelegate.AddLambda([this](int32 NewAttributePoint)
+	GetPhosphorPS()->OnAttributePointChangedDelegate.AddLambda([this](int32 NewAttributePoint)
 	{
 		OnPlayerAttributePointChangedDelegate.Broadcast(NewAttributePoint);
 	});
@@ -46,8 +39,7 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 
 void UAttributeMenuWidgetController::UpgradeAttribute(const FGameplayTag& AttributeTag)
 {
-	UPhosphorAbilitySystemComponent* PhosphorAbilitySystemComponent=CastChecked<UPhosphorAbilitySystemComponent>(AbilitySystemComponent);
-	PhosphorAbilitySystemComponent->UpgradeAttribute(AttributeTag);
+	GetPhosphorASC()->UpgradeAttribute(AttributeTag);
 }
 
 void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayTag& AttributeTag,

@@ -21,12 +21,12 @@ void UPhosphorAbilitySystemComponent::AddCharacterAbilities(
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(GameAbility,1);
 		if (const UPhosphorGameplayAbility* PhosphorGameplayAbility=Cast<UPhosphorGameplayAbility>(AbilitySpec.Ability))
 		{
-			AbilitySpec.DynamicAbilityTags.AddTag(PhosphorGameplayAbility->StartUpTag);
+			AbilitySpec.GetDynamicSpecSourceTags().AddTag(PhosphorGameplayAbility->StartUpTag);
 			GiveAbility(AbilitySpec);
 		}
 	}
 	bStartupAbilitiesGiven=true;
-	AbilitiesGivenDelegate.Broadcast(this);
+	AbilitiesGivenDelegate.Broadcast();
 }
 
 void UPhosphorAbilitySystemComponent::AddCharacterPassiveAbilities(
@@ -45,7 +45,7 @@ void UPhosphorAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& In
 
 	for (FGameplayAbilitySpec& AbilitySpec:GetActivatableAbilities())
 	{
-		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+		if (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
 		{
 			AbilitySpecInputPressed(AbilitySpec);
 			if (!AbilitySpec.IsActive())
@@ -62,7 +62,7 @@ void UPhosphorAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag
 
 	for (FGameplayAbilitySpec& AbilitySpec:GetActivatableAbilities())
 	{
-		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+		if (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
 		{
 			AbilitySpecInputReleased(AbilitySpec);
 		}
@@ -85,7 +85,7 @@ FGameplayTag UPhosphorAbilitySystemComponent::GetAbilityTagFromSpec(const FGamep
 {
 	if (Spec.Ability)
 	{
-		for (FGameplayTag Tag:Spec.Ability.Get()->AbilityTags)
+		for (FGameplayTag Tag:Spec.Ability.Get()->GetAssetTags())
 		{
 			if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag("Abilities")))
 			{
@@ -98,7 +98,7 @@ FGameplayTag UPhosphorAbilitySystemComponent::GetAbilityTagFromSpec(const FGamep
 
 FGameplayTag UPhosphorAbilitySystemComponent::GetInputTagFromSpec(const FGameplayAbilitySpec& Spec)
 {
-	for(FGameplayTag Tag:Spec.DynamicAbilityTags)
+	for(FGameplayTag Tag:Spec.GetDynamicSpecSourceTags())
 	{
 		if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag("InputTag")))
 		{
@@ -137,7 +137,7 @@ void UPhosphorAbilitySystemComponent::OnRep_ActivateAbilities()
 	if (!bStartupAbilitiesGiven)
 	{
 		bStartupAbilitiesGiven=true;
-		AbilitiesGivenDelegate.Broadcast(this);
+		AbilitiesGivenDelegate.Broadcast();
 	}
 }
 

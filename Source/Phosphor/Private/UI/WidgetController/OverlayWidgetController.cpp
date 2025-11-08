@@ -11,68 +11,64 @@
 
 void UOverlayWidgetController::BroadcastInitialValues()
 {
-	const UPhosphorAttributeSet* PhosphorAttributeSet=CastChecked<UPhosphorAttributeSet>(AttributeSet);
-	
-	OnHealthChanged.Broadcast(PhosphorAttributeSet->GetHealth());
-	OnMaxHealthChanged.Broadcast(PhosphorAttributeSet->GetMaxHealth());
-	OnManaChanged.Broadcast(PhosphorAttributeSet->GetMana());
-	OnMaxManaChanged.Broadcast(PhosphorAttributeSet->GetMaxMana());
+	OnHealthChanged.Broadcast(GetPhosphorAS()->GetHealth());
+	OnMaxHealthChanged.Broadcast(GetPhosphorAS()->GetMaxHealth());
+	OnManaChanged.Broadcast(GetPhosphorAS()->GetMana());
+	OnMaxManaChanged.Broadcast(GetPhosphorAS()->GetMaxMana());
 }
 
 void UOverlayWidgetController::BindCallbacksToDependencies()
 {
-	APhosphorPlayerState* PhosphorPlayerState=CastChecked<APhosphorPlayerState>(PlayerState);
 	
-	PhosphorPlayerState->OnXPChangedDelegate.AddUObject(this,&UOverlayWidgetController::OnXPChanged);
+	GetPhosphorPS()->OnXPChangedDelegate.AddUObject(this,&UOverlayWidgetController::OnXPChanged);
 
-	PhosphorPlayerState->OnLevelChangedDelegate.AddLambda(
+	GetPhosphorPS()->OnLevelChangedDelegate.AddLambda(
 		[this](int32 NewLevel)
 	{
 		OnPlayerLevelChangedDelegate.Broadcast(NewLevel);
 	});
-
-	const UPhosphorAttributeSet* PhosphorAttributeSet=CastChecked<UPhosphorAttributeSet>(AttributeSet);
+	
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		PhosphorAttributeSet->GetHealthAttribute()).AddLambda(
+		GetPhosphorAS()->GetHealthAttribute()).AddLambda(
 				[this](const FOnAttributeChangeData& Data)
 				{
 					OnHealthChanged.Broadcast(Data.NewValue);
 				}
 			);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-	PhosphorAttributeSet->GetMaxHealthAttribute()).AddLambda(
+	GetPhosphorAS()->GetMaxHealthAttribute()).AddLambda(
 			[this](const FOnAttributeChangeData& Data)
 			{
 				OnMaxHealthChanged.Broadcast(Data.NewValue);
 			}
 		);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-	PhosphorAttributeSet->GetManaAttribute()).AddLambda(
+	GetPhosphorAS()->GetManaAttribute()).AddLambda(
 			[this](const FOnAttributeChangeData& Data)
 			{
 				OnManaChanged.Broadcast(Data.NewValue);
 			}
 		);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-	PhosphorAttributeSet->GetMaxManaAttribute()).AddLambda(
+	GetPhosphorAS()->GetMaxManaAttribute()).AddLambda(
 			[this](const FOnAttributeChangeData& Data)
 			{
 				OnMaxManaChanged.Broadcast(Data.NewValue);
 			}
 		);
 	
-	if (UPhosphorAbilitySystemComponent* PhosphorAbilitySystemComponent=Cast<UPhosphorAbilitySystemComponent>(AbilitySystemComponent))
+	if (GetPhosphorASC())
 	{
-		if (PhosphorAbilitySystemComponent->bStartupAbilitiesGiven)
+		if (GetPhosphorASC()->bStartupAbilitiesGiven)
 		{
-			OnInitializeStartupAbilities(PhosphorAbilitySystemComponent);
+			BroadcastAbilityInfo();
 		}
 		else
 		{
-			PhosphorAbilitySystemComponent->AbilitiesGivenDelegate.AddUObject(this,&UOverlayWidgetController::OnInitializeStartupAbilities);
+			GetPhosphorASC()->AbilitiesGivenDelegate.AddUObject(this,&UOverlayWidgetController::BroadcastAbilityInfo);
 		}
-		PhosphorAbilitySystemComponent->EffectAssetTags.AddLambda(
+		GetPhosphorASC()->EffectAssetTags.AddLambda(
 		[this](const FGameplayTagContainer& AssetTags)
 		{
 			for (const FGameplayTag& Tag : AssetTags)
@@ -90,25 +86,9 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	}
 }
 
-void UOverlayWidgetController::OnInitializeStartupAbilities(UPhosphorAbilitySystemComponent* PhosphorAbilitySystemComponent)
+void UOverlayWidgetController::OnXPChanged(const int32 NewXP)
 {
-	//TODO Get information about all given abilities,lookup their Ability Info and Broadcast it to Widget.
-	if (!PhosphorAbilitySystemComponent->bStartupAbilitiesGiven) return;
-
-	FForEachAbility BroadcastDelegate;
-	BroadcastDelegate.BindLambda([this,PhosphorAbilitySystemComponent](const FGameplayAbilitySpec& Spec)
-	{
-		FPhosphorAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(PhosphorAbilitySystemComponent->GetAbilityTagFromSpec(Spec));
-		Info.InputTag=PhosphorAbilitySystemComponent->GetInputTagFromSpec(Spec);
-		AbilityInfoDelegate.Broadcast(Info);
-	});
-	PhosphorAbilitySystemComponent->ForEachAbility(BroadcastDelegate);
-}
-
-void UOverlayWidgetController::OnXPChanged(const int32 NewXP) const
-{
-	const APhosphorPlayerState* PhosphorPlayerState=CastChecked<APhosphorPlayerState>(PlayerState);
-	const ULevelUpInfo* LevelUpInfo=PhosphorPlayerState->LevelUpInfo;
+	const ULevelUpInfo* LevelUpInfo=GetPhosphorPS()->LevelUpInfo;
 
 	checkf(LevelUpInfo,TEXT("LevelUpInfo is null"));
 
