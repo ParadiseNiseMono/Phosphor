@@ -5,10 +5,12 @@
 
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
+#include "Player/PhosphorPlayerState.h"
 
 void USpellMenuWidgetController::BroadcastInitialValues()
 {
 	BroadcastAbilityInfo();
+	OnPlayerSpellPointChangedDelegate.Broadcast(GetPhosphorPS()->GetPlayerSpellPoint());
 }
 
 void USpellMenuWidgetController::BindCallbacksToDependencies()
@@ -21,5 +23,9 @@ void USpellMenuWidgetController::BindCallbacksToDependencies()
 			Info.StatusTag = StatusTag;
 			AbilityInfoDelegate.Broadcast(Info);
 		}
+	});
+	GetPhosphorPS()->OnSpellPointChangedDelegate.AddLambda([this](const int32 NewSpellPoint)
+	{
+		OnPlayerSpellPointChangedDelegate.Broadcast(NewSpellPoint);
 	});
 }
