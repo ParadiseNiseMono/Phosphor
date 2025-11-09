@@ -36,6 +36,7 @@ void UPhosphorWidgetController::BroadcastAbilityInfo()
 	{
 		FPhosphorAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(PhosphorAbilitySystemComponent->GetAbilityTagFromSpec(Spec));
 		Info.InputTag=PhosphorAbilitySystemComponent->GetInputTagFromSpec(Spec);
+		Info.StatusTag=PhosphorAbilitySystemComponent->GetStatusFromSpec(Spec);
 		AbilityInfoDelegate.Broadcast(Info);
 	});
 	GetPhosphorASC()->ForEachAbility(BroadcastDelegate);

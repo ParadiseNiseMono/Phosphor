@@ -32,10 +32,10 @@ public:
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 	void ForEachAbility(const FForEachAbility& Delegate);
-
 	
 	static FGameplayTag GetAbilityTagFromSpec(const FGameplayAbilitySpec& Spec);
 	static FGameplayTag GetInputTagFromSpec(const FGameplayAbilitySpec& Spec);
+	static FGameplayTag GetStatusFromSpec(const FGameplayAbilitySpec& Spec);
 
 	void UpgradeAttribute(const FGameplayTag& AttributeTag);
 
@@ -49,3 +49,4 @@ protected:
 	void ClientEffectApplied(UAbilitySystemComponent* AbilitySystemComponent
 		, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle);
 };
+

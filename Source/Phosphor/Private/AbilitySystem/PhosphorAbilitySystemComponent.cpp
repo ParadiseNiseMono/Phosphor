@@ -4,6 +4,7 @@
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "PhosphorGameplayTags.h"
 #include "AbilitySystem/Abilities/PhosphorGameplayAbility.h"
 #include "Interaction/PlayerInterface.h"
 #include "Phosphor/PhosphorLogChannels.h"
@@ -22,6 +23,7 @@ void UPhosphorAbilitySystemComponent::AddCharacterAbilities(
 		if (const UPhosphorGameplayAbility* PhosphorGameplayAbility=Cast<UPhosphorGameplayAbility>(AbilitySpec.Ability))
 		{
 			AbilitySpec.GetDynamicSpecSourceTags().AddTag(PhosphorGameplayAbility->StartUpTag);
+			AbilitySpec.GetDynamicSpecSourceTags().AddTag(FPhosphorGameplayTags::Get().Abilities_Status_Equipped);
 			GiveAbility(AbilitySpec);
 		}
 	}
@@ -103,6 +105,18 @@ FGameplayTag UPhosphorAbilitySystemComponent::GetInputTagFromSpec(const FGamepla
 		if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag("InputTag")))
 		{
 			return Tag;
+		}
+	}
+	return FGameplayTag();
+}
+
+FGameplayTag UPhosphorAbilitySystemComponent::GetStatusFromSpec(const FGameplayAbilitySpec& Spec)
+{
+	for (FGameplayTag StatusTag : Spec.GetDynamicSpecSourceTags())
+	{
+		if (StatusTag.MatchesTag(FGameplayTag::RequestGameplayTag("Abilities.Status")))
+		{
+			return StatusTag;
 		}
 	}
 	return FGameplayTag();
