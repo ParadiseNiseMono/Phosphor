@@ -129,7 +129,7 @@ FGameplayAbilitySpec* UPhosphorAbilitySystemComponent::GetSpecFromAbilityTag(con
 	FScopedAbilityListLock ActiveScopeLock(*this);
 	for (FGameplayAbilitySpec& Spec:GetActivatableAbilities())
 	{
-		for (FGameplayTag Tag:Spec.Ability.Get()->AbilityTags)
+		for (FGameplayTag Tag:Spec.Ability.Get()->GetAssetTags())
 		{
 			if (Tag.MatchesTag(AbilityTag))
 			{
@@ -164,6 +164,7 @@ void UPhosphorAbilitySystemComponent::UpdateAbilityStatus(const int32 Level)
 			Spec.GetDynamicSpecSourceTags().AddTag(FPhosphorGameplayTags::Get().Abilities_Status_Eligible);
 			GiveAbility(Spec);
 			MarkAbilitySpecDirty(Spec);
+			ClientUpdateAbilityStatus(Info.AbilityTag,FPhosphorGameplayTags::Get().Abilities_Status_Eligible);
 		}
 	}
 }
@@ -188,6 +189,12 @@ void UPhosphorAbilitySystemComponent::OnRep_ActivateAbilities()
 		bStartupAbilitiesGiven=true;
 		AbilitiesGivenDelegate.Broadcast();
 	}
+}
+
+void UPhosphorAbilitySystemComponent::ClientUpdateAbilityStatus_Implementation(const FGameplayTag& AbilityTag,
+	const FGameplayTag& StatusTag)
+{
+	AbilityStatusChangedDelegate.Broadcast(AbilityTag,StatusTag);
 }
 
 void UPhosphorAbilitySystemComponent::ClientEffectApplied_Implementation(UAbilitySystemComponent* AbilitySystemComponent,
