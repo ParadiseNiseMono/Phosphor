@@ -24,5 +24,7 @@ protected:
 
 	UFUNCTION(BlueprintCallable,Category="Abilities|Projectile Spell")
 	void SpawnProjectile(const FVector& ProjectileTargetLocation,const FVector& SocketLocation,bool bOverridePitch=false,float PitchOverride=0.f);
-	
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	int32 NumProjectiles = 5;
 };

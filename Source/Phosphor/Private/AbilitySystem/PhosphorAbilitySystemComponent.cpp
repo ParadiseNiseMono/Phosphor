@@ -206,6 +206,24 @@ void UPhosphorAbilitySystemComponent::ServerSpendSpellPoint_Implementation(const
 	}
 }
 
+bool UPhosphorAbilitySystemComponent::GetDescriptionByAbilityTag(const FGameplayTag& AbilityTag,
+	FString& OutDescription, FString& OutNextLevelDescription)
+{
+	if (const FGameplayAbilitySpec* Spec = GetSpecFromAbilityTag(AbilityTag))
+	{
+		if (UPhosphorGameplayAbility* PhosphorGameplayAbility = Cast<UPhosphorGameplayAbility>(Spec->Ability))
+		{
+			OutDescription = PhosphorGameplayAbility->GetDescription(Spec->Level);
+			OutNextLevelDescription = PhosphorGameplayAbility->GetNextLevelDescription(Spec->Level + 1);
+			return true;
+		}
+	}
+	const UAbilityInfo* AbilityInfo = UPhosphorAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
+	OutDescription = UPhosphorGameplayAbility::GetLockedDescription(AbilityInfo->FindAbilityInfoByTag(AbilityTag).LevelRequirement);
+	OutNextLevelDescription = FString();
+	return false;
+}
+
 void UPhosphorAbilitySystemComponent::OnRep_ActivateAbilities()
 {
 	Super::OnRep_ActivateAbilities();

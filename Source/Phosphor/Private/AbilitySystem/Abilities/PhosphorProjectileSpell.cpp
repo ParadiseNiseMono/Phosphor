@@ -65,3 +65,4 @@ void UPhosphorProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLo
 		
 	PhosphorProjectile->FinishSpawning(SpawnTransform);
 }
+

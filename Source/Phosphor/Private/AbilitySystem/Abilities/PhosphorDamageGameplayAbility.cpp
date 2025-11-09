@@ -30,3 +30,9 @@ FTaggedMontage UPhosphorDamageGameplayAbility::GetRandomTaggedMontageFromArray(
 	}
 	return FTaggedMontage();
 }
+
+float UPhosphorDamageGameplayAbility::GetDamageByDamageType(int32 InLevel, const FGameplayTag& DamageType)
+{
+	checkf(DamageTypes.Contains(DamageType), TEXT("Gameplay Ability [%s] does not contain Damage Type [%s]"), *GetNameSafe(this), *DamageType.ToString());
+	return DamageTypes[DamageType].GetValueAtLevel(InLevel);
+}
