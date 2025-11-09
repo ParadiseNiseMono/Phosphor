@@ -164,7 +164,7 @@ void UPhosphorAbilitySystemComponent::UpdateAbilityStatus(const int32 Level)
 			Spec.GetDynamicSpecSourceTags().AddTag(FPhosphorGameplayTags::Get().Abilities_Status_Eligible);
 			GiveAbility(Spec);
 			MarkAbilitySpecDirty(Spec);
-			ClientUpdateAbilityStatus(Info.AbilityTag,FPhosphorGameplayTags::Get().Abilities_Status_Eligible);
+			ClientUpdateAbilityStatus(Info.AbilityTag, FPhosphorGameplayTags::Get().Abilities_Status_Eligible, 1);
 		}
 	}
 }
@@ -180,6 +180,32 @@ void UPhosphorAbilitySystemComponent::ServerUpgradeAttribute_Implementation(cons
 	IPlayerInterface::Execute_AddToAttributePoints(GetAvatarActor(),-1);
 }
 
+void UPhosphorAbilitySystemComponent::ServerSpendSpellPoint_Implementation(const FGameplayTag& AbilityTag)
+{
+	if (FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
+	{
+		if (GetAvatarActor()->Implements<UPlayerInterface>())
+		{
+			IPlayerInterface::Execute_AddToSpellPoints(GetAvatarActor(),-1);
+		}
+		
+		const FPhosphorGameplayTags GameplayTags = FPhosphorGameplayTags::Get();
+		FGameplayTag StatusTag = GetStatusFromSpec(*AbilitySpec);
+		if (StatusTag.MatchesTagExact(GameplayTags.Abilities_Status_Eligible))
+		{
+			AbilitySpec->GetDynamicSpecSourceTags().RemoveTag(GameplayTags.Abilities_Status_Eligible);
+			AbilitySpec->GetDynamicSpecSourceTags().AddTag(GameplayTags.Abilities_Status_Unlocked);
+			StatusTag = GameplayTags.Abilities_Status_Unlocked;
+		}
+		else if (StatusTag.MatchesTagExact(GameplayTags.Abilities_Status_Equipped) || StatusTag.MatchesTagExact(GameplayTags.Abilities_Status_Unlocked))
+		{
+			AbilitySpec->Level += 1;
+		}
+		ClientUpdateAbilityStatus(AbilityTag, StatusTag, AbilitySpec->Level);
+		MarkAbilitySpecDirty(*AbilitySpec);
+	}
+}
+
 void UPhosphorAbilitySystemComponent::OnRep_ActivateAbilities()
 {
 	Super::OnRep_ActivateAbilities();
@@ -192,9 +218,9 @@ void UPhosphorAbilitySystemComponent::OnRep_ActivateAbilities()
 }
 
 void UPhosphorAbilitySystemComponent::ClientUpdateAbilityStatus_Implementation(const FGameplayTag& AbilityTag,
-	const FGameplayTag& StatusTag)
+	const FGameplayTag& StatusTag, int32 AbilityLevel)
 {
-	AbilityStatusChangedDelegate.Broadcast(AbilityTag,StatusTag);
+	AbilityStatusChangedDelegate.Broadcast(AbilityTag, StatusTag, AbilityLevel);
 }
 
 void UPhosphorAbilitySystemComponent::ClientEffectApplied_Implementation(UAbilitySystemComponent* AbilitySystemComponent,
