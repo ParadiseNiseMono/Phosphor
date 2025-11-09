@@ -7,6 +7,7 @@
 #include "PhosphorGameModeBase.generated.h"
 
 class UCharacterClassInfo;
+class UAbilityInfo;
 /**
  * 
  */
@@ -17,4 +18,7 @@ class PHOSPHOR_API APhosphorGameModeBase : public AGameModeBase
 public:
 	UPROPERTY(EditDefaultsOnly,Category="Character Class Defaults")
 	TObjectPtr<UCharacterClassInfo> CharacterClassInfo;
+
+	UPROPERTY(EditDefaultsOnly,Category="Ability Info")
+	TObjectPtr<UAbilityInfo> AbilityInfo;
 };

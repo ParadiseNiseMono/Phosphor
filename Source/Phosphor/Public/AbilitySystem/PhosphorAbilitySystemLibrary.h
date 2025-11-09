@@ -7,6 +7,7 @@
 #include "Data/CharacterClassInfo.h"
 #include "PhosphorAbilitySystemLibrary.generated.h"
 
+class UAbilityInfo;
 class APhosphorHUD;
 struct FWidgetControllerParams;
 class USpellMenuWidgetController;
@@ -42,6 +43,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "PhosphorAbilitySystemLibrary|CharacterClassDefaults")
 	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "PhosphorAbilitySystemLibrary|AbilityInfo")
+	static UAbilityInfo* GetAbilityInfo(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintPure, Category = "PhosphorAbilitySystemLibrary|GameplayEffects")
 	static bool IsBlockHit(const FGameplayEffectContextHandle& ContextHandle);

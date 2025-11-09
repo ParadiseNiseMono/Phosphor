@@ -132,6 +132,14 @@ UCharacterClassInfo* UPhosphorAbilitySystemLibrary::GetCharacterClassInfo(const 
 	return PhosphorGameModeBase->CharacterClassInfo;
 }
 
+UAbilityInfo* UPhosphorAbilitySystemLibrary::GetAbilityInfo(const UObject* WorldContextObject)
+{
+	APhosphorGameModeBase* PhosphorGameModeBase= Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (PhosphorGameModeBase==nullptr) return nullptr;
+
+	return PhosphorGameModeBase->AbilityInfo;
+}
+
 bool UPhosphorAbilitySystemLibrary::IsBlockHit(const FGameplayEffectContextHandle& ContextHandle)
 {
 	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
