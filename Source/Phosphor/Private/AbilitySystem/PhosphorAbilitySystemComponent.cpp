@@ -5,7 +5,9 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "PhosphorGameplayTags.h"
+#include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 #include "AbilitySystem/Abilities/PhosphorGameplayAbility.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 #include "Interaction/PlayerInterface.h"
 #include "Phosphor/PhosphorLogChannels.h"
 
@@ -122,6 +124,22 @@ FGameplayTag UPhosphorAbilitySystemComponent::GetStatusFromSpec(const FGameplayA
 	return FGameplayTag();
 }
 
+FGameplayAbilitySpec* UPhosphorAbilitySystemComponent::GetSpecFromAbilityTag(const FGameplayTag& AbilityTag)
+{
+	FScopedAbilityListLock ActiveScopeLock(*this);
+	for (FGameplayAbilitySpec& Spec:GetActivatableAbilities())
+	{
+		for (FGameplayTag Tag:Spec.Ability.Get()->AbilityTags)
+		{
+			if (Tag.MatchesTag(AbilityTag))
+			{
+				return &Spec;
+			}
+		}
+	}
+	return nullptr;
+}
+
 void UPhosphorAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag)
 {
 	if (GetAvatarActor()->Implements<UPlayerInterface>())
@@ -129,6 +147,23 @@ void UPhosphorAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& Attri
 		if (IPlayerInterface::Execute_GetAttributePoints(GetAvatarActor()) > 0)
 		{
 			ServerUpgradeAttribute(AttributeTag);
+		}
+	}
+}
+
+void UPhosphorAbilitySystemComponent::UpdateAbilityStatus(const int32 Level)
+{
+	UAbilityInfo* AbilityInfo=UPhosphorAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
+	for (const FPhosphorAbilityInfo Info : AbilityInfo->AbilityInformation)
+	{
+		if (!Info.AbilityTag.IsValid()) continue;
+		if (Level < Info.LevelRequirement) continue;
+		if (GetSpecFromAbilityTag(Info.AbilityTag) == nullptr)
+		{
+			FGameplayAbilitySpec Spec = FGameplayAbilitySpec(Info.Ability,1);
+			Spec.GetDynamicSpecSourceTags().AddTag(FPhosphorGameplayTags::Get().Abilities_Status_Eligible);
+			GiveAbility(Spec);
+			MarkAbilitySpecDirty(Spec);
 		}
 	}
 }
