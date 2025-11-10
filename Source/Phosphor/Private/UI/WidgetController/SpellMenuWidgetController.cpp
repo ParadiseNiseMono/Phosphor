@@ -88,6 +88,14 @@ void USpellMenuWidgetController::SpendPointsButtonPressed()
 	GetPhosphorASC()->ServerSpendSpellPoint(SelectedAbility.Ability);
 }
 
+void USpellMenuWidgetController::GlobeDeselect()
+{
+	SelectedAbility.Ability = FPhosphorGameplayTags::Get().Abilities_None;
+	SelectedAbility.Status = FPhosphorGameplayTags::Get().Abilities_Status_Locked;
+
+	SpellGlobeSelectedDelegate.Broadcast(false, false, FString(), FString());
+}
+
 void USpellMenuWidgetController::ShouldEnableButtons(const FGameplayTag& AbilityStatusTag, const int32 SpellPoints,
                                                      bool& bShouldEnableSpendPointsButton, bool& bShouldEnableEquipButton)
 {

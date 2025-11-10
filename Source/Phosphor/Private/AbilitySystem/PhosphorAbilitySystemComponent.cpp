@@ -219,7 +219,14 @@ bool UPhosphorAbilitySystemComponent::GetDescriptionByAbilityTag(const FGameplay
 		}
 	}
 	const UAbilityInfo* AbilityInfo = UPhosphorAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
-	OutDescription = UPhosphorGameplayAbility::GetLockedDescription(AbilityInfo->FindAbilityInfoByTag(AbilityTag).LevelRequirement);
+	if (!AbilityTag.IsValid() || AbilityTag.MatchesTagExact(FPhosphorGameplayTags::Get().Abilities_None))
+	{
+		OutDescription = FString();
+	}
+	else
+	{
+		OutDescription = UPhosphorGameplayAbility::GetLockedDescription(AbilityInfo->FindAbilityInfoByTag(AbilityTag).LevelRequirement);
+	}
 	OutNextLevelDescription = FString();
 	return false;
 }
