@@ -9,6 +9,7 @@
 #include "SpellMenuWidgetController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FSpellGlobeSelectedSingnature, bool, bSpendPointsButtonEnabled, bool, bEquipButtonEnabled, FString, DescriptionString, FString, NextLevelDescriptionString);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWaitForEquipSelectionSignature, const FGameplayTag&, AbilityType);
 
 struct FSelectedAbility
 {
@@ -34,6 +35,12 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FSpellGlobeSelectedSingnature SpellGlobeSelectedDelegate;
 
+	UPROPERTY(BlueprintAssignable)
+	FWaitForEquipSelectionSignature WaitForEquipSelectionDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FWaitForEquipSelectionSignature StopWaitingForEquipDelegate;
+
 	UFUNCTION(BlueprintCallable)
 	void SpellGlobeSelected(const FGameplayTag& AbilityTag);
 
@@ -43,10 +50,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void GlobeDeselect();
 
+	UFUNCTION(BlueprintCallable)
+	void EquipButtonPressed();
+
 private:
 
 	static void ShouldEnableButtons(const FGameplayTag& AbilityStatusTag , const int32 SpellPoints , bool& bShouldEnableSpendPointsButton , bool& bShouldEnableEquipButton);
 
 	FSelectedAbility SelectedAbility = FSelectedAbility(FPhosphorGameplayTags::Get().Abilities_None , FPhosphorGameplayTags::Get().Abilities_Status_Locked);
 	int32 CurrentSpellPoint = 0;
+
+	bool bWaitingForEquipSelection = false;
 };
