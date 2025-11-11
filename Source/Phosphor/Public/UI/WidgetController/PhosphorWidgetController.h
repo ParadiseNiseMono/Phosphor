@@ -18,6 +18,7 @@ class UAbilitySystemComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChangedSignature, int32, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature,const FPhosphorAbilityInfo&, Info);
 
+
 USTRUCT(BlueprintType)
 struct FWidgetControllerParams
 {
