@@ -295,7 +295,7 @@ void UPhosphorAbilitySystemComponent::ClearSlot(FGameplayAbilitySpec* AbilitySpe
 void UPhosphorAbilitySystemComponent::ClearAbilitiesOfSlot(const FGameplayTag& Slot)
 {
 	FScopedAbilityListLock ActiveScopeLock(*this);
-	for (FGameplayAbilitySpec Spec : GetActivatableAbilities())
+	for (FGameplayAbilitySpec& Spec : GetActivatableAbilities())
 	{
 		if (AbilityHasSlot(&Spec, Slot))
 		{

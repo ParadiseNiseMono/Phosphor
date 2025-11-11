@@ -3,6 +3,7 @@
 
 #include "UI/WidgetController/OverlayWidgetController.h"
 
+#include "PhosphorGameplayTags.h"
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "AbilitySystem/PhosphorAttributeSet.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
@@ -60,6 +61,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	
 	if (GetPhosphorASC())
 	{
+		GetPhosphorASC()->AbilityEquipped.AddUObject(this,&UOverlayWidgetController::OnAbilityEquipped);
 		if (GetPhosphorASC()->bStartupAbilitiesGiven)
 		{
 			BroadcastAbilityInfo();
@@ -84,6 +86,24 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 		}
 	);
 	}
+}
+
+void UOverlayWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status,
+	const FGameplayTag& Slot, const FGameplayTag& PreviousSlot) const
+{
+	const FPhosphorGameplayTags GameplayTags=FPhosphorGameplayTags::Get();
+
+	FPhosphorAbilityInfo LastSlotInfo;
+	LastSlotInfo.AbilityTag = GameplayTags.Abilities_None;
+	LastSlotInfo.InputTag = PreviousSlot;
+	LastSlotInfo.StatusTag = GameplayTags.Abilities_Status_Unlocked;
+	//Broadcast empty info if PreviousSlot is a valid slot.only if equipping an already equipped ability.
+	AbilityInfoDelegate.Broadcast(LastSlotInfo);
+
+	FPhosphorAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
+	Info.InputTag = Slot;
+	Info.StatusTag = Status;
+	AbilityInfoDelegate.Broadcast(Info);
 }
 
 void UOverlayWidgetController::OnXPChanged(const int32 NewXP)
