@@ -16,7 +16,7 @@ void USpellMenuWidgetController::BroadcastInitialValues()
 
 void USpellMenuWidgetController::BindCallbacksToDependencies()
 {
-	GetPhosphorASC()->AbilityStatusChangedDelegate.AddLambda([this](const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, int32 Level)
+	GetPhosphorASC()->AbilityStatusChanged.AddLambda([this](const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, int32 Level)
 	{
 		if (SelectedAbility.Ability.MatchesTagExact(AbilityTag))
 		{
@@ -36,6 +36,9 @@ void USpellMenuWidgetController::BindCallbacksToDependencies()
 			AbilityInfoDelegate.Broadcast(Info);
 		}
 	});
+
+	GetPhosphorASC()->AbilityEquipped.AddUObject(this,&USpellMenuWidgetController::OnAbilityEquipped);
+	
 	GetPhosphorPS()->OnSpellPointChangedDelegate.AddLambda([this](const int32 NewSpellPoint)
 	{
 		OnPlayerSpellPointChangedDelegate.Broadcast(NewSpellPoint);
@@ -115,6 +118,45 @@ void USpellMenuWidgetController::EquipButtonPressed()
 
 	WaitForEquipSelectionDelegate.Broadcast(AbilityType);
 	bWaitingForEquipSelection = true;
+
+	const FGameplayTag AbilityStatus = GetPhosphorASC()->GetStatusFromAbilityTag(SelectedAbility.Ability);
+	if (AbilityStatus.MatchesTagExact(FPhosphorGameplayTags::Get().Abilities_Status_Equipped))
+	{
+		SelectedSlot = GetPhosphorASC()->GetInputTagFromAbilityTag(SelectedAbility.Ability);
+	}
+}
+
+void USpellMenuWidgetController::SpellRowGlobePressed(const FGameplayTag& SlotTag, const FGameplayTag& AbilityType)
+{
+	if (!bWaitingForEquipSelection) return;
+	//Check selected ability against the slot's ability type
+	//(don't equip an offensive spell in passive globe.)
+	const FGameplayTag& SelectedAbilityType = AbilityInfo->FindAbilityInfoByTag(SelectedAbility.Ability).AbilityType;
+	if (!SelectedAbilityType.MatchesTagExact(AbilityType)) return;
+
+	GetPhosphorASC()->SeverEquipAbility(SelectedAbility.Ability, SlotTag);
+}
+
+void USpellMenuWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status,
+	const FGameplayTag& Slot, const FGameplayTag& PreviousSlot)
+{
+	bWaitingForEquipSelection = false;
+
+	const FPhosphorGameplayTags GameplayTags=FPhosphorGameplayTags::Get();
+
+	FPhosphorAbilityInfo LastSlotInfo;
+	LastSlotInfo.AbilityTag = GameplayTags.Abilities_None;
+	LastSlotInfo.InputTag = PreviousSlot;
+	LastSlotInfo.StatusTag = GameplayTags.Abilities_Status_Unlocked;
+	//Broadcast empty info if PreviousSlot is a valid slot.only if equipping an already equipped ability.
+	AbilityInfoDelegate.Broadcast(LastSlotInfo);
+
+	FPhosphorAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
+	Info.InputTag = Slot;
+	Info.StatusTag = Status;
+	AbilityInfoDelegate.Broadcast(Info);
+
+	StopWaitingForEquipDelegate.Broadcast(AbilityInfo->FindAbilityInfoByTag(AbilityTag).AbilityType);
 }
 
 void USpellMenuWidgetController::ShouldEnableButtons(const FGameplayTag& AbilityStatusTag, const int32 SpellPoints,
