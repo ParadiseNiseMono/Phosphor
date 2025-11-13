@@ -52,7 +52,7 @@ struct PhosphorDamageStatics
 		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitResistance,CriticalHitResistanceDef);
 		
 		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Fire,FireResistanceDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Lighting,LightingResistanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Lightning,LightingResistanceDef);
 		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Arcane,ArcaneResistanceDef);
 		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Physical,PhysicalResistanceDef);
 	}

@@ -12,11 +12,8 @@
 void UPhosphorDamageGameplayAbility::CauseDamage(AActor* Target)
 {
 	FGameplayEffectSpecHandle DamageSpecHandle=MakeOutgoingGameplayEffectSpec(DamageEffectClass,1);
-	for (TTuple<FGameplayTag,FScalableFloat> Pair:DamageTypes)
-	{
-		const float ScaledDamage=Pair.Value.GetValueAtLevel(GetAbilityLevel());
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle,Pair.Key,ScaledDamage);
-	}
+	const float ScaledDamage=Damage.GetValueAtLevel(GetAbilityLevel());
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle,DamageType,ScaledDamage);
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(),UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target));
 }
 
@@ -29,10 +26,4 @@ FTaggedMontage UPhosphorDamageGameplayAbility::GetRandomTaggedMontageFromArray(
 		return TaggedMontages[RandomIndex];
 	}
 	return FTaggedMontage();
-}
-
-float UPhosphorDamageGameplayAbility::GetDamageByDamageType(int32 InLevel, const FGameplayTag& DamageType)
-{
-	checkf(DamageTypes.Contains(DamageType), TEXT("Gameplay Ability [%s] does not contain Damage Type [%s]"), *GetNameSafe(this), *DamageType.ToString());
-	return DamageTypes[DamageType].GetValueAtLevel(InLevel);
 }

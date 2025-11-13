@@ -38,7 +38,7 @@ UPhosphorAttributeSet::UPhosphorAttributeSet()
 	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Secondary_MaxMana,GetMaxManaAttribute);
 	/*Resistance Attributes*/
 	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Resistance_Fire,GetFireResistanceAttribute);
-	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Resistance_Lighting,GetLightingResistanceAttribute);
+	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Resistance_Lightning,GetLightingResistanceAttribute);
 	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Resistance_Arcane,GetArcaneResistanceAttribute);
 	TagsToAttributes.Add(PhosphorGameplayTags.Attributes_Resistance_Physical,GetPhysicalResistanceAttribute);
 }

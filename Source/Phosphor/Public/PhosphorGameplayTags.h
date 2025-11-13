@@ -36,7 +36,7 @@ public:
 	FGameplayTag Attributes_Secondary_MaxMana;
 
 	FGameplayTag Attributes_Resistance_Fire;
-	FGameplayTag Attributes_Resistance_Lighting;
+	FGameplayTag Attributes_Resistance_Lightning;
 	FGameplayTag Attributes_Resistance_Arcane;
 	FGameplayTag Attributes_Resistance_Physical;
 
@@ -58,9 +58,14 @@ public:
 
 	FGameplayTag Damage;
 	FGameplayTag Damage_Fire;
-	FGameplayTag Damage_Lighting;
+	FGameplayTag Damage_Lightning;
 	FGameplayTag Damage_Arcane;
 	FGameplayTag Damage_Physical;
+
+	FGameplayTag Debuff_Burn;
+	FGameplayTag Debuff_Stun;
+	FGameplayTag Debuff_Arcane;
+	FGameplayTag Debuff_Physical;
 	
 	FGameplayTag Abilities_Attack;
 	FGameplayTag Abilities_Summon;
@@ -94,7 +99,8 @@ public:
 	FGameplayTag Montage_Attack_4;
 	
 	TMap<FGameplayTag,FGameplayTag> DamageTypesToResistances;
-
+	TMap<FGameplayTag,FGameplayTag> DamageTypesToDebuffs;
+	
 	/*Effects*/
 	FGameplayTag Effects_HitReact;
 protected:
