@@ -10,6 +10,7 @@
 #include "AbilitySystem/PhosphorAttributeSet.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Interaction/CombatInterface.h"
+#include "Phosphor/PhosphorLogChannels.h"
 
 struct PhosphorDamageStatics
 {
@@ -25,8 +26,7 @@ struct PhosphorDamageStatics
 	DECLARE_ATTRIBUTE_CAPTUREDEF(LightingResistance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(ArcaneResistance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(PhysicalResistance);
-
-	TMap<FGameplayTag,FGameplayEffectAttributeCaptureDefinition> TagsToCaptureDefs;
+	
 	
 	PhosphorDamageStatics()
 	{
@@ -42,19 +42,6 @@ struct PhosphorDamageStatics
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UPhosphorAttributeSet,ArcaneResistance,Target,false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UPhosphorAttributeSet,PhysicalResistance,Target,false);
 
-		const FPhosphorGameplayTags& Tags=FPhosphorGameplayTags::Get();
-		
-		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_Armor,ArmorDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_ArmorPenetration,ArmorPenetrationDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_BlockChance,BlockChanceDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitChance,CriticalHitChanceDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitDamage,CriticalHitDamageDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitResistance,CriticalHitResistanceDef);
-		
-		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Fire,FireResistanceDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Lightning,LightingResistanceDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Arcane,ArcaneResistanceDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Physical,PhysicalResistanceDef);
 	}
 
 	
@@ -81,14 +68,59 @@ UExecCalc_Damage::UExecCalc_Damage()
 	RelevantAttributesToCapture.Add(DamageStatics().PhysicalResistanceDef);
 }
 
-void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
-	FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
+void UExecCalc_Damage::DetermineDebuff(const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FGameplayEffectSpec& Spec,
+	FAggregatorEvaluateParameters EvaluateParameters, const TMap<FGameplayTag,FGameplayEffectAttributeCaptureDefinition>& InTagsToDefs) const
 {
+	const FPhosphorGameplayTags& GameplayTags = FPhosphorGameplayTags::Get();
+
+	for (const TTuple<FGameplayTag, FGameplayTag> Pair : GameplayTags.DamageTypesToDebuffs)
+	{
+		const FGameplayTag& DamageType = Pair.Key;
+		const FGameplayTag& DebuffType = Pair.Value;
+		const float TypeDamage = Spec.GetSetByCallerMagnitude(DamageType, false, -1);
+		if (TypeDamage > 1.f)
+		{
+			//Determine if there is a successful Debuff
+			const float SourceDebuffChance = Spec.GetSetByCallerMagnitude(GameplayTags.Debuff_Chance, false, -1);
+
+			float TargetDebuffResistance = 0.f;
+			const FGameplayTag& ResistanceTag = GameplayTags.DamageTypesToResistances[DamageType];
+			ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(InTagsToDefs[ResistanceTag], EvaluateParameters, TargetDebuffResistance);
+			TargetDebuffResistance = FMath::Max<float>(TargetDebuffResistance, 0.f);
+			const float EffectiveDebuffChance = SourceDebuffChance * (100.f - TargetDebuffResistance) / 100.f;
+			const bool bDebuff = FMath::RandRange(1, 100) < EffectiveDebuffChance;
+			UE_LOG(LogPhosphor, Warning, TEXT("Chance %f"), EffectiveDebuffChance);
+			if (bDebuff)
+			{
+				
+			}
+		}
+	}
+}
+
+void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
+                                              FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
+{
+	TMap<FGameplayTag,FGameplayEffectAttributeCaptureDefinition> TagsToCaptureDefs;
+	const FPhosphorGameplayTags& Tags=FPhosphorGameplayTags::Get();
+		
+	TagsToCaptureDefs.Add(Tags.Attributes_Secondary_Armor, DamageStatics().ArmorDef);
+	TagsToCaptureDefs.Add(Tags.Attributes_Secondary_ArmorPenetration, DamageStatics().ArmorPenetrationDef);
+	TagsToCaptureDefs.Add(Tags.Attributes_Secondary_BlockChance, DamageStatics().BlockChanceDef);
+	TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitChance, DamageStatics().CriticalHitChanceDef);
+	TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitDamage, DamageStatics().CriticalHitDamageDef);
+	TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitResistance, DamageStatics().CriticalHitResistanceDef);
+		
+	TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Fire, DamageStatics().FireResistanceDef);
+	TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Lightning, DamageStatics().LightingResistanceDef);
+	TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Arcane, DamageStatics().ArcaneResistanceDef);
+	TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Physical, DamageStatics().PhysicalResistanceDef);
+	
 	const UAbilitySystemComponent* SourceASC=ExecutionParams.GetSourceAbilitySystemComponent();
-	const UAbilitySystemComponent* TargerASC=ExecutionParams.GetTargetAbilitySystemComponent();
+	const UAbilitySystemComponent* TargetASC=ExecutionParams.GetTargetAbilitySystemComponent();
 
 	AActor* SourceAvatar=SourceASC ? SourceASC->GetAvatarActor() : nullptr;
-	AActor* TargetAvatar=TargerASC ? TargerASC->GetAvatarActor() : nullptr;
+	AActor* TargetAvatar=TargetASC ? TargetASC->GetAvatarActor() : nullptr;
 
 	int32 SourcePlayerLevel=1;
 	if (SourceAvatar->Implements<UCombatInterface>())
@@ -112,6 +144,9 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	const UCharacterClassInfo* CharacterClassInfo=UPhosphorAbilitySystemLibrary::GetCharacterClassInfo(SourceAvatar);
 
+	//Debuff
+	DetermineDebuff(ExecutionParams, Spec, EvaluateParameters, TagsToCaptureDefs);
+
 	//Get Damage set  by Caller Magnitude
 	float Damage=0;
 	for (const auto& Pair:FPhosphorGameplayTags::Get().DamageTypesToResistances)
@@ -119,9 +154,9 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		const FGameplayTag DamageTypeTag=Pair.Key;
 		const FGameplayTag ResistanceTag=Pair.Value;
 
-		checkf(PhosphorDamageStatics().TagsToCaptureDefs.Contains(ResistanceTag),TEXT("TagToCaptureDefs doesn't contain Tag:[%s] in ExecCalc_Damage"),*ResistanceTag.ToString());
+		checkf(TagsToCaptureDefs.Contains(ResistanceTag),TEXT("TagToCaptureDefs doesn't contain Tag:[%s] in ExecCalc_Damage"),*ResistanceTag.ToString());
 		
-		const FGameplayEffectAttributeCaptureDefinition CaptureDefinition=PhosphorDamageStatics().TagsToCaptureDefs[ResistanceTag];
+		const FGameplayEffectAttributeCaptureDefinition CaptureDefinition = TagsToCaptureDefs[ResistanceTag];
 
 		float DamageTypeValue=Spec.GetSetByCallerMagnitude(Pair.Key,false);
 		
