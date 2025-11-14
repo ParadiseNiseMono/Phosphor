@@ -164,14 +164,17 @@ void FPhosphorGameplayTags::InitializeNativeGameplayTags()
 		FName("Attributes.Resistance.Fire")
 		, FString("Resistance of Fire Damage Type")
 		);
+	
 	GameplayTags.Attributes_Resistance_Lightning= UGameplayTagsManager::Get().AddNativeGameplayTag(
 	FName("Attributes.Resistance.Lightning")
 	, FString("Resistance of Lightning Damage Type")
 	);
+	
 	GameplayTags.Attributes_Resistance_Arcane= UGameplayTagsManager::Get().AddNativeGameplayTag(
 	FName("Attributes.Resistance.Arcane")
 	, FString("Resistance of Arcane Damage Type")
 	);
+	
 	GameplayTags.Attributes_Resistance_Physical= UGameplayTagsManager::Get().AddNativeGameplayTag(
 	FName("Attributes.Resistance.Physical")
 	, FString("Resistance of Physical Damage Type")
@@ -182,17 +185,40 @@ void FPhosphorGameplayTags::InitializeNativeGameplayTags()
 		FName("Debuff.Burn")
 		, FString("Debuff of Fire Damage")
 		);
+	
 	GameplayTags.Debuff_Stun= UGameplayTagsManager::Get().AddNativeGameplayTag(
 	FName("Debuff.Stun")
 	, FString("Debuff of Lightning Damage")
 	);
+	
 	GameplayTags.Debuff_Arcane= UGameplayTagsManager::Get().AddNativeGameplayTag(
 	FName("Debuff.Arcane")
 	, FString("Debuff of Arcane Damage")
 	);
+	
 	GameplayTags.Debuff_Physical= UGameplayTagsManager::Get().AddNativeGameplayTag(
 	FName("Debuff.Physical")
 	, FString("Debuff of Physical Damage")
+	);
+
+	GameplayTags.Debuff_Chance= UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Debuff.Chance")
+		, FString("Debuff Chance")
+		);
+	
+	GameplayTags.Debuff_Damage= UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Debuff.Damage")
+	, FString("Debuff Damage")
+	);
+	
+	GameplayTags.Debuff_Frequency= UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Debuff.Frequency")
+	, FString("Debuff Frequency")
+	);
+	
+	GameplayTags.Debuff_Duration= UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Debuff.Duration")
+	, FString("Debuff Duration")
 	);
 
 	/*Map of Damage Type to Resistance*/
