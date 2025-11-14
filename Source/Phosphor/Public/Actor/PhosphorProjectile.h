@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "GameplayEffectTypes.h"
+#include "PhosphorAbilityTypes.h"
 #include "PhosphorProjectile.generated.h"
 
 struct FGameplayEffectSpecHandle;
@@ -24,9 +24,10 @@ public:
 
 	// meta = (ExposeOnSpawn = "true") 讓這個變數可以在藍圖的 SpawnActor 節點上顯示為輸入引腳
 	UPROPERTY(BlueprintReadWrite,meta=(ExposeOnSpawn=true))
-	FGameplayEffectSpecHandle DamageEffectSpecHandle;
+	FDamageEffectParams DamageEffectParams;	
 protected:
 	virtual void BeginPlay() override;
+	void OnHit();
 	virtual void Destroyed() override;
 	UFUNCTION()
 	void OnSphereOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
