@@ -53,7 +53,7 @@ void APhosphorProjectile::OnHit()
 
 void APhosphorProjectile::Destroyed()
 {
-	if (!bHit&&!HasAuthority()) OnHit();
+	if (!bHit && !HasAuthority()) OnHit();
 	
 	Super::Destroyed();
 }
@@ -69,9 +69,9 @@ void APhosphorProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComp, A
 
 	if (HasAuthority())
 	{
-		if (UAbilitySystemComponent* AbilitySystemComponent=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
+		if (UAbilitySystemComponent* TargetASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
-			DamageEffectParams.TargetAbilitySystemComponent = AbilitySystemComponent;
+			DamageEffectParams.TargetAbilitySystemComponent = TargetASC;
 			UPhosphorAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
 		}
 		Destroy();

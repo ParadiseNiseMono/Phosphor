@@ -243,6 +243,14 @@ protected:
 	void SendXPEvent(const FEffectProperties& Props);
 	bool bTopOffHealth=false;
 	bool bTopOffMana=false;
+
+private:
+
+	void HandleInComingDamage(const FEffectProperties& Props);
+
+	void HandleIncomingXP(const FEffectProperties& Props);
+
+	void Debuff(const FEffectProperties& Props);
 	
 };
 

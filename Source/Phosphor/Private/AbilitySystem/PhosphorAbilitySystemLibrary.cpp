@@ -160,6 +160,54 @@ bool UPhosphorAbilitySystemLibrary::IsCriticalHit(const FGameplayEffectContextHa
 	return false;
 }
 
+bool UPhosphorAbilitySystemLibrary::IsSuccessfulDebuff(const FGameplayEffectContextHandle& ContextHandle)
+{
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		return PhosphorGameplayEffectContext->IsSuccessfulDebuff();
+	}
+	return false;
+}
+
+float UPhosphorAbilitySystemLibrary::GetDebuffDamage(const FGameplayEffectContextHandle& ContextHandle)
+{
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		return PhosphorGameplayEffectContext->GetDebuffDamage();
+	}
+	return 0.f;
+}
+
+float UPhosphorAbilitySystemLibrary::GetDebuffDuration(const FGameplayEffectContextHandle& ContextHandle)
+{
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		return PhosphorGameplayEffectContext->GetDebuffDuration();
+	}
+	return 0.f;
+}
+
+float UPhosphorAbilitySystemLibrary::GetDebuffFrequency(const FGameplayEffectContextHandle& ContextHandle)
+{
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		return PhosphorGameplayEffectContext->GetDebuffFrequency();
+	}
+	return 0.f;
+}
+
+FGameplayTag UPhosphorAbilitySystemLibrary::GetDamageType(const FGameplayEffectContextHandle& ContextHandle)
+{
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		if (PhosphorGameplayEffectContext->GetDamageType().IsValid())
+		{
+			return *PhosphorGameplayEffectContext->GetDamageType();
+		}
+	}
+	return FGameplayTag();
+}
+
 void UPhosphorAbilitySystemLibrary::SetIsBlockHit(FGameplayEffectContextHandle& ContextHandle, bool bInIsBlockHit)
 {
 	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
@@ -176,9 +224,52 @@ void UPhosphorAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandl
 	}
 }
 
+void UPhosphorAbilitySystemLibrary::SetIsSuccessfulDebuff(FGameplayEffectContextHandle& ContextHandle,
+	bool bInIsSuccessfulDebuff)
+{
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		PhosphorGameplayEffectContext->SetIsSuccessfulDebuff(bInIsSuccessfulDebuff);
+	}
+}
+
+void UPhosphorAbilitySystemLibrary::SetDebuffDamage(FGameplayEffectContextHandle& ContextHandle, float InDamage)
+{
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		PhosphorGameplayEffectContext->SetDebuffDamage(InDamage);
+	}
+}
+
+void UPhosphorAbilitySystemLibrary::SetDebuffDuration(FGameplayEffectContextHandle& ContextHandle, float InDuration)
+{
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		PhosphorGameplayEffectContext->SetDebuffDuration(InDuration);
+	}
+}
+
+void UPhosphorAbilitySystemLibrary::SetDebuffFrequency(FGameplayEffectContextHandle& ContextHandle, float InFrequency)
+{
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		PhosphorGameplayEffectContext->SetDebuffFrequency(InFrequency);
+	}
+}
+
+void UPhosphorAbilitySystemLibrary::SetDamageType(FGameplayEffectContextHandle& ContextHandle,
+	const FGameplayTag& InDamageType)
+{
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		const TSharedPtr<FGameplayTag> DamageType = MakeShared<FGameplayTag>(InDamageType);
+		PhosphorGameplayEffectContext->SetDamageType(DamageType);
+	}
+}
+
 void UPhosphorAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* WorldContextObject,
-	TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius,
-	const FVector& SphereOrigin)
+                                                               TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius,
+                                                               const FVector& SphereOrigin)
 {
 	FCollisionQueryParams SphereParams;
 	SphereParams.AddIgnoredActors(ActorsToIgnore);
@@ -210,7 +301,7 @@ bool UPhosphorAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* Seco
 FGameplayEffectContextHandle UPhosphorAbilitySystemLibrary::ApplyDamageEffect(
 	const FDamageEffectParams& DamageEffectParams)
 {
-	const FPhosphorGameplayTags GameplayTags = FPhosphorGameplayTags::Get();
+	const FPhosphorGameplayTags& GameplayTags = FPhosphorGameplayTags::Get();
 	const AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
 
 	FGameplayEffectContextHandle ContextHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeEffectContext();
@@ -225,7 +316,7 @@ FGameplayEffectContextHandle UPhosphorAbilitySystemLibrary::ApplyDamageEffect(
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Duration, DamageEffectParams.DebuffDuration);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Frequency, DamageEffectParams.DebuffFrequency);
 	
-	DamageEffectParams.TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+	DamageEffectParams.TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	return ContextHandle;
 	
 }

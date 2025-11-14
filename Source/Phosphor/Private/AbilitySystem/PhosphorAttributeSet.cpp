@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
+#include "PhosphorAbilityTypes.h"
 #include "GameFramework/Character.h"
 #include "PhosphorGameplayTags.h"
 #include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
@@ -130,6 +131,14 @@ void UPhosphorAttributeSet::PostGameplayEffectExecute(const  FGameplayEffectModC
 	FEffectProperties Props;
 	SetEffectProperties(Data,Props);
 
+	if (Props.TargetCharacter->Implements<UCombatInterface>())
+	{
+		if (ICombatInterface::Execute_IsDead(Props.TargetCharacter))
+		{
+			return;
+		}
+	}
+
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(),0.f,GetMaxHealth()));
@@ -138,67 +147,13 @@ void UPhosphorAttributeSet::PostGameplayEffectExecute(const  FGameplayEffectModC
 	{
 		SetMana(FMath::Clamp(GetMana(),0.f,GetMaxMana()));
 	}
-	if (Data.EvaluatedData.Attribute==GetInComingDamageAttribute())
+	if (Data.EvaluatedData.Attribute == GetInComingDamageAttribute())
 	{
-		const float LocalIncomingDamage=GetInComingDamage();
-		SetInComingDamage(0.f);
-		if (LocalIncomingDamage>0.f)
-		{
-			const float NewHealth=GetHealth()-LocalIncomingDamage;
-			SetHealth(FMath::Clamp(NewHealth,0.f,GetMaxHealth()));
-
-			const bool bFatal=NewHealth<=0;
-			if (bFatal)
-			{
-				ICombatInterface* CombatInterface=Cast<ICombatInterface>(Props.TargetAvatarActor);
-				if (CombatInterface)
-				{
-					CombatInterface->Die();
-				}
-				SendXPEvent(Props);
-			}
-			else
-			{
-				FGameplayTagContainer TagContainer;
-				TagContainer.AddTag(FPhosphorGameplayTags::Get().Effects_HitReact);
-				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
-			}
-			const bool bBlockHit=UPhosphorAbilitySystemLibrary::IsBlockHit(Props.EffectContextHandle);
-			const bool bCriticalHit=UPhosphorAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
-			ShowFloatText(Props,LocalIncomingDamage,bBlockHit,bCriticalHit);
-		}
+		HandleInComingDamage(Props);
 	}
 	if (Data.EvaluatedData.Attribute == GetInComingXPAttribute())
 	{
-		const float LocalIncomingXP=GetInComingXP();
-		SetInComingXP(0.f);
-
-		//TODO: See if we should Level up.
-		if (Props.SourceCharacter->Implements<UPlayerInterface>() && Props.SourceCharacter->Implements<UCombatInterface>())
-		{
-			const int32 CurrentLevel=ICombatInterface::Execute_GetPlayerLevel(Props.SourceCharacter);
-			const int32 CurrentXP=IPlayerInterface::Execute_GetXP(Props.SourceCharacter);
-
-			const int32 NewLevel=IPlayerInterface::Execute_FindLevelForXP(Props.SourceCharacter,LocalIncomingXP+CurrentXP);\
-			const int32 NumLevelUps=NewLevel-CurrentLevel;
-			if (NumLevelUps>0)
-			{
-				const int32 AttributePoints=IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter,CurrentLevel);
-				const int32 SpellPoints=IPlayerInterface::Execute_GetSpellPointsReward(Props.SourceCharacter,CurrentLevel);
-
-				IPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter,NumLevelUps);
-
-				IPlayerInterface::Execute_AddToAttributePoints(Props.SourceCharacter,AttributePoints);
-				IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter,SpellPoints);
-
-				bTopOffHealth=true;
-				bTopOffMana=true;
-				
-				IPlayerInterface::Execute_LevelUp(Props.SourceCharacter);
-			}
-			
-			IPlayerInterface::Execute_AddToXP(Props.SourceCharacter,LocalIncomingXP);
-		}
+		HandleIncomingXP(Props);
 	}
 }
 
@@ -249,6 +204,116 @@ void UPhosphorAttributeSet::SendXPEvent(const FEffectProperties& Props)
 		
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceCharacter,GameplayTags.Attributes_Meta_IncomingXP,Payload);
 	}	
+}
+
+void UPhosphorAttributeSet::HandleInComingDamage(const FEffectProperties& Props)
+{
+	const float LocalIncomingDamage = GetInComingDamage();
+	SetInComingDamage(0.f);
+	if (LocalIncomingDamage>0.f)
+	{
+		const float NewHealth = GetHealth() - LocalIncomingDamage;
+		SetHealth(FMath::Clamp(NewHealth,0.f,GetMaxHealth()));
+
+		const bool bFatal = NewHealth <= 0;
+		if (bFatal)
+		{
+			ICombatInterface* CombatInterface=Cast<ICombatInterface>(Props.TargetAvatarActor);
+			if (CombatInterface)
+			{
+				CombatInterface->Die();
+			}
+			SendXPEvent(Props);
+		}
+		else
+		{
+			FGameplayTagContainer TagContainer;
+			TagContainer.AddTag(FPhosphorGameplayTags::Get().Effects_HitReact);
+			Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+		}
+		const bool bBlockHit=UPhosphorAbilitySystemLibrary::IsBlockHit(Props.EffectContextHandle);
+		const bool bCriticalHit=UPhosphorAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
+		ShowFloatText(Props,LocalIncomingDamage,bBlockHit,bCriticalHit);
+
+		if (UPhosphorAbilitySystemLibrary::IsSuccessfulDebuff(Props.EffectContextHandle))
+		{
+			Debuff(Props);
+		}
+	}
+}
+
+void UPhosphorAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
+{
+	const float LocalIncomingXP=GetInComingXP();
+	SetInComingXP(0.f);
+
+	//TODO: See if we should Level up.
+	if (Props.SourceCharacter->Implements<UPlayerInterface>() && Props.SourceCharacter->Implements<UCombatInterface>())
+	{
+		const int32 CurrentLevel=ICombatInterface::Execute_GetPlayerLevel(Props.SourceCharacter);
+		const int32 CurrentXP=IPlayerInterface::Execute_GetXP(Props.SourceCharacter);
+
+		const int32 NewLevel=IPlayerInterface::Execute_FindLevelForXP(Props.SourceCharacter,LocalIncomingXP+CurrentXP);\
+		const int32 NumLevelUps=NewLevel-CurrentLevel;
+		if (NumLevelUps>0)
+		{
+			const int32 AttributePoints=IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter,CurrentLevel);
+			const int32 SpellPoints=IPlayerInterface::Execute_GetSpellPointsReward(Props.SourceCharacter,CurrentLevel);
+
+			IPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter,NumLevelUps);
+
+			IPlayerInterface::Execute_AddToAttributePoints(Props.SourceCharacter,AttributePoints);
+			IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter,SpellPoints);
+
+			bTopOffHealth=true;
+			bTopOffMana=true;
+				
+			IPlayerInterface::Execute_LevelUp(Props.SourceCharacter);
+		}
+			
+		IPlayerInterface::Execute_AddToXP(Props.SourceCharacter,LocalIncomingXP);
+	}
+}
+
+void UPhosphorAttributeSet::Debuff(const FEffectProperties& Props)
+{
+	const FPhosphorGameplayTags GameplayTags = FPhosphorGameplayTags::Get();
+	FGameplayEffectContextHandle EffectContextHandle = Props.SourceASC->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(Props.SourceAvatarActor);
+
+	const FGameplayTag DamageType = UPhosphorAbilitySystemLibrary::GetDamageType(Props.EffectContextHandle);
+	const float DebuffDamage = UPhosphorAbilitySystemLibrary::GetDebuffDamage(Props.EffectContextHandle);
+	const float DebuffDuration = UPhosphorAbilitySystemLibrary::GetDebuffDuration(Props.EffectContextHandle);
+	const float DebuffFrequency = UPhosphorAbilitySystemLibrary::GetDebuffFrequency(Props.EffectContextHandle);
+
+	FString DebuffName = FString::Printf(TEXT("DynamicDebuff_%s"), *DamageType.ToString());
+	UGameplayEffect* Effect = NewObject<UGameplayEffect>(GetTransientPackage(), FName(DebuffName));
+
+	Effect->DurationPolicy = EGameplayEffectDurationType::HasDuration;
+	Effect->Period = DebuffFrequency;
+	Effect->DurationMagnitude = FScalableFloat(DebuffDuration);
+	
+	Effect->InheritableOwnedTagsContainer.AddTag(GameplayTags.DamageTypesToDebuffs[DamageType]);
+
+	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource;
+	Effect->StackLimitCount = 1;
+
+	int32 Index = Effect->Modifiers.Num();
+	Effect->Modifiers.Add(FGameplayModifierInfo());
+	FGameplayModifierInfo& ModifierInfo = Effect->Modifiers.Last();
+
+	ModifierInfo.ModifierMagnitude = FScalableFloat(DebuffDamage);
+	ModifierInfo.ModifierOp = EGameplayModOp::Additive;
+	ModifierInfo.Attribute = UPhosphorAttributeSet::GetInComingDamageAttribute();
+	
+	
+	if (FGameplayEffectSpec* Mutable = new FGameplayEffectSpec(Effect, EffectContextHandle, 1))
+	{
+		FPhosphorGameplayEffectContext* PhosphorContext = static_cast<FPhosphorGameplayEffectContext*>(EffectContextHandle.Get());
+		TSharedPtr<FGameplayTag> DebuffDamageType = MakeShareable(new FGameplayTag(DamageType));
+		PhosphorContext->SetDamageType(DebuffDamageType);
+		Props.TargetASC->ApplyGameplayEffectSpecToSelf(*Mutable);
+	}
 }
 
 void UPhosphorAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)const

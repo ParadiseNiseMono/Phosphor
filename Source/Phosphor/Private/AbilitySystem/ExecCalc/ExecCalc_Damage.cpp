@@ -73,7 +73,7 @@ void UExecCalc_Damage::DetermineDebuff(const FGameplayEffectCustomExecutionParam
 {
 	const FPhosphorGameplayTags& GameplayTags = FPhosphorGameplayTags::Get();
 
-	for (const TTuple<FGameplayTag, FGameplayTag> Pair : GameplayTags.DamageTypesToDebuffs)
+	for (TTuple<FGameplayTag, FGameplayTag> Pair : GameplayTags.DamageTypesToDebuffs)
 	{
 		const FGameplayTag& DamageType = Pair.Key;
 		const FGameplayTag& DebuffType = Pair.Value;
@@ -92,7 +92,18 @@ void UExecCalc_Damage::DetermineDebuff(const FGameplayEffectCustomExecutionParam
 			UE_LOG(LogPhosphor, Warning, TEXT("Chance %f"), EffectiveDebuffChance);
 			if (bDebuff)
 			{
-				
+				FGameplayEffectContextHandle ContextHandle = Spec.GetContext();
+
+				UPhosphorAbilitySystemLibrary::SetIsSuccessfulDebuff(ContextHandle, true);
+				UPhosphorAbilitySystemLibrary::SetDamageType(ContextHandle, DamageType);
+
+				const float DebuffDamage = Spec.GetSetByCallerMagnitude(GameplayTags.Debuff_Damage, false, -1);
+				const float DebuffDuration = Spec.GetSetByCallerMagnitude(GameplayTags.Debuff_Duration, false, -1);
+				const float DebuffFrequency = Spec.GetSetByCallerMagnitude(GameplayTags.Debuff_Frequency, false, -1);
+
+				UPhosphorAbilitySystemLibrary::SetDebuffDamage(ContextHandle, DebuffDamage);
+				UPhosphorAbilitySystemLibrary::SetDebuffDuration(ContextHandle, DebuffDuration);
+				UPhosphorAbilitySystemLibrary::SetDebuffFrequency(ContextHandle, DebuffFrequency);
 			}
 		}
 	}
@@ -133,10 +144,10 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		TargetPlayerLevel = ICombatInterface::Execute_GetPlayerLevel(TargetAvatar);
 	}
 
-	const FGameplayEffectSpec&	Spec=ExecutionParams.GetOwningSpec();
+	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
 
-	const FGameplayTagContainer* SourceTags=Spec.CapturedSourceTags.GetAggregatedTags();
-	const FGameplayTagContainer* TargetTags=Spec.CapturedTargetTags.GetAggregatedTags();
+	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
+	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
 
 	FAggregatorEvaluateParameters EvaluateParameters;
 	EvaluateParameters.SourceTags=SourceTags;
@@ -149,7 +160,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	//Get Damage set  by Caller Magnitude
 	float Damage=0;
-	for (const auto& Pair:FPhosphorGameplayTags::Get().DamageTypesToResistances)
+	for (const TTuple<FGameplayTag, FGameplayTag>& Pair:FPhosphorGameplayTags::Get().DamageTypesToResistances)
 	{
 		const FGameplayTag DamageTypeTag=Pair.Key;
 		const FGameplayTag ResistanceTag=Pair.Value;
@@ -158,7 +169,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		
 		const FGameplayEffectAttributeCaptureDefinition CaptureDefinition = TagsToCaptureDefs[ResistanceTag];
 
-		float DamageTypeValue=Spec.GetSetByCallerMagnitude(Pair.Key,false);
+		float DamageTypeValue = Spec.GetSetByCallerMagnitude(Pair.Key,false);
 		
 		float Resistance=0.f;
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(CaptureDefinition,EvaluateParameters,Resistance);
