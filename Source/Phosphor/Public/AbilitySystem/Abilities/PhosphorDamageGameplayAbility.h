@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PhosphorAbilityTypes.h"
 #include "AbilitySystem/Abilities/PhosphorGameplayAbility.h"
 #include "PhosphorDamageGameplayAbility.generated.h"
 
@@ -18,6 +19,8 @@ class PHOSPHOR_API UPhosphorDamageGameplayAbility : public UPhosphorGameplayAbil
 public:
 	UFUNCTION(BlueprintCallable)
 	void CauseDamage(AActor* Target);
+
+	FDamageEffectParams MakeDamageEffectParamsFromDefaults(AActor* TargetActor = nullptr) const;
 protected:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
@@ -28,16 +31,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly,Category="Damage")
 	FScalableFloat Damage;
 	
-	UPROPERTY(EditDefaultsOnly,Category="Debuff")
+	UPROPERTY(EditDefaultsOnly,Category="Damage")
 	FScalableFloat DebuffChance;
 
-	UPROPERTY(EditDefaultsOnly,Category="Debuff")
+	UPROPERTY(EditDefaultsOnly,Category="Damage")
 	FScalableFloat DebuffDamage;
 
-	UPROPERTY(EditDefaultsOnly,Category="Debuff")
+	UPROPERTY(EditDefaultsOnly,Category="Damage")
 	FScalableFloat DebuffFrequency;
 
-	UPROPERTY(EditDefaultsOnly,Category="Debuff")
+	UPROPERTY(EditDefaultsOnly,Category="Damage")
 	FScalableFloat DebuffDuration;
 	
 	UFUNCTION(BlueprintPure)

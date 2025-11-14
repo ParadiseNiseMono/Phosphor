@@ -17,6 +17,24 @@ void UPhosphorDamageGameplayAbility::CauseDamage(AActor* Target)
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(),UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target));
 }
 
+FDamageEffectParams UPhosphorDamageGameplayAbility::MakeDamageEffectParamsFromDefaults(AActor* TargetActor) const
+{
+	FDamageEffectParams DamageEffectParams;
+	DamageEffectParams.WorldContext = GetAvatarActorFromActorInfo();
+	DamageEffectParams.DamageGameplayEffectClass = DamageEffectClass;
+	DamageEffectParams.SourceAbilitySystemComponent = GetAbilitySystemComponentFromActorInfo();
+	DamageEffectParams.TargetAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+	DamageEffectParams.BaseDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+	DamageEffectParams.AbilityLevel = GetAbilityLevel();
+	DamageEffectParams.DamageType = DamageType;
+	DamageEffectParams.DebuffChance = DebuffChance.GetValueAtLevel(GetAbilityLevel());
+	DamageEffectParams.DebuffDamage = DebuffDamage.GetValueAtLevel(GetAbilityLevel());
+	DamageEffectParams.DebuffDuration = DebuffDuration.GetValueAtLevel(GetAbilityLevel());
+	DamageEffectParams.DebuffFrequency = DebuffFrequency.GetValueAtLevel(GetAbilityLevel());
+
+	return DamageEffectParams;
+}
+
 FTaggedMontage UPhosphorDamageGameplayAbility::GetRandomTaggedMontageFromArray(
 	const TArray<FTaggedMontage>& TaggedMontages) const
 {

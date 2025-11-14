@@ -3,7 +3,9 @@
 
 #include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "PhosphorAbilityTypes.h"
+#include "PhosphorGameplayTags.h"
 #include "Game/PhosphorGameModeBase.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -203,6 +205,29 @@ bool UPhosphorAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* Seco
 	const bool bSecondIsEnemy=SecondActor->ActorHasTag("Enemy");
 
 	return !((bFirstIsPlayer&&bSecondIsPlayer)||(bFirstIsEnemy&&bSecondIsEnemy));
+}
+
+FGameplayEffectContextHandle UPhosphorAbilitySystemLibrary::ApplyDamageEffect(
+	const FDamageEffectParams& DamageEffectParams)
+{
+	const FPhosphorGameplayTags GameplayTags = FPhosphorGameplayTags::Get();
+	const AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
+
+	FGameplayEffectContextHandle ContextHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeEffectContext();
+	ContextHandle.AddSourceObject(SourceAvatarActor);
+
+	const FGameplayEffectSpecHandle SpecHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeOutgoingSpec(
+		DamageEffectParams.DamageGameplayEffectClass, DamageEffectParams.AbilityLevel, ContextHandle);
+
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageEffectParams.DamageType, DamageEffectParams.BaseDamage);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Chance, DamageEffectParams.DebuffChance);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Damage, DamageEffectParams.DebuffDamage);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Duration, DamageEffectParams.DebuffDuration);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Debuff_Frequency, DamageEffectParams.DebuffFrequency);
+	
+	DamageEffectParams.TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+	return ContextHandle;
+	
 }
 
 
