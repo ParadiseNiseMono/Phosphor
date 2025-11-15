@@ -40,10 +40,10 @@ UAnimMontage* APhosphorCharacterBase::GetHitReactMontage_Implementation()
 	return HitReactMontage;
 }
 
-void APhosphorCharacterBase::Die()
+void APhosphorCharacterBase::Die(const FVector& InDeathImpulse)
 {
 	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
-	MulticastHandleDeath();
+	MulticastHandleDeath(InDeathImpulse);
 }
 
 TArray<FTaggedMontage> APhosphorCharacterBase::GetAttackMontages_Implementation()
@@ -93,18 +93,21 @@ FOnDeath APhosphorCharacterBase::GetOnDeathDelegate()
 	return OnDeath;
 }
 
-void APhosphorCharacterBase::MulticastHandleDeath_Implementation()
+
+void APhosphorCharacterBase::MulticastHandleDeath_Implementation(const FVector& InDeathImpulse)
 {
 	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(),GetActorRotation());
 	
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetEnableGravity(true);
 	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	Weapon->AddImpulse(InDeathImpulse * 0.1f, NAME_None, true);;
 
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetEnableGravity(true);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic,ECR_Block);
+	GetMesh()->AddImpulse(InDeathImpulse, NAME_None, true);
 	
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Dissolve();

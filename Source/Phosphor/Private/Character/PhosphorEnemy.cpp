@@ -61,14 +61,14 @@ void APhosphorEnemy::UnHighLightActor()
 	Weapon->SetRenderCustomDepth(false);
 }
 
-void APhosphorEnemy::Die()
+void APhosphorEnemy::Die(const FVector& InDeathImpulse)
 {
 	SetLifeSpan(LifeSpan);
 	if (PhosphorAIController)
 	{
 		PhosphorAIController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"),true);
 	}
-	Super::Die();
+	Super::Die(InDeathImpulse);
 }
 
 void APhosphorEnemy::SetCombatTarget_Implementation(AActor* InCombatTarget)
