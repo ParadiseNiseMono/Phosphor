@@ -3,6 +3,8 @@
 
 #include "AbilitySystem/Abilities/PhosphorBeamSpell.h"
 
+#include "GameFramework/Character.h"
+
 void UPhosphorBeamSpell::StoreMouseDataInfo(const FHitResult& MouseHitResult)
 {
 	if (MouseHitResult.bBlockingHit)
@@ -16,10 +18,11 @@ void UPhosphorBeamSpell::StoreMouseDataInfo(const FHitResult& MouseHitResult)
 	}
 }
 
-void UPhosphorBeamSpell::StoreOwnerController()
+void UPhosphorBeamSpell::StoreOwnerVariables()
 {
 	if (CurrentActorInfo)
 	{
 		OwnerPlayerController = CurrentActorInfo->PlayerController.Get();
+		OwnerCharacter = Cast<ACharacter>(CurrentActorInfo->AvatarActor);
 	}
 }
