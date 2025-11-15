@@ -96,6 +96,16 @@ void APhosphorPlayerController::Move(const FInputActionValue& InputActionValue)
 
 void APhosphorPlayerController::CursorTrace()
 {
+
+	if (GetASC() && GetASC() -> HasMatchingGameplayTag(FPhosphorGameplayTags::Get().Player_Block_CursorTrace))
+	{
+		if (LastActor) LastActor->UnHighLightActor();
+		if (ThisActor) ThisActor->UnHighLightActor();
+		LastActor = nullptr;
+		ThisActor = nullptr;
+		return;
+	}
+	
 	GetHitResultUnderCursor(ECC_Visibility,false,HitResult);
 	if (!HitResult.bBlockingHit) return;
 
@@ -112,7 +122,6 @@ void APhosphorPlayerController::CursorTrace()
 		{
 			if (LastActor!=ThisActor)
 			{
-				//case D
 				LastActor->UnHighLightActor();
 				ThisActor->HighLightActor();
 			}
@@ -122,6 +131,10 @@ void APhosphorPlayerController::CursorTrace()
 
 void APhosphorPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
+	if (GetASC() && GetASC() -> HasMatchingGameplayTag(FPhosphorGameplayTags::Get().Player_Block_InputPressed))
+	{
+		return;
+	}
 	if (InputTag.MatchesTagExact(FPhosphorGameplayTags::Get().InputTag_LMB))
 	{
 		bTargeting=ThisActor ? true : false;
@@ -132,6 +145,10 @@ void APhosphorPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 
 void APhosphorPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
+	if (GetASC() && GetASC() -> HasMatchingGameplayTag(FPhosphorGameplayTags::Get().Player_Block_InputReleased))
+	{
+		return;
+	}
 	if (!InputTag.MatchesTagExact(FPhosphorGameplayTags::Get().InputTag_LMB))
 	{
 		if (GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
@@ -165,6 +182,10 @@ void APhosphorPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 
 void APhosphorPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
+	if (GetASC() && GetASC() -> HasMatchingGameplayTag(FPhosphorGameplayTags::Get().Player_Block_InputHeld))
+	{
+		return;
+	}
 	if (!InputTag.MatchesTagExact(FPhosphorGameplayTags::Get().InputTag_LMB))
 	{
 		if (GetASC())GetASC()->AbilityInputTagHeld(InputTag);
