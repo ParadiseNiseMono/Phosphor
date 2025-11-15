@@ -28,7 +28,6 @@ void UPhosphorProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLo
 	{
 		Rotation.Pitch=PitchOverride;
 	}
-	//Rotation.Pitch=0.0f;
 	FTransform SpawnTransform;
 	SpawnTransform.SetLocation(SocketLocation);
 	SpawnTransform.SetRotation(Rotation.Quaternion());

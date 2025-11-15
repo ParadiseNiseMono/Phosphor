@@ -4,7 +4,8 @@
 #include "AbilitySystem/Abilities/PhosphorFireBolt.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
-#include "PhosphorGameplayTags.h"
+#include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
+#include "Actor/PhosphorProjectile.h"
 
 FString UPhosphorFireBolt::GetDescription(int32 Level)
 {
@@ -76,4 +77,36 @@ FString UPhosphorFireBolt::GetNextLevelDescription(int32 Level)
 			
 			//Values
 			, Level, ManaCost, Cooldown,FMath::Min(Level, NumProjectiles), ScaledDamage);
+}
+
+void UPhosphorFireBolt::SpawnProjectiles(const FVector& ProjectileTargetLocation, const FVector& SocketLocation,
+	bool bOverridePitch, float PitchOverride, AActor* HomingTarget)
+{
+	const bool bIsServer=GetAvatarActorFromActorInfo()->HasAuthority();
+	if(!bIsServer) return;
+	
+	FRotator Rotation=(ProjectileTargetLocation - SocketLocation).Rotation();
+	if (bOverridePitch) Rotation.Pitch=PitchOverride;
+
+	const FVector Forward = Rotation.Vector();
+
+	TArray<FRotator> Rotations = UPhosphorAbilitySystemLibrary::EvenlySpacedRotators(Forward, FVector::UpVector, ProjectileSpread, NumProjectiles);
+
+	for (const FRotator& Rot : Rotations)
+	{
+		FTransform SpawnTransform;
+		SpawnTransform.SetLocation(SocketLocation);
+		SpawnTransform.SetRotation(Rot.Quaternion());
+
+		APhosphorProjectile* PhosphorProjectile=GetWorld()->SpawnActorDeferred<APhosphorProjectile>(
+		ProjectileClass,
+		SpawnTransform,
+		GetOwningActorFromActorInfo(),
+		Cast<APawn>(GetOwningActorFromActorInfo()),
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	
+		PhosphorProjectile->DamageEffectParams = MakeDamageEffectParamsFromDefaults();
+		
+		PhosphorProjectile->FinishSpawning(SpawnTransform);
+	}
 }
