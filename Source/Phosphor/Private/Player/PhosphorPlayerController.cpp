@@ -127,13 +127,14 @@ void APhosphorPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 		bTargeting=ThisActor ? true : false;
 		bAutoRunning=false;
 	}
+	if(GetASC()) GetASC()->AbilityInputTagPressed(InputTag);
 }
 
 void APhosphorPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
 	if (!InputTag.MatchesTagExact(FPhosphorGameplayTags::Get().InputTag_LMB))
 	{
-		if (GetASC())GetASC()->AbilityInputTagReleased(InputTag);
+		if (GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
 		return;
 	}
 	if (GetASC())GetASC()->AbilityInputTagReleased(InputTag);
