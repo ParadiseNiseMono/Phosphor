@@ -165,6 +165,7 @@ void APhosphorCharacter::InitAbilityActorInfo()
 	Cast<UPhosphorAbilitySystemComponent>(PhosphorPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent=PhosphorPlayerState->GetAbilitySystemComponent();
 	AttributeSet=PhosphorPlayerState->GetAttributeSet();
+	OnAscRegisetered.Broadcast(AbilitySystemComponent);
 
 	if (APhosphorPlayerController* PhosphorPlayerController=Cast<APhosphorPlayerController>(GetController()))
 	{

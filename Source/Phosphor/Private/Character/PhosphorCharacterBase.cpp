@@ -3,8 +3,10 @@
 
 #include "Character/PhosphorCharacterBase.h"
 #include "AbilitySystemComponent.h"
+#include "MovieSceneSequenceID.h"
 #include "PhosphorGameplayTags.h"
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
+#include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Phosphor/Phosphor.h"
@@ -13,6 +15,10 @@ APhosphorCharacterBase::APhosphorCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
+	BurnDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("BrunDebuffComponent");
+	BurnDebuffComponent->SetupAttachment(RootComponent);
+	BurnDebuffComponent->DebuffTag = FPhosphorGameplayTags::Get().Debuff_Burn;
+	
 	Weapon=CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
 	Weapon->SetupAttachment(GetMesh(), "WeaponHandSocket");
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -77,6 +83,16 @@ ECharacterClass APhosphorCharacterBase::GetCharacterClass_Implementation()
 	return CharacterClass;
 }
 
+FOnASCRegisetered APhosphorCharacterBase::GetOnASCRegisteredDelegate()
+{
+	return OnAscRegisetered;
+}
+
+FOnDeath APhosphorCharacterBase::GetOnDeathDelegate()
+{
+	return OnDeath;
+}
+
 void APhosphorCharacterBase::MulticastHandleDeath_Implementation()
 {
 	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(),GetActorRotation());
@@ -93,6 +109,9 @@ void APhosphorCharacterBase::MulticastHandleDeath_Implementation()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Dissolve();
 	bDead=true;
+
+	BurnDebuffComponent->Deactivate();
+	OnDeath.Broadcast(this);
 }
 
 void APhosphorCharacterBase::BeginPlay()
