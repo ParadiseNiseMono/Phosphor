@@ -71,6 +71,8 @@ void APhosphorProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComp, A
 	{
 		if (UAbilitySystemComponent* TargetASC=UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
+			const FVector DeathImpulse = GetActorForwardVector() * DamageEffectParams.DeathImpulseMagnitude;
+			DamageEffectParams.DeathImpulse = DeathImpulse;
 			DamageEffectParams.TargetAbilitySystemComponent = TargetASC;
 			UPhosphorAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
 		}

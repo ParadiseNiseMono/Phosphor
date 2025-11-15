@@ -208,6 +208,15 @@ FGameplayTag UPhosphorAbilitySystemLibrary::GetDamageType(const FGameplayEffectC
 	return FGameplayTag();
 }
 
+FVector UPhosphorAbilitySystemLibrary::GetDeathImpulse(const FGameplayEffectContextHandle& ContextHandle)
+{
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		return PhosphorGameplayEffectContext->GetDeathImpulse();
+	}
+	return FVector::ZeroVector;
+}
+
 void UPhosphorAbilitySystemLibrary::SetIsBlockHit(FGameplayEffectContextHandle& ContextHandle, bool bInIsBlockHit)
 {
 	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
@@ -267,6 +276,15 @@ void UPhosphorAbilitySystemLibrary::SetDamageType(FGameplayEffectContextHandle& 
 	}
 }
 
+void UPhosphorAbilitySystemLibrary::SetDeathImpulse(FGameplayEffectContextHandle& ContextHandle,
+	const FVector& InImpulse)
+{
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		PhosphorGameplayEffectContext->SetDeathImpulse(InImpulse);
+	}
+}
+
 void UPhosphorAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* WorldContextObject,
                                                                TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius,
                                                                const FVector& SphereOrigin)
@@ -306,6 +324,7 @@ FGameplayEffectContextHandle UPhosphorAbilitySystemLibrary::ApplyDamageEffect(
 
 	FGameplayEffectContextHandle ContextHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeEffectContext();
 	ContextHandle.AddSourceObject(SourceAvatarActor);
+	SetDeathImpulse(ContextHandle, DamageEffectParams.DeathImpulse);
 
 	const FGameplayEffectSpecHandle SpecHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeOutgoingSpec(
 		DamageEffectParams.DamageGameplayEffectClass, DamageEffectParams.AbilityLevel, ContextHandle);

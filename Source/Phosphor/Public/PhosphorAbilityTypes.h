@@ -44,6 +44,12 @@ struct FDamageEffectParams
 
 	UPROPERTY()
 	float DebuffFrequency = 0.f;
+
+	UPROPERTY()
+	float DeathImpulseMagnitude = 0.f;
+
+	UPROPERTY()
+	FVector DeathImpulse = FVector::ZeroVector;
 };
 
 USTRUCT(BlueprintType)
@@ -59,6 +65,7 @@ public:
 	float GetDebuffDuration() const { return DebuffDuration; }
 	float GetDebuffFrequency() const { return DebuffFrequency; }
 	TSharedPtr<FGameplayTag> GetDamageType() const { return DamageType; }
+	FVector GetDeathImpulse() const { return DeathImpulse; }
 
 	void SetIsCriticalHit(bool InIsCriticalHit) { bIsCriticalHit = InIsCriticalHit; }
 	void SetIsBlockHit(bool InIsBlockHit) { bIsBlockHit = InIsBlockHit; }
@@ -67,6 +74,7 @@ public:
 	void SetDebuffDuration(float InDuration) { DebuffDuration = InDuration; }
 	void SetDebuffFrequency(float InFrequency) { DebuffFrequency = InFrequency; }
 	void SetDamageType(TSharedPtr<FGameplayTag> InDamageType) { DamageType = InDamageType; }
+	void SetDeathImpulse(const FVector& InImpulse) {DeathImpulse = InImpulse; }
 	
 	
 	/** Returns the actual struct used for serialization, subclasses must override this! */
@@ -111,6 +119,9 @@ protected:
 	float DebuffFrequency = 0.f;
 	
 	TSharedPtr<FGameplayTag> DamageType;
+
+	UPROPERTY()
+	FVector DeathImpulse = FVector::ZeroVector;
 };
 template<> // 表示這是一個模板特化
 struct TStructOpsTypeTraits<FPhosphorGameplayEffectContext> : public TStructOpsTypeTraitsBase2<FPhosphorGameplayEffectContext> // 為 FAuraGameplayEffectContext 特化

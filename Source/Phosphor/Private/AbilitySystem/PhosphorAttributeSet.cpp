@@ -218,6 +218,8 @@ void UPhosphorAttributeSet::HandleInComingDamage(const FEffectProperties& Props)
 		const bool bFatal = NewHealth <= 0;
 		if (bFatal)
 		{
+			//TODO: Use death Impulse
+			
 			ICombatInterface* CombatInterface=Cast<ICombatInterface>(Props.TargetAvatarActor);
 			if (CombatInterface)
 			{

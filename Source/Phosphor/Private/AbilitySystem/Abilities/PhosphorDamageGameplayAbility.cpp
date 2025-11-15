@@ -30,7 +30,7 @@ FDamageEffectParams UPhosphorDamageGameplayAbility::MakeDamageEffectParamsFromDe
 	DamageEffectParams.DebuffDamage = DebuffDamage.GetValueAtLevel(GetAbilityLevel());
 	DamageEffectParams.DebuffDuration = DebuffDuration.GetValueAtLevel(GetAbilityLevel());
 	DamageEffectParams.DebuffFrequency = DebuffFrequency.GetValueAtLevel(GetAbilityLevel());
-
+	DamageEffectParams.DeathImpulseMagnitude = DeathImpulseMagnitude;
 	return DamageEffectParams;
 }
 
