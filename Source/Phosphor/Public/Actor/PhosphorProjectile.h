@@ -24,7 +24,10 @@ public:
 
 	// meta = (ExposeOnSpawn = "true") 讓這個變數可以在藍圖的 SpawnActor 節點上顯示為輸入引腳
 	UPROPERTY(BlueprintReadWrite,meta=(ExposeOnSpawn=true))
-	FDamageEffectParams DamageEffectParams;	
+	FDamageEffectParams DamageEffectParams;
+
+	UPROPERTY()
+	TObjectPtr<USceneComponent> HomingTargetSceneComponent;
 protected:
 	virtual void BeginPlay() override;
 	void OnHit();

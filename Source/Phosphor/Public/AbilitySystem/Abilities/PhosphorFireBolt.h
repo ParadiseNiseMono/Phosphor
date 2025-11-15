@@ -27,5 +27,14 @@ protected:
 	float ProjectileSpread = 90.f;
 
 	UPROPERTY(EditDefaultsOnly, Category= "FureBolt")
-	int32 MaxNumProjectiles = 5;
+	int32 MaxNumProjectiles = 40;
+
+	UPROPERTY(EditDefaultsOnly, Category= "FureBolt")
+	float HomingAccelerationMin = 1600.f;
+
+	UPROPERTY(EditDefaultsOnly, Category= "FureBolt")
+	float HomingAccelerationMax = 3200.f;
+
+	UPROPERTY(EditDefaultsOnly, Category= "FureBolt")
+	bool bLaunchHomingTarget = true;
 };

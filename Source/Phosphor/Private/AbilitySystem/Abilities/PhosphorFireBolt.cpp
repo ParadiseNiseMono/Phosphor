@@ -6,6 +6,8 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 #include "Actor/PhosphorProjectile.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "Interaction/CombatInterface.h"
 
 FString UPhosphorFireBolt::GetDescription(int32 Level)
 {
@@ -90,7 +92,9 @@ void UPhosphorFireBolt::SpawnProjectiles(const FVector& ProjectileTargetLocation
 
 	const FVector Forward = Rotation.Vector();
 
-	TArray<FRotator> Rotations = UPhosphorAbilitySystemLibrary::EvenlySpacedRotators(Forward, FVector::UpVector, ProjectileSpread, NumProjectiles);
+	const int32 EffectiveNumProjectiles = FMath::Min(MaxNumProjectiles, GetAbilityLevel());
+
+	TArray<FRotator> Rotations = UPhosphorAbilitySystemLibrary::EvenlySpacedRotators(Forward, FVector::UpVector, ProjectileSpread, EffectiveNumProjectiles);
 
 	for (const FRotator& Rot : Rotations)
 	{
@@ -98,15 +102,28 @@ void UPhosphorFireBolt::SpawnProjectiles(const FVector& ProjectileTargetLocation
 		SpawnTransform.SetLocation(SocketLocation);
 		SpawnTransform.SetRotation(Rot.Quaternion());
 
-		APhosphorProjectile* PhosphorProjectile=GetWorld()->SpawnActorDeferred<APhosphorProjectile>(
+		APhosphorProjectile* Projectile=GetWorld()->SpawnActorDeferred<APhosphorProjectile>(
 		ProjectileClass,
 		SpawnTransform,
 		GetOwningActorFromActorInfo(),
 		Cast<APawn>(GetOwningActorFromActorInfo()),
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	
-		PhosphorProjectile->DamageEffectParams = MakeDamageEffectParamsFromDefaults();
+		Projectile->DamageEffectParams = MakeDamageEffectParamsFromDefaults();
+
+		if (HomingTarget && HomingTarget->Implements<UCombatInterface>())
+		{
+			Projectile->ProjectileMovementComponent->HomingTargetComponent = HomingTarget->GetRootComponent();
+		}
+		else
+		{
+			Projectile->HomingTargetSceneComponent = NewObject<USceneComponent>(USceneComponent::StaticClass());
+			Projectile->HomingTargetSceneComponent->SetWorldLocation(ProjectileTargetLocation);
+			Projectile->ProjectileMovementComponent->HomingTargetComponent = Projectile->HomingTargetSceneComponent;
+		}
+		Projectile->ProjectileMovementComponent->HomingAccelerationMagnitude = FMath::FRandRange(HomingAccelerationMin, HomingAccelerationMax);
+		Projectile->ProjectileMovementComponent->bIsHomingProjectile = bLaunchHomingTarget;
 		
-		PhosphorProjectile->FinishSpawning(SpawnTransform);
+		Projectile->FinishSpawning(SpawnTransform);
 	}
 }
