@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "PhosphorPlayerController.generated.h"
 
+class UNiagaraSystem;
 class UDamageTextComponent;
 struct FGameplayTag;
 class UPhosphorInputConfig;
@@ -83,4 +84,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraSystem> ClickNiagaraSystem;
 };

@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
+#include "NiagaraFunctionLibrary.h"
 #include "PhosphorGameplayTags.h"
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "Components/SplineComponent.h"
@@ -89,6 +90,7 @@ void APhosphorPlayerController::Move(const FInputActionValue& InputActionValue)
 	{
 		ControlledPawn->AddMovementInput(ForwardVector,InputAxisValue.Y);
 		ControlledPawn->AddMovementInput(RightVector,InputAxisValue.X);
+		bAutoRunning=false;
 	}
 }
 
@@ -153,6 +155,7 @@ void APhosphorPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 					bAutoRunning=true;
 				}
 			}
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
 		}
 		FollowTime=0.0f;
 		bTargeting=false;
