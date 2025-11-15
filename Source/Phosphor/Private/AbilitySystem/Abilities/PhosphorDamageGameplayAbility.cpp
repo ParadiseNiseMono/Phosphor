@@ -3,6 +3,8 @@
 
 #include "AbilitySystem/Abilities/PhosphorDamageGameplayAbility.h"
 
+#include <ThirdParty/ShaderConductor/ShaderConductor/External/DirectXShaderCompiler/include/dxc/DXIL/DxilConstants.h>
+
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "Interaction/CombatInterface.h"
@@ -31,6 +33,16 @@ FDamageEffectParams UPhosphorDamageGameplayAbility::MakeDamageEffectParamsFromDe
 	DamageEffectParams.DebuffDuration = DebuffDuration.GetValueAtLevel(GetAbilityLevel());
 	DamageEffectParams.DebuffFrequency = DebuffFrequency.GetValueAtLevel(GetAbilityLevel());
 	DamageEffectParams.DeathImpulseMagnitude = DeathImpulseMagnitude;
+	DamageEffectParams.KnockbackForceMagnitude = KnockbackForceMagnitude;
+	DamageEffectParams.KnockbackChance = KnockbackChance;
+	if (IsValid(TargetActor))
+	{
+		FRotator Rotation = (TargetActor->GetActorLocation() - GetAvatarActorFromActorInfo()->GetActorLocation()).Rotation();
+		Rotation.Pitch = 45.f;
+		const FVector ToTarget = Rotation.Vector();
+		DamageEffectParams.DeathImpulse = ToTarget * DeathImpulseMagnitude;
+		DamageEffectParams.KnockbackForce = ToTarget * KnockbackForceMagnitude;
+	}
 	return DamageEffectParams;
 }
 

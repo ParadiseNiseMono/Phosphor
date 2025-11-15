@@ -217,6 +217,15 @@ FVector UPhosphorAbilitySystemLibrary::GetDeathImpulse(const FGameplayEffectCont
 	return FVector::ZeroVector;
 }
 
+FVector UPhosphorAbilitySystemLibrary::GetKnockbackForce(const FGameplayEffectContextHandle& ContextHandle)
+{
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		return PhosphorGameplayEffectContext->GetKnockbackForce();
+	}
+	return FVector::ZeroVector;
+}
+
 void UPhosphorAbilitySystemLibrary::SetIsBlockHit(FGameplayEffectContextHandle& ContextHandle, bool bInIsBlockHit)
 {
 	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
@@ -285,6 +294,15 @@ void UPhosphorAbilitySystemLibrary::SetDeathImpulse(FGameplayEffectContextHandle
 	}
 }
 
+void UPhosphorAbilitySystemLibrary::SetKnockbackForce(FGameplayEffectContextHandle& ContextHandle,
+	const FVector& InForce)
+{
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		PhosphorGameplayEffectContext->SetKnockbackForce(InForce);
+	}
+}
+
 void UPhosphorAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* WorldContextObject,
                                                                TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius,
                                                                const FVector& SphereOrigin)
@@ -325,6 +343,7 @@ FGameplayEffectContextHandle UPhosphorAbilitySystemLibrary::ApplyDamageEffect(
 	FGameplayEffectContextHandle ContextHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeEffectContext();
 	ContextHandle.AddSourceObject(SourceAvatarActor);
 	SetDeathImpulse(ContextHandle, DamageEffectParams.DeathImpulse);
+	SetKnockbackForce(ContextHandle, DamageEffectParams.KnockbackForce);
 
 	const FGameplayEffectSpecHandle SpecHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeOutgoingSpec(
 		DamageEffectParams.DamageGameplayEffectClass, DamageEffectParams.AbilityLevel, ContextHandle);

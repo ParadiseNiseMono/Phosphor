@@ -230,6 +230,12 @@ void UPhosphorAttributeSet::HandleInComingDamage(const FEffectProperties& Props)
 			FGameplayTagContainer TagContainer;
 			TagContainer.AddTag(FPhosphorGameplayTags::Get().Effects_HitReact);
 			Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+
+			const FVector& KnockbackForce = UPhosphorAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
+			if (!KnockbackForce.IsNearlyZero(1.f))
+			{
+				Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, true);
+			}
 		}
 		const bool bBlockHit=UPhosphorAbilitySystemLibrary::IsBlockHit(Props.EffectContextHandle);
 		const bool bCriticalHit=UPhosphorAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
