@@ -46,6 +46,11 @@ FDamageEffectParams UPhosphorDamageGameplayAbility::MakeDamageEffectParamsFromDe
 	return DamageEffectParams;
 }
 
+float UPhosphorDamageGameplayAbility::GetDamageAtLevel() const
+{
+	return Damage.GetValueAtLevel(GetAbilityLevel());
+}
+
 FTaggedMontage UPhosphorDamageGameplayAbility::GetRandomTaggedMontageFromArray(
 	const TArray<FTaggedMontage>& TaggedMontages) const
 {
