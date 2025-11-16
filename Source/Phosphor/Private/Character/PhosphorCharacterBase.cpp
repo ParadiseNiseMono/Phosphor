@@ -88,9 +88,9 @@ FOnASCRegisetered APhosphorCharacterBase::GetOnASCRegisteredDelegate()
 	return OnAscRegisetered;
 }
 
-FOnDeath APhosphorCharacterBase::GetOnDeathDelegate()
+FOnDeathSignature& APhosphorCharacterBase::GetOnDeathDelegate()
 {
-	return OnDeath;
+	return OnDeathDelegate;
 }
 
 USkeletalMeshComponent* APhosphorCharacterBase::GetWeapon_Implementation()
@@ -119,7 +119,7 @@ void APhosphorCharacterBase::MulticastHandleDeath_Implementation(const FVector& 
 	bDead=true;
 
 	BurnDebuffComponent->Deactivate();
-	OnDeath.Broadcast(this);
+	OnDeathDelegate.Broadcast(this);
 }
 
 void APhosphorCharacterBase::BeginPlay()

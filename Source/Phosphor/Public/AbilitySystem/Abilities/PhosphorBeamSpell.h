@@ -26,6 +26,13 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void StoreAdditionalActors(TArray<AActor*>& OutAdditionTargets);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PrimaryTargetDead(AActor* DeadActor);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void AdditionalTargetDead(AActor* DeadActor);
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, Category="Beam")

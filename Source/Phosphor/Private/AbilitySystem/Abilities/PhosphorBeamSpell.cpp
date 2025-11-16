@@ -59,6 +59,13 @@ void UPhosphorBeamSpell::TraceFirstTarget(const FVector& BeamTargetLocation)
 			}
 		}
 	}
+	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(MouseHitActor))
+	{
+		if (!CombatInterface->GetOnDeathDelegate().IsAlreadyBound(this, &UPhosphorBeamSpell::PrimaryTargetDead))
+		{
+			CombatInterface->GetOnDeathDelegate().AddDynamic(this, &UPhosphorBeamSpell::PrimaryTargetDead);
+		}
+	}
 }
 
 void UPhosphorBeamSpell::StoreAdditionalActors(TArray<AActor*>& OutAdditionTargets)
@@ -78,5 +85,21 @@ void UPhosphorBeamSpell::StoreAdditionalActors(TArray<AActor*>& OutAdditionTarge
 	//int32 NumAdditionalTargets = FMath::Min(GetAbilityLevel() - 1, MaxNumShockTargets);
 	int32 NumAdditionalTargets = 5;
 
-	UPhosphorAbilitySystemLibrary::GetClosestTargets(NumAdditionalTargets, OverlappingActors, OutAdditionTargets, MouseHitActor->GetActorLocation());
+	UPhosphorAbilitySystemLibrary::GetClosestTargets(
+		NumAdditionalTargets,
+		OverlappingActors,
+		OutAdditionTargets,
+		MouseHitActor->GetActorLocation());
+	
+	for (AActor* Actor : OutAdditionTargets)
+	{
+		if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Actor))
+		{
+			if (!CombatInterface->GetOnDeathDelegate().IsAlreadyBound(this, &UPhosphorBeamSpell::AdditionalTargetDead))
+			{
+				CombatInterface->GetOnDeathDelegate().AddDynamic(this, &UPhosphorBeamSpell::AdditionalTargetDead);
+			}
+		}
+	}
+	
 }
