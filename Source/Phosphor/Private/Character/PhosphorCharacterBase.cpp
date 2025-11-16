@@ -93,6 +93,11 @@ FOnDeath APhosphorCharacterBase::GetOnDeathDelegate()
 	return OnDeath;
 }
 
+USkeletalMeshComponent* APhosphorCharacterBase::GetWeapon_Implementation()
+{
+	return Weapon;
+}
+
 
 void APhosphorCharacterBase::MulticastHandleDeath_Implementation(const FVector& InDeathImpulse)
 {
