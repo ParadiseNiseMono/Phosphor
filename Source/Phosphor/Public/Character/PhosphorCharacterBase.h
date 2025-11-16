@@ -26,6 +26,7 @@ public:
 	APhosphorCharacterBase();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent()const override;
 	UAttributeSet* GetAttributeSet() const {return AttributeSet;}
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	/*Combat Interface*/
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)override;
@@ -39,9 +40,11 @@ public:
 	virtual int32 GetMinionCount_Implementation() override;
 	virtual void IncrementMinionCount_Implementation(int32 Amount) override;
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
-	virtual FOnASCRegisetered GetOnASCRegisteredDelegate() override;
+	virtual FOnASCRegisetered& GetOnASCRegisteredDelegate() override;
 	virtual FOnDeathSignature& GetOnDeathDelegate() override;
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
+	virtual bool IsBeingShockLoop_Implementation() override;
+	virtual void SetIsBeingShockLoop_Implementation(bool InShock) override;
 	/*End Combat Interface*/
 
 	FOnASCRegisetered OnAscRegisetered;
@@ -53,9 +56,25 @@ public:
 	UPROPERTY(EditAnywhere, Category="Combat")
 	TArray<FTaggedMontage> AttackMontages;
 
-	
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
+	UPROPERTY(ReplicatedUsing = OnRep_Stunned, BlueprintReadOnly)
+	bool bIsStunned = false;
+
+	UPROPERTY(ReplicatedUsing = OnRep_Burned, BlueprintReadOnly)
+	bool bIsBurned = false;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	bool bIsBeingShockLoop = false;
+
+	UFUNCTION()
+	virtual void OnRep_Stunned();
+
+	UFUNCTION()
+	virtual void OnRep_Burned();
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
@@ -71,8 +90,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName TailSocketName;
-
-
+	
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Combat")
+	float BaseWalkSpeed=600.0f;
+	
 	bool bDead=false;
 
 	UPROPERTY()
@@ -128,6 +149,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UDebuffNiagaraComponent> StunDebuffComponent;
 private:
 	UPROPERTY(EditAnywhere,Category="Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartUpAbilities;

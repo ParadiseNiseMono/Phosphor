@@ -87,7 +87,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	ECharacterClass GetCharacterClass();
 
-	virtual FOnASCRegisetered GetOnASCRegisteredDelegate() = 0;
+	virtual FOnASCRegisetered& GetOnASCRegisteredDelegate() = 0;
 	
 	virtual FOnDeathSignature& GetOnDeathDelegate() = 0;
 	
@@ -96,4 +96,10 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	USkeletalMeshComponent* GetWeapon();
+
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	bool IsBeingShockLoop();
+
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	void SetIsBeingShockLoop(bool InShock);
 };

@@ -5,10 +5,12 @@
 #include "AbilitySystemComponent.h"
 #include "MovieSceneSequenceID.h"
 #include "PhosphorGameplayTags.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "Phosphor/Phosphor.h"
 
 APhosphorCharacterBase::APhosphorCharacterBase()
@@ -18,6 +20,10 @@ APhosphorCharacterBase::APhosphorCharacterBase()
 	BurnDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("BrunDebuffComponent");
 	BurnDebuffComponent->SetupAttachment(RootComponent);
 	BurnDebuffComponent->DebuffTag = FPhosphorGameplayTags::Get().Debuff_Burn;
+
+	StunDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("StunDebuffComponent");
+	StunDebuffComponent->SetupAttachment(RootComponent);
+	StunDebuffComponent->DebuffTag = FPhosphorGameplayTags::Get().Debuff_Stun;
 	
 	Weapon=CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
 	Weapon->SetupAttachment(GetMesh(), "WeaponHandSocket");
@@ -83,7 +89,7 @@ ECharacterClass APhosphorCharacterBase::GetCharacterClass_Implementation()
 	return CharacterClass;
 }
 
-FOnASCRegisetered APhosphorCharacterBase::GetOnASCRegisteredDelegate()
+FOnASCRegisetered& APhosphorCharacterBase::GetOnASCRegisteredDelegate()
 {
 	return OnAscRegisetered;
 }
@@ -96,6 +102,16 @@ FOnDeathSignature& APhosphorCharacterBase::GetOnDeathDelegate()
 USkeletalMeshComponent* APhosphorCharacterBase::GetWeapon_Implementation()
 {
 	return Weapon;
+}
+
+bool APhosphorCharacterBase::IsBeingShockLoop_Implementation()
+{
+	return bIsBeingShockLoop;
+}
+
+void APhosphorCharacterBase::SetIsBeingShockLoop_Implementation(bool InShock)
+{
+	bIsBeingShockLoop = InShock;
 }
 
 
@@ -119,13 +135,39 @@ void APhosphorCharacterBase::MulticastHandleDeath_Implementation(const FVector& 
 	bDead=true;
 
 	BurnDebuffComponent->Deactivate();
+	StunDebuffComponent->Deactivate();
 	OnDeathDelegate.Broadcast(this);
+}
+
+void APhosphorCharacterBase::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	bIsStunned = NewCount > 0;
+	GetCharacterMovement()->MaxWalkSpeed=bIsStunned ? 0.0f : BaseWalkSpeed;
+}
+
+void APhosphorCharacterBase::OnRep_Stunned()
+{
+	
+}
+
+void APhosphorCharacterBase::OnRep_Burned()
+{
+	
 }
 
 void APhosphorCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void APhosphorCharacterBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APhosphorCharacterBase, bIsStunned);
+	DOREPLIFETIME(APhosphorCharacterBase, bIsBurned);
+	DOREPLIFETIME(APhosphorCharacterBase, bIsBeingShockLoop);
 }
 
 FVector APhosphorCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)

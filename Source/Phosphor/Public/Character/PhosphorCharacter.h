@@ -23,6 +23,8 @@ public:
 	APhosphorCharacter();
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
+	virtual void OnRep_Stunned() override;
+	virtual void OnRep_Burned() override;
 
 	/*Player Interface*/
 	virtual void AddToXP_Implementation(int32 InXP) override;
@@ -44,6 +46,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	TObjectPtr<UNiagaraComponent> LevelUpNiagaraComponent;
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UCameraComponent> TopDownCameraComponent;

@@ -6,7 +6,9 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "NiagaraComponent.h"
+#include "PhosphorGameplayTags.h"
 #include "AbilitySystem/Data/LevelUpInfo.h"
+#include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -56,6 +58,41 @@ void APhosphorCharacter::OnRep_PlayerState()
 
 	//init ability actor for the client
 	InitAbilityActorInfo();
+}
+
+void APhosphorCharacter::OnRep_Stunned()
+{
+	if (UPhosphorAbilitySystemComponent* PhosphorASC = Cast<UPhosphorAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		const FPhosphorGameplayTags& GameplayTags = FPhosphorGameplayTags::Get();
+		FGameplayTagContainer BlockTags;
+		BlockTags.AddTag(GameplayTags.Player_Block_CursorTrace);
+		BlockTags.AddTag(GameplayTags.Player_Block_InputHeld);
+		BlockTags.AddTag(GameplayTags.Player_Block_InputPressed);
+		BlockTags.AddTag(GameplayTags.Player_Block_InputReleased);
+		if (bIsStunned)
+		{
+			PhosphorASC->AddLooseGameplayTags(BlockTags);
+			StunDebuffComponent->Activate();
+		}
+		else
+		{
+			PhosphorASC->RemoveLooseGameplayTags(BlockTags);
+			StunDebuffComponent->Deactivate();
+		}
+	}
+}
+
+void APhosphorCharacter::OnRep_Burned()
+{
+	if (bIsBurned)
+	{
+		BurnDebuffComponent->Activate();
+	}
+	else
+	{
+		BurnDebuffComponent->Deactivate();
+	}
 }
 
 void APhosphorCharacter::AddToXP_Implementation(int32 InXP)
@@ -166,6 +203,9 @@ void APhosphorCharacter::InitAbilityActorInfo()
 	AbilitySystemComponent=PhosphorPlayerState->GetAbilitySystemComponent();
 	AttributeSet=PhosphorPlayerState->GetAttributeSet();
 	OnAscRegisetered.Broadcast(AbilitySystemComponent);
+	AbilitySystemComponent->RegisterGameplayTagEvent(
+		FPhosphorGameplayTags::Get().Debuff_Stun,
+		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &APhosphorCharacter::StunTagChanged);
 
 	if (APhosphorPlayerController* PhosphorPlayerController=Cast<APhosphorPlayerController>(GetController()))
 	{

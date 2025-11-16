@@ -31,6 +31,8 @@ APhosphorEnemy::APhosphorEnemy()
 	
 	HealthBar=CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent());
+
+	BaseWalkSpeed=300.0f;
 }
 
 void APhosphorEnemy::PossessedBy(AController* NewController)
@@ -85,9 +87,9 @@ void APhosphorEnemy::HitReactTagChanged(const FGameplayTag CallBackTag, int32 Ne
 {
 	bHitReacting=NewCount > 0;
 	GetCharacterMovement()->MaxWalkSpeed=bHitReacting ? 0.0f : BaseWalkSpeed;
-	if (PhosphorAIController&&PhosphorAIController->GetBlackboardComponent())
+	if (PhosphorAIController && PhosphorAIController->GetBlackboardComponent())
 	{
-		PhosphorAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"),bHitReacting);
+		PhosphorAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
 	}
 }
 
@@ -135,6 +137,10 @@ void APhosphorEnemy::InitAbilityActorInfo()
 	AbilitySystemComponent->InitAbilityActorInfo(this,this);
 	Cast<UPhosphorAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 
+	AbilitySystemComponent->RegisterGameplayTagEvent(
+		FPhosphorGameplayTags::Get().Debuff_Stun,
+		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &APhosphorEnemy::StunTagChanged);
+	
 	if (HasAuthority())
 	{
 		InitializeDefaultAttribute();
@@ -145,5 +151,15 @@ void APhosphorEnemy::InitAbilityActorInfo()
 
 void APhosphorEnemy::InitializeDefaultAttribute() const
 {
-	UPhosphorAbilitySystemLibrary::InitializeDefaultAbilities(this,CharacterClass,Level,AbilitySystemComponent);
+	UPhosphorAbilitySystemLibrary::InitializeDefaultAbilities(this, CharacterClass,Level, AbilitySystemComponent);
+}
+
+void APhosphorEnemy::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	Super::StunTagChanged(CallbackTag, NewCount);
+	
+	if (PhosphorAIController && PhosphorAIController->GetBlackboardComponent())
+	{
+		PhosphorAIController->GetBlackboardComponent()->SetValueAsBool(FName("Stunned"), bIsStunned);
+	}
 }

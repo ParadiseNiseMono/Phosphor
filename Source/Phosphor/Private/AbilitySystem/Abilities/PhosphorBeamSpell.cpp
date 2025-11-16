@@ -82,8 +82,8 @@ void UPhosphorBeamSpell::StoreAdditionalActors(TArray<AActor*>& OutAdditionTarge
 		AdditionalTargetRadius.GetValueAtLevel(GetAbilityLevel()),
 		MouseHitActor->GetActorLocation());
 
-	//int32 NumAdditionalTargets = FMath::Min(GetAbilityLevel() - 1, MaxNumShockTargets);
-	int32 NumAdditionalTargets = 5;
+	int32 NumAdditionalTargets = FMath::Min(GetAbilityLevel() - 1, MaxNumShockTargets);
+	//int32 NumAdditionalTargets = 5;
 
 	UPhosphorAbilitySystemLibrary::GetClosestTargets(
 		NumAdditionalTargets,

@@ -79,6 +79,10 @@ void APhosphorPlayerController::SetupInputComponent()
 
 void APhosphorPlayerController::Move(const FInputActionValue& InputActionValue)
 {
+	if (GetASC() && GetASC() -> HasMatchingGameplayTag(FPhosphorGameplayTags::Get().Player_Block_InputPressed))
+	{
+		return;
+	}
 	const FVector2D InputAxisValue=InputActionValue.Get<FVector2D>();
 	FRotator Rotator=GetControlRotation();
 	FRotator YawRotator=FRotator(0.f,Rotator.Yaw,0.f);
