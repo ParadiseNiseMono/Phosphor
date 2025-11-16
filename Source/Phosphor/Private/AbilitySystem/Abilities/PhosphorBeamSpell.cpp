@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/Abilities/PhosphorBeamSpell.h"
 
+#include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/KismetArrayLibrary.h"
@@ -58,4 +59,24 @@ void UPhosphorBeamSpell::TraceFirstTarget(const FVector& BeamTargetLocation)
 			}
 		}
 	}
+}
+
+void UPhosphorBeamSpell::StoreAdditionalActors(TArray<AActor*>& OutAdditionTargets)
+{
+	TArray<AActor*> ActorsToIgnore;
+	ActorsToIgnore.Add(OwnerCharacter);
+	ActorsToIgnore.Add(MouseHitActor);
+
+	TArray<AActor*> OverlappingActors;
+	UPhosphorAbilitySystemLibrary::GetLivePlayersWithinRadius(
+		GetAvatarActorFromActorInfo(),
+		OverlappingActors,
+		ActorsToIgnore,
+		AdditionalTargetRadius.GetValueAtLevel(GetAbilityLevel()),
+		MouseHitActor->GetActorLocation());
+
+	//int32 NumAdditionalTargets = FMath::Min(GetAbilityLevel() - 1, MaxNumShockTargets);
+	int32 NumAdditionalTargets = 5;
+
+	UPhosphorAbilitySystemLibrary::GetClosestTargets(NumAdditionalTargets, OverlappingActors, OutAdditionTargets, MouseHitActor->GetActorLocation());
 }

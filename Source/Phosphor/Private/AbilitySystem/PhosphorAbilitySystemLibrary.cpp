@@ -324,6 +324,37 @@ void UPhosphorAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* Wo
 	}
 }
 
+void UPhosphorAbilitySystemLibrary::GetClosestTargets(int32 MaxTargets, const TArray<AActor*>& Actors,
+	TArray<AActor*>& OutClosestTargets, const FVector& Origin)
+{
+	if (Actors.Num() <= MaxTargets)
+	{
+		OutClosestTargets = Actors;
+		return;
+	}
+	TArray<AActor*> ActorsToCheck = Actors;
+	int32 NumTargetsFound = 0;
+	
+	while (NumTargetsFound < MaxTargets)
+	{
+		if (ActorsToCheck.Num() == 0) break;
+		double ClosestDistance = TNumericLimits<double>::Max();
+		AActor* ClosestTarget = nullptr;
+		for (AActor* Actor : ActorsToCheck)
+		{
+			double Distance = (Actor->GetActorLocation() - Origin).Length();
+			if (Distance < ClosestDistance)
+			{
+				ClosestDistance = Distance;
+				ClosestTarget = Actor;
+			}
+		}
+		ActorsToCheck.Remove(ClosestTarget);
+		OutClosestTargets.AddUnique(ClosestTarget);
+		NumTargetsFound++;
+	}
+}
+
 bool UPhosphorAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondActor)
 {
 	const bool bFirstIsPlayer=FirstActor->ActorHasTag("Player");
