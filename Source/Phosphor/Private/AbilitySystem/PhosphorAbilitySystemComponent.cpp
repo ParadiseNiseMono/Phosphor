@@ -214,6 +214,12 @@ void UPhosphorAbilitySystemComponent::AssignSlotToAbility(FGameplayAbilitySpec& 
 	Spec.GetDynamicSpecSourceTags().AddTag(Slot);
 }
 
+void UPhosphorAbilitySystemComponent::MulticastActivePassiveEffect_Implementation(const FGameplayTag& AbilityTag,
+	bool bActivate)
+{
+	ActivatePassiveEffect.Broadcast(AbilityTag, bActivate);
+}
+
 FGameplayAbilitySpec* UPhosphorAbilitySystemComponent::GetSpecFromAbilityTag(const FGameplayTag& AbilityTag)
 {
 	FScopedAbilityListLock ActiveScopeLock(*this);
@@ -321,6 +327,7 @@ void UPhosphorAbilitySystemComponent::SeverEquipAbility_Implementation(const FGa
 					}
 					if (IsPassiveAbility(*SpecWithSlot))
 					{
+						MulticastActivePassiveEffect(GetAbilityTagFromSpec(*SpecWithSlot), false);
 						DeactivatePassiveAbility.Broadcast(GetAbilityTagFromSpec(*SpecWithSlot));
 					}
 
@@ -331,6 +338,7 @@ void UPhosphorAbilitySystemComponent::SeverEquipAbility_Implementation(const FGa
 			{
 				if (IsPassiveAbility(*AbilitySpec))
 				{
+					MulticastActivePassiveEffect(AbilityTag, true);
 					TryActivateAbility(AbilitySpec->Handle);
 				}
 			}

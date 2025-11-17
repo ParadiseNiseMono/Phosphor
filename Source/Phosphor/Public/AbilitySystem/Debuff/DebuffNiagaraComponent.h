@@ -28,5 +28,5 @@ protected:
 	void DebuffTagChanged(const FGameplayTag InDebuffTag,int32 NewCount);
 
 	UFUNCTION()
-	void OnOwnerDaeth(AActor* DeadActor);
+	void OnOwnerDeath(AActor* DeadActor);
 };

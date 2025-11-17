@@ -32,7 +32,7 @@ void UDebuffNiagaraComponent::BeginPlay()
 	}
 	if (CombatInterface)
 	{
-		CombatInterface->GetOnDeathDelegate().AddDynamic(this, &UDebuffNiagaraComponent::OnOwnerDaeth);
+		CombatInterface->GetOnDeathDelegate().AddDynamic(this, &UDebuffNiagaraComponent::OnOwnerDeath);
 	}
 }
 
@@ -51,7 +51,7 @@ void UDebuffNiagaraComponent::DebuffTagChanged(const FGameplayTag InDebuffTag, i
 	}
 }
 
-void UDebuffNiagaraComponent::OnOwnerDaeth(AActor* DeadActor)
+void UDebuffNiagaraComponent::OnOwnerDeath(AActor* DeadActor)
 {
 	Deactivate();
 }
