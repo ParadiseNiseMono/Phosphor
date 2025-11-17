@@ -122,7 +122,7 @@ void USpellMenuWidgetController::EquipButtonPressed()
 	const FGameplayTag AbilityStatus = GetPhosphorASC()->GetStatusFromAbilityTag(SelectedAbility.Ability);
 	if (AbilityStatus.MatchesTagExact(FPhosphorGameplayTags::Get().Abilities_Status_Equipped))
 	{
-		SelectedSlot = GetPhosphorASC()->GetInputTagFromAbilityTag(SelectedAbility.Ability);
+		SelectedSlot = GetPhosphorASC()->GetSlotFromAbilityTag(SelectedAbility.Ability);
 	}
 }
 
