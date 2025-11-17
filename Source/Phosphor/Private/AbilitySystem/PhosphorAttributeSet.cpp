@@ -266,10 +266,16 @@ void UPhosphorAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
 		const int32 NumLevelUps=NewLevel-CurrentLevel;
 		if (NumLevelUps>0)
 		{
-			const int32 AttributePoints=IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter,CurrentLevel);
-			const int32 SpellPoints=IPlayerInterface::Execute_GetSpellPointsReward(Props.SourceCharacter,CurrentLevel);
-
 			IPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter,NumLevelUps);
+
+			int32 AttributePoints = 0;
+			int32 SpellPoints = 0;
+
+			for (int i = 0; i < NumLevelUps; ++i)
+			{
+				AttributePoints += IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter, CurrentLevel + i);
+				SpellPoints += IPlayerInterface::Execute_GetSpellPointsReward(Props.SourceCharacter, CurrentLevel + i);
+			}
 
 			IPlayerInterface::Execute_AddToAttributePoints(Props.SourceCharacter,AttributePoints);
 			IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter,SpellPoints);
