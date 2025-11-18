@@ -192,6 +192,7 @@ void APhosphorCharacter::ShowMagicCircle_Implementation(UMaterialInterface* Deca
 	if (APhosphorPlayerController* PhosphorPlayerController = Cast<APhosphorPlayerController>(GetController()))
 	{
 		PhosphorPlayerController->ShowMagicCircle(DecalMaterial);
+		PhosphorPlayerController->bShowMouseCursor = false;
 	}
 }
 
@@ -200,6 +201,7 @@ void APhosphorCharacter::HideMagicCircle_Implementation()
 	if (APhosphorPlayerController* PhosphorPlayerController = Cast<APhosphorPlayerController>(GetController()))
 	{
 		PhosphorPlayerController->HideMagicCircle();
+		PhosphorPlayerController->bShowMouseCursor = true;
 	}
 }
 
