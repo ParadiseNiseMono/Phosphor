@@ -187,6 +187,22 @@ int32 APhosphorCharacter::GetSpellPoints_Implementation()
 	return PhosphorPlayerState->GetPlayerSpellPoint();
 }
 
+void APhosphorCharacter::ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial)
+{
+	if (APhosphorPlayerController* PhosphorPlayerController = Cast<APhosphorPlayerController>(GetController()))
+	{
+		PhosphorPlayerController->ShowMagicCircle(DecalMaterial);
+	}
+}
+
+void APhosphorCharacter::HideMagicCircle_Implementation()
+{
+	if (APhosphorPlayerController* PhosphorPlayerController = Cast<APhosphorPlayerController>(GetController()))
+	{
+		PhosphorPlayerController->HideMagicCircle();
+	}
+}
+
 int32 APhosphorCharacter::GetPlayerLevel_Implementation()
 {
 	const APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
