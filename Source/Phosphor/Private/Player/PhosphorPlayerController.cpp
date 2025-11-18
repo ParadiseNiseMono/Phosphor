@@ -10,6 +10,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "PhosphorGameplayTags.h"
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
+#include "Actor/MagicCircle.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Character.h"
 
@@ -29,6 +30,23 @@ void APhosphorPlayerController::PlayerTick(float DeltaTime)
 
 	CursorTrace();
 	AutoRun();
+	UpdateMagicCircleLocation();
+}
+
+void APhosphorPlayerController::ShowMagicCircle()
+{
+	if (!IsValid(MagicCircle))
+	{
+		MagicCircle = GetWorld()->SpawnActor<AMagicCircle>(MagicCircleClass);
+	}
+}
+
+void APhosphorPlayerController::HideMagicCircle()
+{
+	if (IsValid(MagicCircle))
+	{
+		MagicCircle->Destroy();
+	}
 }
 
 void APhosphorPlayerController::ShowDamageNumber_Implementation(const float Damage,ACharacter* Target,bool bBlockHit,bool bCriticalHit)
@@ -110,11 +128,11 @@ void APhosphorPlayerController::CursorTrace()
 		return;
 	}
 	
-	GetHitResultUnderCursor(ECC_Visibility,false,HitResult);
-	if (!HitResult.bBlockingHit) return;
+	GetHitResultUnderCursor(ECC_Visibility,false,CursorHit);
+	if (!CursorHit.bBlockingHit) return;
 
 	LastActor=ThisActor;
-	ThisActor=HitResult.GetActor();
+	ThisActor=CursorHit.GetActor();
 	
 	if (LastActor==nullptr)
 	{
@@ -202,7 +220,7 @@ void APhosphorPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	else
 	{
 		FollowTime+=GetWorld()->GetDeltaSeconds();
-		if (GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility,false,HitResult))CachedDestination=HitResult.ImpactPoint;
+		if (GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility,false,CursorHit))CachedDestination=CursorHit.ImpactPoint;
 		if (APawn* ControlledPawn=GetPawn())
 		{
 			const FVector WorldDestination=(CachedDestination-ControlledPawn->GetActorLocation()).GetSafeNormal();
@@ -231,5 +249,13 @@ void APhosphorPlayerController::AutoRun()
 
 		const float DistanToDestination=(LocationOnSpline-CachedDestination).Length();
 		if (DistanToDestination<=AutoRunAcceptanceRadius)bAutoRunning=false;
+	}
+}
+
+void APhosphorPlayerController::UpdateMagicCircleLocation()
+{
+	if (IsValid(MagicCircle))
+	{
+		MagicCircle->SetActorLocation(CursorHit.ImpactPoint);
 	}
 }
