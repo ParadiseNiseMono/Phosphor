@@ -59,8 +59,6 @@ private:
 	
 	virtual void InitAbilityActorInfo() override;
 
-	virtual void MulticastHandleDeath(const FVector& InDeathImpulse) override;
-
 	UFUNCTION(NetMulticast,Reliable)
 	void MulticastLevelUpParticles() const;
 };
