@@ -10,8 +10,10 @@
 #include "AbilitySystem/Data/LevelUpInfo.h"
 #include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/PhosphorPlayerController.h"
 #include "Player/PhosphorPlayerState.h"
 #include "UI/HUD/PhosphorHUD.h"
@@ -233,6 +235,26 @@ void APhosphorCharacter::InitAbilityActorInfo()
 		}
 	}
 	InitializeDefaultAttribute();
+}
+
+void APhosphorCharacter::MulticastHandleDeath(const FVector& InDeathImpulse)
+{
+	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(),GetActorRotation());
+	
+	Weapon->SetSimulatePhysics(true);
+	Weapon->SetEnableGravity(true);
+	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	Weapon->AddImpulse(InDeathImpulse * 0.1f, NAME_None, true);;
+
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic,ECR_Block);
+	GetMesh()->AddImpulse(InDeathImpulse, NAME_None, true);
+	
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	BurnDebuffComponent->Deactivate();
+	StunDebuffComponent->Deactivate();
 }
 
 

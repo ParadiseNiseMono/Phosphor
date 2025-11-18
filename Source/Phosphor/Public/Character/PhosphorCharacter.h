@@ -57,7 +57,9 @@ private:
 	TObjectPtr<USpringArmComponent> CameraBoom;
 
 	
-	virtual  void InitAbilityActorInfo() override;
+	virtual void InitAbilityActorInfo() override;
+
+	virtual void MulticastHandleDeath(const FVector& InDeathImpulse) override;
 
 	UFUNCTION(NetMulticast,Reliable)
 	void MulticastLevelUpParticles() const;
