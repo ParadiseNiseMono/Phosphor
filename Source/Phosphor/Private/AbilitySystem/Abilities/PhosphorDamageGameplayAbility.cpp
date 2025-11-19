@@ -43,6 +43,13 @@ FDamageEffectParams UPhosphorDamageGameplayAbility::MakeDamageEffectParamsFromDe
 		DamageEffectParams.DeathImpulse = ToTarget * DeathImpulseMagnitude;
 		DamageEffectParams.KnockbackForce = ToTarget * KnockbackForceMagnitude;
 	}
+	if (bIsRadialDamage)
+	{
+		DamageEffectParams.bIsRadialDamage = bIsRadialDamage;
+		DamageEffectParams.RadialDamageInnerRadius = RadialDamageInnerRadius;
+		DamageEffectParams.RadialDamageOuterRadius = RadialDamageOuterRadius;
+		DamageEffectParams.RadialDamageOrigin = RadialDamageOrigin;
+	}
 	return DamageEffectParams;
 }
 
