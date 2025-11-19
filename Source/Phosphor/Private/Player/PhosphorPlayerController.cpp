@@ -17,6 +17,7 @@
 
 #include "Input/PhosphorInputComponent.h"
 #include "Interaction/EnemyInterface.h"
+#include "Phosphor/Phosphor.h"
 #include "UI/Widget/DamageTextComponent.h"
 
 APhosphorPlayerController::APhosphorPlayerController()
@@ -132,8 +133,9 @@ void APhosphorPlayerController::CursorTrace()
 		ThisActor = nullptr;
 		return;
 	}
-	
-	GetHitResultUnderCursor(ECC_Visibility,false,CursorHit);
+
+	const ECollisionChannel TraceChannel = IsValid(MagicCircle)? ECC_ExcludePlayers : ECC_Visibility;
+	GetHitResultUnderCursor(TraceChannel,false,CursorHit);
 	if (!CursorHit.bBlockingHit) return;
 
 	LastActor=ThisActor;

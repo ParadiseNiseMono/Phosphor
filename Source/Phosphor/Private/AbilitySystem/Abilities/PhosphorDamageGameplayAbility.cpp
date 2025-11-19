@@ -18,7 +18,7 @@ void UPhosphorDamageGameplayAbility::CauseDamage(AActor* Target)
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(),UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target));
 }
 
-FDamageEffectParams UPhosphorDamageGameplayAbility::MakeDamageEffectParamsFromDefaults(AActor* TargetActor) const
+FDamageEffectParams UPhosphorDamageGameplayAbility::MakeDamageEffectParamsFromDefaults(AActor* TargetActor, FVector InRadialDamageOrigin) const
 {
 	FDamageEffectParams DamageEffectParams;
 	DamageEffectParams.WorldContext = GetAvatarActorFromActorInfo();
@@ -48,7 +48,7 @@ FDamageEffectParams UPhosphorDamageGameplayAbility::MakeDamageEffectParamsFromDe
 		DamageEffectParams.bIsRadialDamage = bIsRadialDamage;
 		DamageEffectParams.RadialDamageInnerRadius = RadialDamageInnerRadius;
 		DamageEffectParams.RadialDamageOuterRadius = RadialDamageOuterRadius;
-		DamageEffectParams.RadialDamageOrigin = RadialDamageOrigin;
+		DamageEffectParams.RadialDamageOrigin = InRadialDamageOrigin;
 	}
 	return DamageEffectParams;
 }
