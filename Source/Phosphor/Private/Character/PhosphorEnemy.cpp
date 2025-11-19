@@ -146,7 +146,7 @@ void APhosphorEnemy::InitAbilityActorInfo()
 		InitializeDefaultAttribute();
 	}
 
-	OnAscRegisetered.Broadcast(AbilitySystemComponent);
+	OnAscRegistered.Broadcast(AbilitySystemComponent);
 }
 
 void APhosphorEnemy::InitializeDefaultAttribute() const

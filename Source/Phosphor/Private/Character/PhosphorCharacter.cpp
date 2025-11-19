@@ -222,7 +222,7 @@ void APhosphorCharacter::InitAbilityActorInfo()
 	Cast<UPhosphorAbilitySystemComponent>(PhosphorPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent=PhosphorPlayerState->GetAbilitySystemComponent();
 	AttributeSet=PhosphorPlayerState->GetAttributeSet();
-	OnAscRegisetered.Broadcast(AbilitySystemComponent);
+	OnAscRegistered.Broadcast(AbilitySystemComponent);
 	AbilitySystemComponent->RegisterGameplayTagEvent(
 		FPhosphorGameplayTags::Get().Debuff_Stun,
 		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &APhosphorCharacter::StunTagChanged);

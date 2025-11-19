@@ -101,7 +101,7 @@ ECharacterClass APhosphorCharacterBase::GetCharacterClass_Implementation()
 
 FOnASCRegisetered& APhosphorCharacterBase::GetOnASCRegisteredDelegate()
 {
-	return OnAscRegisetered;
+	return OnAscRegistered;
 }
 
 FOnDeathSignature& APhosphorCharacterBase::GetOnDeathDelegate()
@@ -122,6 +122,11 @@ bool APhosphorCharacterBase::IsBeingShockLoop_Implementation()
 void APhosphorCharacterBase::SetIsBeingShockLoop_Implementation(bool InShock)
 {
 	bIsBeingShockLoop = InShock;
+}
+
+FOnDamageSignature& APhosphorCharacterBase::GetOnDamageSignature()
+{
+	return OnDamageDelegate;
 }
 
 
@@ -185,6 +190,14 @@ void APhosphorCharacterBase::GetLifetimeReplicatedProps(TArray<class FLifetimePr
 	DOREPLIFETIME(APhosphorCharacterBase, bIsStunned);
 	DOREPLIFETIME(APhosphorCharacterBase, bIsBurned);
 	DOREPLIFETIME(APhosphorCharacterBase, bIsBeingShockLoop);
+}
+
+float APhosphorCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
+	AController* EventInstigator, AActor* DamageCauser)
+{
+	const float DamageTaken =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	OnDamageDelegate.Broadcast(DamageTaken);
+	return DamageTaken;
 }
 
 FVector APhosphorCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)

@@ -17,7 +17,9 @@ class UGameplayAbility;
 class UGameplayEffect;
 class UAbilitySystemComponent;
 class UAttributeSet;
-class UAnimMontage; 
+class UAnimMontage;
+class AController;
+struct FDamageEvent;
 UCLASS()
 class PHOSPHOR_API APhosphorCharacterBase : public ACharacter,public IAbilitySystemInterface,public ICombatInterface
 {
@@ -28,6 +30,7 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent()const override;
 	UAttributeSet* GetAttributeSet() const {return AttributeSet;}
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	
 	/*Combat Interface*/
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)override;
@@ -46,10 +49,12 @@ public:
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
 	virtual bool IsBeingShockLoop_Implementation() override;
 	virtual void SetIsBeingShockLoop_Implementation(bool InShock) override;
+	virtual FOnDamageSignature& GetOnDamageSignature() override;
 	/*End Combat Interface*/
 
-	FOnASCRegisetered OnAscRegisetered;
+	FOnASCRegisetered OnAscRegistered;
 	FOnDeathSignature OnDeathDelegate;
+	FOnDamageSignature OnDamageDelegate;
 	
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath(const FVector& InDeathImpulse);
