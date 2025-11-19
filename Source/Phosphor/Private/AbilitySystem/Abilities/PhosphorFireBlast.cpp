@@ -70,3 +70,8 @@ FString UPhosphorFireBlast::GetNextLevelDescription(int32 Level)
 			//Values
 			, Level, ManaCost, Cooldown, NumFireBalls, ScaledDamage, ScaledDebuffChance, ScaledDebuffFrequency, ScaledDebuffDamage, ScaledDebuffDuration);
 }
+
+TArray<APhosphorFireBall*> UPhosphorFireBlast::SpawnFireBalls()
+{
+	return TArray<APhosphorFireBall*>();
+}
