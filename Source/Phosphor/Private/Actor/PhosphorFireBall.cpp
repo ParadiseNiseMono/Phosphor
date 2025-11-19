@@ -6,6 +6,7 @@
 void APhosphorFireBall::BeginPlay()
 {
 	Super::BeginPlay();
+	StartOutgoingTimeLine();
 }
 
 void APhosphorFireBall::OnSphereOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,

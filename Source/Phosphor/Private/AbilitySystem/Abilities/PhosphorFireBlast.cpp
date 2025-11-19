@@ -3,6 +3,9 @@
 
 #include "AbilitySystem/Abilities/PhosphorFireBlast.h"
 
+#include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
+#include "Actor/PhosphorFireBall.h"
+
 FString UPhosphorFireBlast::GetDescription(int32 Level)
 {
 	const int32 ScaledDamage=Damage.GetValueAtLevel(Level);
@@ -73,5 +76,31 @@ FString UPhosphorFireBlast::GetNextLevelDescription(int32 Level)
 
 TArray<APhosphorFireBall*> UPhosphorFireBlast::SpawnFireBalls()
 {
-	return TArray<APhosphorFireBall*>();
+	TArray<APhosphorFireBall*> FireBalls;
+	const FVector Forward = GetAvatarActorFromActorInfo()->GetActorForwardVector();
+	const FVector Location = GetAvatarActorFromActorInfo()->GetActorLocation();
+	TArray<FRotator> Rotators = UPhosphorAbilitySystemLibrary::EvenlySpacedRotators(Forward, FVector::UpVector, 360.f, NumFireBalls);
+	
+	for (const FRotator& Rotator : Rotators)
+	{
+		FTransform SpawnTransform;
+		SpawnTransform.SetLocation(Location);
+		SpawnTransform.SetRotation(Rotator.Quaternion());
+		
+		APhosphorFireBall* FireBall = GetWorld()->SpawnActorDeferred<APhosphorFireBall>(
+			FireBallClass,
+			SpawnTransform,
+			GetOwningActorFromActorInfo(),
+			CurrentActorInfo->PlayerController->GetPawn(),
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+
+		FireBall->DamageEffectParams = MakeDamageEffectParamsFromDefaults();
+		FireBall->ReturnToActor = GetAvatarActorFromActorInfo();
+		
+		FireBalls.Add(FireBall);
+
+		FireBall->FinishSpawning(SpawnTransform);
+	}
+	
+	return FireBalls;
 }

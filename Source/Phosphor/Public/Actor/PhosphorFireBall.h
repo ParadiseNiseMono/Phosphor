@@ -16,6 +16,11 @@ class PHOSPHOR_API APhosphorFireBall : public APhosphorProjectile
 
 public:
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartOutgoingTimeLine();
+
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<AActor> ReturnToActor;
 protected:
 	virtual void BeginPlay() override;
 	
