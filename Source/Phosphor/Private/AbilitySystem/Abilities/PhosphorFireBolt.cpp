@@ -15,6 +15,10 @@ FString UPhosphorFireBolt::GetDescription(int32 Level)
 	
 	const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float Cooldown = GetCooldown(Level);
+	const float ScaledDebuffChance = DebuffChance.GetValueAtLevel(Level);
+	const float ScaledDebuffDamage = DebuffDamage.GetValueAtLevel(Level);
+	const float ScaledDebuffDuration = DebuffDuration.GetValueAtLevel(Level);
+	const float ScaledDebuffFrequency = DebuffFrequency.GetValueAtLevel(Level);
 	if (Level==1)
 	{
 		return FString::Printf(TEXT(
@@ -27,13 +31,16 @@ FString UPhosphorFireBolt::GetDescription(int32 Level)
 			"<Small>Cooldown: </><Cooldown>%.1f</>\n\n"
 
 			//Description
-			"<Default>Shot a Fire Blot</>\n\n"
-			"<Default>Each bolt can cause </><Damage>%d</><Default> damage</>\n\n"
-			"<Default>Fire Damage with a chance to burn</>"
+			"<Default>Shoot a fireball at the enemy's face</>\n\n"
+			"<Default>Damage per fireball:</><Damage>%d</>\n\n"
+			"<Default>There is</><Damage>%.1f</><Default>chance of causing a burning effect.</>\n\n"
+			"<Default>After burning, it deals</><Damage>%.1f</><Default>fire damage per second.</>\n\n"
+			"<Default>Each time it deals</><Damage>%.1f</><Default>of damage.</>\n\n"
+			"<Default>Duration</><Damage>%.1f</><Default>seconds</>\n\n"
 			)
 			
 			//Values
-			, Level, ManaCost, Cooldown, ScaledDamage);
+			, Level, ManaCost, Cooldown, ScaledDamage, ScaledDebuffChance, ScaledDebuffFrequency, ScaledDebuffDamage, ScaledDebuffDuration);
 	}
 	else
 	{
@@ -47,13 +54,16 @@ FString UPhosphorFireBolt::GetDescription(int32 Level)
 			"<Small>Cooldown: </><Cooldown>%.1f</>\n\n"
 
 			//Description
-			"<Default>Shot %d Fire Blots</>\n\n"
-			"<Default>Each bolt can cause </><Damage>%d</><Default> damage</>\n\n"
-			"<Default>Fire Damage with a chance to burn</>"
+			"<Default>Shoot %d fire a fireball at the enemy's face.</>\n\n"
+			"<Default>Damage per fireball:</><Damage>%d</>\n\n"
+			"<Default>There is</><Damage>%.1f</><Default>chance of causing a burning effect.</>\n\n"
+			"<Default>After burning, it deals</><Damage>%.1f</><Default>fire damage per second.</>\n\n"
+			"<Default>Each time it deals</><Damage>%.1f</><Default>of damage.</>\n\n"
+			"<Default>Duration</><Damage>%.1f</><Default>seconds</>\n\n"
 			)
 			
 			//Values
-			, Level, ManaCost, Cooldown,FMath::Min(Level, NumProjectiles), ScaledDamage);
+			, Level, ManaCost, Cooldown,FMath::Min(Level, NumProjectiles), ScaledDamage, ScaledDebuffChance, ScaledDebuffFrequency, ScaledDebuffDamage, ScaledDebuffDuration);
 	}
 }
 
@@ -62,6 +72,10 @@ FString UPhosphorFireBolt::GetNextLevelDescription(int32 Level)
 	const int32 ScaledDamage=Damage.GetValueAtLevel(Level);
 	const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float Cooldown = GetCooldown(Level);
+	const float ScaledDebuffChance = DebuffChance.GetValueAtLevel(Level);
+	const float ScaledDebuffDamage = DebuffDamage.GetValueAtLevel(Level);
+	const float ScaledDebuffDuration = DebuffDuration.GetValueAtLevel(Level);
+	const float ScaledDebuffFrequency = DebuffFrequency.GetValueAtLevel(Level);
 	return FString::Printf(TEXT(
 			//Title
 			"<Title>NEXT LEVEL</>\n\n"
@@ -72,13 +86,16 @@ FString UPhosphorFireBolt::GetNextLevelDescription(int32 Level)
 			"<Small>Cooldown: </><Cooldown>%.1f</>\n\n"
 
 			//Description
-			"<Default>Shot %d Fire Blots</>\n\n"
-			"<Default>Each bolt can cause </><Damage>%d</><Default> damage</>\n\n"
-			"<Default>Fire Damage with a chance to burn</>"
+			"<Default>Shoot %d fire a fireball at the enemy's face.</>\n\n"
+			"<Default>Damage per fireball:</><Damage>%d</>\n\n"
+			"<Default>There is</><Damage>%.1f</><Default>chance of causing a burning effect.</>\n\n"
+			"<Default>After burning, it deals</><Damage>%.1f</><Default>fire damage per second.</>\n\n"
+			"<Default>Each time it deals</><Damage>%.1f</><Default>of damage.</>\n\n"
+			"<Default>Duration</><Damage>%.1f</><Default>seconds</>\n\n"
 			)
 			
 			//Values
-			, Level, ManaCost, Cooldown,FMath::Min(Level, NumProjectiles), ScaledDamage);
+			, Level, ManaCost, Cooldown,FMath::Min(Level, NumProjectiles), ScaledDamage, ScaledDebuffChance, ScaledDebuffFrequency, ScaledDebuffDamage, ScaledDebuffDuration);
 }
 
 void UPhosphorFireBolt::SpawnProjectiles(const FVector& ProjectileTargetLocation, const FVector& SocketLocation,
