@@ -383,5 +383,9 @@ void FPhosphorGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Player_Block_InputReleased= UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Player.Block.InputReleased"),
 		FString("Block Input released	 callback for input"));
-	
+
+	/*Gameplay Cue*/
+	GameplayTags.GameplayCue_FireBlast= UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("GameplayCue.FireBlast"),
+		FString("FireBlast GameplayCue Tag"));
 }

@@ -24,6 +24,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	FDamageEffectParams ExplosionDamageParams;
+
+	virtual void OnHit() override;
 protected:
 	virtual void BeginPlay() override;
 	

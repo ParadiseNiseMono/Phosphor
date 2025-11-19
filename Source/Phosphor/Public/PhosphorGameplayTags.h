@@ -120,6 +120,9 @@ public:
 	
 	/*Effects*/
 	FGameplayTag Effects_HitReact;
+
+	FGameplayTag GameplayCue_FireBlast;
+	
 protected:
 	
 
