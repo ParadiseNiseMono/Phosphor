@@ -40,8 +40,11 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	TObjectPtr<USphereComponent> SphereComponent;
-private:
+
+	bool IsValidOverlap(AActor* OtherActor);
+
 	bool bHit=false;
+private:
 	bool bIsCauser=false;
 
 	UPROPERTY(EditAnywhere)

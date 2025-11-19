@@ -96,6 +96,9 @@ TArray<APhosphorFireBall*> UPhosphorFireBlast::SpawnFireBalls()
 
 		FireBall->DamageEffectParams = MakeDamageEffectParamsFromDefaults();
 		FireBall->ReturnToActor = GetAvatarActorFromActorInfo();
+
+		FireBall->ExplosionDamageParams = MakeDamageEffectParamsFromDefaults();	
+		FireBall->SetOwner(GetAvatarActorFromActorInfo());
 		
 		FireBalls.Add(FireBall);
 

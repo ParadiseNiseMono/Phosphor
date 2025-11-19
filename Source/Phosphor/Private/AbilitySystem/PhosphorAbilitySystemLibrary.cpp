@@ -117,34 +117,76 @@ void UPhosphorAbilitySystemLibrary::GiveStartUpAbilities(const UObject* WorldCon
 int32 UPhosphorAbilitySystemLibrary::GetXPRewardForClassAndLevel(const UObject* WorldContextObject,
 	ECharacterClass CharacterClass, int32 CharacterLevel)
 {
-	UCharacterClassInfo* CharacterClassInfo=GetCharacterClassInfo(WorldContextObject);
-	if (CharacterClassInfo==nullptr) return 0;
+	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+	if (CharacterClassInfo == nullptr) return 0;
 
 	const FCharacterClassDefaultInfo Info = CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
-	const float XPReward=Info.XPReward.GetValueAtLevel(CharacterLevel);
+	const float XPReward = Info.XPReward.GetValueAtLevel(CharacterLevel);
 
 	return static_cast<int32>(XPReward);
 }
 
+void UPhosphorAbilitySystemLibrary::SetIsRadialDamageEffectParam(FDamageEffectParams& DamageEffectParams, const bool bIsRadial, const float InnerRadius, const float OuterRadius, const FVector& Origin)
+{
+	DamageEffectParams.bIsRadialDamage = bIsRadial;
+	DamageEffectParams.RadialDamageInnerRadius = InnerRadius;
+	DamageEffectParams.RadialDamageOuterRadius = OuterRadius;
+	DamageEffectParams.RadialDamageOrigin = Origin;
+}
+
+void UPhosphorAbilitySystemLibrary::SetKnockbackDirection(FDamageEffectParams& DamageEffectParams,
+	FVector KnockbackDirection, float Magnitude)
+{
+	KnockbackDirection.Normalize();
+	if (Magnitude == 0.0f)
+	{
+		DamageEffectParams.KnockbackForce = KnockbackDirection * DamageEffectParams.KnockbackForceMagnitude;
+	}
+	else
+	{
+		DamageEffectParams.KnockbackForce = KnockbackDirection * Magnitude;
+	}
+}
+
+void UPhosphorAbilitySystemLibrary::SetDeathImpulseDirection(FDamageEffectParams& DamageEffectParams,
+	FVector ImpulseDirection, float Magnitude)
+{
+	ImpulseDirection.Normalize();
+	if (Magnitude == 0.0f)
+	{
+		DamageEffectParams.DeathImpulse = ImpulseDirection * DamageEffectParams.DeathImpulseMagnitude;
+	}
+	else
+	{
+		DamageEffectParams.DeathImpulse = ImpulseDirection * Magnitude;
+	}
+}
+
+void UPhosphorAbilitySystemLibrary::SetTargetEffectParamsASC(FDamageEffectParams& DamageEffectParams,
+	UAbilitySystemComponent* InASC)
+{
+	DamageEffectParams.TargetAbilitySystemComponent = InASC;
+}
+
 UCharacterClassInfo* UPhosphorAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
 {
-	APhosphorGameModeBase* PhosphorGameModeBase= Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
-	if (PhosphorGameModeBase==nullptr) return nullptr;
+	APhosphorGameModeBase* PhosphorGameModeBase = Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (PhosphorGameModeBase == nullptr) return nullptr;
 
 	return PhosphorGameModeBase->CharacterClassInfo;
 }
 
 UAbilityInfo* UPhosphorAbilitySystemLibrary::GetAbilityInfo(const UObject* WorldContextObject)
 {
-	APhosphorGameModeBase* PhosphorGameModeBase= Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
-	if (PhosphorGameModeBase==nullptr) return nullptr;
+	APhosphorGameModeBase* PhosphorGameModeBase = Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (PhosphorGameModeBase == nullptr) return nullptr;
 
 	return PhosphorGameModeBase->AbilityInfo;
 }
 
 bool UPhosphorAbilitySystemLibrary::IsBlockHit(const FGameplayEffectContextHandle& ContextHandle)
 {
-	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		return PhosphorGameplayEffectContext->IsBlockHit();
 	}
@@ -153,7 +195,7 @@ bool UPhosphorAbilitySystemLibrary::IsBlockHit(const FGameplayEffectContextHandl
 
 bool UPhosphorAbilitySystemLibrary::IsCriticalHit(const FGameplayEffectContextHandle& ContextHandle)
 {
-	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		return PhosphorGameplayEffectContext->IsCriticalHit();
 	}
@@ -162,7 +204,7 @@ bool UPhosphorAbilitySystemLibrary::IsCriticalHit(const FGameplayEffectContextHa
 
 bool UPhosphorAbilitySystemLibrary::IsSuccessfulDebuff(const FGameplayEffectContextHandle& ContextHandle)
 {
-	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		return PhosphorGameplayEffectContext->IsSuccessfulDebuff();
 	}
@@ -171,7 +213,7 @@ bool UPhosphorAbilitySystemLibrary::IsSuccessfulDebuff(const FGameplayEffectCont
 
 float UPhosphorAbilitySystemLibrary::GetDebuffDamage(const FGameplayEffectContextHandle& ContextHandle)
 {
-	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		return PhosphorGameplayEffectContext->GetDebuffDamage();
 	}
@@ -180,7 +222,7 @@ float UPhosphorAbilitySystemLibrary::GetDebuffDamage(const FGameplayEffectContex
 
 float UPhosphorAbilitySystemLibrary::GetDebuffDuration(const FGameplayEffectContextHandle& ContextHandle)
 {
-	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		return PhosphorGameplayEffectContext->GetDebuffDuration();
 	}
@@ -189,7 +231,7 @@ float UPhosphorAbilitySystemLibrary::GetDebuffDuration(const FGameplayEffectCont
 
 float UPhosphorAbilitySystemLibrary::GetDebuffFrequency(const FGameplayEffectContextHandle& ContextHandle)
 {
-	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		return PhosphorGameplayEffectContext->GetDebuffFrequency();
 	}
@@ -198,7 +240,7 @@ float UPhosphorAbilitySystemLibrary::GetDebuffFrequency(const FGameplayEffectCon
 
 FGameplayTag UPhosphorAbilitySystemLibrary::GetDamageType(const FGameplayEffectContextHandle& ContextHandle)
 {
-	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		if (PhosphorGameplayEffectContext->GetDamageType().IsValid())
 		{
@@ -210,7 +252,7 @@ FGameplayTag UPhosphorAbilitySystemLibrary::GetDamageType(const FGameplayEffectC
 
 FVector UPhosphorAbilitySystemLibrary::GetDeathImpulse(const FGameplayEffectContextHandle& ContextHandle)
 {
-	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		return PhosphorGameplayEffectContext->GetDeathImpulse();
 	}
@@ -219,7 +261,7 @@ FVector UPhosphorAbilitySystemLibrary::GetDeathImpulse(const FGameplayEffectCont
 
 FVector UPhosphorAbilitySystemLibrary::GetKnockbackForce(const FGameplayEffectContextHandle& ContextHandle)
 {
-	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		return PhosphorGameplayEffectContext->GetKnockbackForce();
 	}
@@ -228,7 +270,7 @@ FVector UPhosphorAbilitySystemLibrary::GetKnockbackForce(const FGameplayEffectCo
 
 bool UPhosphorAbilitySystemLibrary::IsRadialDamage(const FGameplayEffectContextHandle& ContextHandle)
 {
-	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		return PhosphorGameplayEffectContext->IsRadialDamage();
 	}
@@ -237,7 +279,7 @@ bool UPhosphorAbilitySystemLibrary::IsRadialDamage(const FGameplayEffectContextH
 
 float UPhosphorAbilitySystemLibrary::GetRadialDamageInnerRadius(const FGameplayEffectContextHandle& ContextHandle)
 {
-	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		return PhosphorGameplayEffectContext->GetRadialDamageInnerRadius();
 	}
@@ -246,7 +288,7 @@ float UPhosphorAbilitySystemLibrary::GetRadialDamageInnerRadius(const FGameplayE
 
 float UPhosphorAbilitySystemLibrary::GetRadialDamageOuterRadius(const FGameplayEffectContextHandle& ContextHandle)
 {
-	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		return PhosphorGameplayEffectContext->GetRadialDamageOuterRadius();
 	}
@@ -255,7 +297,7 @@ float UPhosphorAbilitySystemLibrary::GetRadialDamageOuterRadius(const FGameplayE
 
 FVector UPhosphorAbilitySystemLibrary::GetRadialDamageOrigin(const FGameplayEffectContextHandle& ContextHandle)
 {
-	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		return PhosphorGameplayEffectContext->GetRadialDamageOrigin();
 	}
@@ -264,7 +306,7 @@ FVector UPhosphorAbilitySystemLibrary::GetRadialDamageOrigin(const FGameplayEffe
 
 void UPhosphorAbilitySystemLibrary::SetIsBlockHit(FGameplayEffectContextHandle& ContextHandle, bool bInIsBlockHit)
 {
-	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		PhosphorGameplayEffectContext->SetIsBlockHit(bInIsBlockHit);
 	}
@@ -272,7 +314,7 @@ void UPhosphorAbilitySystemLibrary::SetIsBlockHit(FGameplayEffectContextHandle& 
 
 void UPhosphorAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& ContextHandle, bool bInIsCriticalHit)
 {
-	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		PhosphorGameplayEffectContext->SetIsCriticalHit(bInIsCriticalHit);
 	}
@@ -281,7 +323,7 @@ void UPhosphorAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandl
 void UPhosphorAbilitySystemLibrary::SetIsSuccessfulDebuff(FGameplayEffectContextHandle& ContextHandle,
 	bool bInIsSuccessfulDebuff)
 {
-	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		PhosphorGameplayEffectContext->SetIsSuccessfulDebuff(bInIsSuccessfulDebuff);
 	}
@@ -289,7 +331,7 @@ void UPhosphorAbilitySystemLibrary::SetIsSuccessfulDebuff(FGameplayEffectContext
 
 void UPhosphorAbilitySystemLibrary::SetDebuffDamage(FGameplayEffectContextHandle& ContextHandle, float InDamage)
 {
-	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		PhosphorGameplayEffectContext->SetDebuffDamage(InDamage);
 	}
@@ -297,7 +339,7 @@ void UPhosphorAbilitySystemLibrary::SetDebuffDamage(FGameplayEffectContextHandle
 
 void UPhosphorAbilitySystemLibrary::SetDebuffDuration(FGameplayEffectContextHandle& ContextHandle, float InDuration)
 {
-	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		PhosphorGameplayEffectContext->SetDebuffDuration(InDuration);
 	}
@@ -305,7 +347,7 @@ void UPhosphorAbilitySystemLibrary::SetDebuffDuration(FGameplayEffectContextHand
 
 void UPhosphorAbilitySystemLibrary::SetDebuffFrequency(FGameplayEffectContextHandle& ContextHandle, float InFrequency)
 {
-	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		PhosphorGameplayEffectContext->SetDebuffFrequency(InFrequency);
 	}
@@ -314,7 +356,7 @@ void UPhosphorAbilitySystemLibrary::SetDebuffFrequency(FGameplayEffectContextHan
 void UPhosphorAbilitySystemLibrary::SetDamageType(FGameplayEffectContextHandle& ContextHandle,
 	const FGameplayTag& InDamageType)
 {
-	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		const TSharedPtr<FGameplayTag> DamageType = MakeShared<FGameplayTag>(InDamageType);
 		PhosphorGameplayEffectContext->SetDamageType(DamageType);
@@ -324,7 +366,7 @@ void UPhosphorAbilitySystemLibrary::SetDamageType(FGameplayEffectContextHandle& 
 void UPhosphorAbilitySystemLibrary::SetDeathImpulse(FGameplayEffectContextHandle& ContextHandle,
 	const FVector& InImpulse)
 {
-	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		PhosphorGameplayEffectContext->SetDeathImpulse(InImpulse);
 	}
@@ -333,7 +375,7 @@ void UPhosphorAbilitySystemLibrary::SetDeathImpulse(FGameplayEffectContextHandle
 void UPhosphorAbilitySystemLibrary::SetKnockbackForce(FGameplayEffectContextHandle& ContextHandle,
 	const FVector& InForce)
 {
-	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		PhosphorGameplayEffectContext->SetKnockbackForce(InForce);
 	}
@@ -342,7 +384,7 @@ void UPhosphorAbilitySystemLibrary::SetKnockbackForce(FGameplayEffectContextHand
 void UPhosphorAbilitySystemLibrary::SetIsRadialDamage(FGameplayEffectContextHandle& ContextHandle,
 	bool bInIsRadialDamage)
 {
-	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		PhosphorGameplayEffectContext->SetIsRadialDamage(bInIsRadialDamage);
 	}
@@ -351,7 +393,7 @@ void UPhosphorAbilitySystemLibrary::SetIsRadialDamage(FGameplayEffectContextHand
 void UPhosphorAbilitySystemLibrary::SetRadialDamageInnerRadius(FGameplayEffectContextHandle& ContextHandle,
 	float InInnerRadius)
 {
-	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		PhosphorGameplayEffectContext->SetRadialDamageInnerRadius(InInnerRadius);
 	}
@@ -360,7 +402,7 @@ void UPhosphorAbilitySystemLibrary::SetRadialDamageInnerRadius(FGameplayEffectCo
 void UPhosphorAbilitySystemLibrary::SetRadialDamageOuterRadius(FGameplayEffectContextHandle& ContextHandle,
 	float InOuterRadius)
 {
-	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		PhosphorGameplayEffectContext->SetRadialDamageOuterRadius(InOuterRadius);
 	}
@@ -369,7 +411,7 @@ void UPhosphorAbilitySystemLibrary::SetRadialDamageOuterRadius(FGameplayEffectCo
 void UPhosphorAbilitySystemLibrary::SetRadialDamageOrigin(FGameplayEffectContextHandle& ContextHandle,
 	const FVector& InOrigin)
 {
-	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext = static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
 	{
 		PhosphorGameplayEffectContext->SetRadialDamageOrigin(InOrigin);
 	}

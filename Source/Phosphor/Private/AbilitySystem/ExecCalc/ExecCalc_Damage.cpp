@@ -194,7 +194,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 			}
 			UGameplayStatics::ApplyRadialDamageWithFalloff(TargetAvatar,
 				DamageTypeValue,
-				0.f,
+				DamageTypeValue / 2,
 				UPhosphorAbilitySystemLibrary::GetRadialDamageOrigin(EffectContextHandle),
 				UPhosphorAbilitySystemLibrary::GetRadialDamageInnerRadius(EffectContextHandle),
 				UPhosphorAbilitySystemLibrary::GetRadialDamageOuterRadius(EffectContextHandle),
