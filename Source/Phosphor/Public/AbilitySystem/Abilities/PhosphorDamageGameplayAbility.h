@@ -21,7 +21,15 @@ public:
 	void CauseDamage(AActor* Target);
 
 	UFUNCTION(BlueprintPure)
-	FDamageEffectParams MakeDamageEffectParamsFromDefaults(AActor* TargetActor = nullptr, FVector InRadialDamageOrigin = FVector::ZeroVector) const;
+	FDamageEffectParams MakeDamageEffectParamsFromDefaults(
+		AActor* TargetActor = nullptr,
+		FVector InRadialDamageOrigin = FVector::ZeroVector,
+		bool bOverrideKnockbackDirection = false,
+		FVector KnockbackDirectionOverride = FVector::ZeroVector,
+		bool bOverrideDeathImpulse = false,
+		FVector DeathImpulseOverride = FVector::ZeroVector,
+		bool bOverridePitch = true,
+		float OverridePitch = 0.f) const;
 
 	UFUNCTION(BlueprintPure)
 	float GetDamageAtLevel() const;
