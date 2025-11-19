@@ -226,6 +226,42 @@ FVector UPhosphorAbilitySystemLibrary::GetKnockbackForce(const FGameplayEffectCo
 	return FVector::ZeroVector;
 }
 
+bool UPhosphorAbilitySystemLibrary::IsRadialDamage(const FGameplayEffectContextHandle& ContextHandle)
+{
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		return PhosphorGameplayEffectContext->IsRadialDamage();
+	}
+	return false;
+}
+
+float UPhosphorAbilitySystemLibrary::GetRadialDamageInnerRadius(const FGameplayEffectContextHandle& ContextHandle)
+{
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		return PhosphorGameplayEffectContext->GetRadialDamageInnerRadius();
+	}
+	return 0.f;
+}
+
+float UPhosphorAbilitySystemLibrary::GetRadialDamageOuterRadius(const FGameplayEffectContextHandle& ContextHandle)
+{
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		return PhosphorGameplayEffectContext->GetRadialDamageOuterRadius();
+	}
+	return 0.f;
+}
+
+FVector UPhosphorAbilitySystemLibrary::GetRadialDamageOrigin(const FGameplayEffectContextHandle& ContextHandle)
+{
+	if (const FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<const FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		return PhosphorGameplayEffectContext->GetRadialDamageOrigin();
+	}
+	return FVector::ZeroVector;
+}
+
 void UPhosphorAbilitySystemLibrary::SetIsBlockHit(FGameplayEffectContextHandle& ContextHandle, bool bInIsBlockHit)
 {
 	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
@@ -303,6 +339,42 @@ void UPhosphorAbilitySystemLibrary::SetKnockbackForce(FGameplayEffectContextHand
 	}
 }
 
+void UPhosphorAbilitySystemLibrary::SetIsRadialDamage(FGameplayEffectContextHandle& ContextHandle,
+	bool bInIsRadialDamage)
+{
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		PhosphorGameplayEffectContext->SetIsRadialDamage(bInIsRadialDamage);
+	}
+}
+
+void UPhosphorAbilitySystemLibrary::SetRadialDamageInnerRadius(FGameplayEffectContextHandle& ContextHandle,
+	float InInnerRadius)
+{
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		PhosphorGameplayEffectContext->SetRadialDamageInnerRadius(InInnerRadius);
+	}
+}
+
+void UPhosphorAbilitySystemLibrary::SetRadialDamageOuterRadius(FGameplayEffectContextHandle& ContextHandle,
+	float InOuterRadius)
+{
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		PhosphorGameplayEffectContext->SetRadialDamageOuterRadius(InOuterRadius);
+	}
+}
+
+void UPhosphorAbilitySystemLibrary::SetRadialDamageOrigin(FGameplayEffectContextHandle& ContextHandle,
+	const FVector& InOrigin)
+{
+	if (FPhosphorGameplayEffectContext* PhosphorGameplayEffectContext=static_cast<FPhosphorGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		PhosphorGameplayEffectContext->SetRadialDamageOrigin(InOrigin);
+	}
+}
+
 void UPhosphorAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* WorldContextObject,
                                                                TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius,
                                                                const FVector& SphereOrigin)
@@ -376,6 +448,12 @@ FGameplayEffectContextHandle UPhosphorAbilitySystemLibrary::ApplyDamageEffect(
 	SetDeathImpulse(ContextHandle, DamageEffectParams.DeathImpulse);
 	SetKnockbackForce(ContextHandle, DamageEffectParams.KnockbackForce);
 
+	SetIsRadialDamage(ContextHandle, DamageEffectParams.bIsRadialDamage);
+	SetRadialDamageInnerRadius(ContextHandle, DamageEffectParams.RadialDamageInnerRadius);
+	SetRadialDamageOuterRadius(ContextHandle, DamageEffectParams.RadialDamageOuterRadius);
+	SetRadialDamageOrigin(ContextHandle, DamageEffectParams.RadialDamageOrigin);
+	
+
 	const FGameplayEffectSpecHandle SpecHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeOutgoingSpec(
 		DamageEffectParams.DamageGameplayEffectClass, DamageEffectParams.AbilityLevel, ContextHandle);
 
@@ -387,7 +465,6 @@ FGameplayEffectContextHandle UPhosphorAbilitySystemLibrary::ApplyDamageEffect(
 	
 	DamageEffectParams.TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	return ContextHandle;
-	
 }
 
 TArray<FRotator> UPhosphorAbilitySystemLibrary::EvenlySpacedRotators(const FVector& Forward, const FVector& Axis, float Spread, int32 NumRotators)
