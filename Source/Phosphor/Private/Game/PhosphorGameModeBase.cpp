@@ -83,6 +83,27 @@ void APhosphorGameModeBase::TravelToMap(UMVVM_LoadSlot* LoadSlot)
 	UGameplayStatics::OpenLevelBySoftObjectPtr(LoadSlot, Maps.FindChecked(LoadSlot->GetMapName()));
 }
 
+ULoadScreenSaveGame* APhosphorGameModeBase::RetrieveInGameSaveData()
+{
+	UPhosphorGameInstance* PhosphorGameInstance = Cast<UPhosphorGameInstance>(GetGameInstance());
+
+	const FString InGameLoadSlotName = PhosphorGameInstance->LoadSlotName;
+	const int32 InGameLoadSlotIndex = PhosphorGameInstance->LoadSlotIndex;
+
+	return GetSaveSlotData(InGameLoadSlotIndex, InGameLoadSlotName);
+}
+
+void APhosphorGameModeBase::SaveInGameProgressData(ULoadScreenSaveGame* SaveObject)
+{
+	UPhosphorGameInstance* PhosphorGameInstance = Cast<UPhosphorGameInstance>(GetGameInstance());
+
+	const FString InGameLoadSlotName = PhosphorGameInstance->LoadSlotName;
+	const int32 InGameLoadSlotIndex = PhosphorGameInstance->LoadSlotIndex;
+	PhosphorGameInstance->PlayerStartTag = SaveObject->PlayerStartTag;
+
+	UGameplayStatics::SaveGameToSlot(SaveObject, InGameLoadSlotName, InGameLoadSlotIndex);
+}
+
 void APhosphorGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();

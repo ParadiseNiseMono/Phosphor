@@ -89,6 +89,8 @@ void UMVVM_LoadScreen::PlayButtonPressed()
 
 	UPhosphorGameInstance* PhosphorGameInstance = Cast<UPhosphorGameInstance>(PhosphorGameMode->GetGameInstance());
 	PhosphorGameInstance->PlayerStartTag = SelectedSlot->PlayerStartTag;
+	PhosphorGameInstance->LoadSlotName = SelectedSlot->GetLoadSlotName();
+	PhosphorGameInstance->LoadSlotIndex = SelectedSlot->SlotIndex;
 	
 	if (IsValid(SelectedSlot))
 	{

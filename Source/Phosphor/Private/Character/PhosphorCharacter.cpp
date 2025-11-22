@@ -11,6 +11,9 @@
 #include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Game/LoadScreenSaveGame.h"
+#include "Game/PhosphorGameInstance.h"
+#include "Game/PhosphorGameModeBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -204,6 +207,20 @@ void APhosphorCharacter::HideMagicCircle_Implementation()
 	{
 		PhosphorPlayerController->HideMagicCircle();
 		PhosphorPlayerController->bShowMouseCursor = true;
+	}
+}
+
+void APhosphorCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
+{
+	APhosphorGameModeBase* PhosphorGameModeBase = Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (PhosphorGameModeBase)
+	{
+		ULoadScreenSaveGame* SaveData = PhosphorGameModeBase->RetrieveInGameSaveData();
+		if (SaveData == nullptr) return;
+
+		SaveData->PlayerStartTag = CheckpointTag;
+
+		PhosphorGameModeBase->SaveInGameProgressData(SaveData);
 	}
 }
 
