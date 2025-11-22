@@ -9,6 +9,7 @@
 #include "PhosphorGameplayTags.h"
 #include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 #include "AbilitySystem/PhosphorAttributeSet.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 #include "AbilitySystem/Data/LevelUpInfo.h"
 #include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Camera/CameraComponent.h"
@@ -264,6 +265,27 @@ void APhosphorCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
 		SaveData->Vigor = UPhosphorAttributeSet::GetVigorAttribute().GetNumericValue(GetAttributeSet());
 
 		SaveData->bFirstTimeLogIn = false;
+		if (!HasAuthority()) return;
+
+		UPhosphorAbilitySystemComponent* PhosphorASC = Cast<UPhosphorAbilitySystemComponent>(AbilitySystemComponent);
+		FForEachAbility SaveAbilityDelegate;
+		SaveAbilityDelegate.BindLambda([this, PhosphorASC, SaveData](const FGameplayAbilitySpec& Spec)
+		{
+			const FGameplayTag AbilityTag = PhosphorASC->GetAbilityTagFromSpec(Spec);
+			UAbilityInfo* AbilityInfo = UPhosphorAbilitySystemLibrary::GetAbilityInfo(this);
+			FPhosphorAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
+			
+			FSaveAbility SavedAbility;
+			SavedAbility.GameplayAbility = Info.Ability;
+			SavedAbility.AbilityLevel = Spec.Level;
+			SavedAbility.AbilitySlot = PhosphorASC->GetSlotFromAbilityTag(AbilityTag);
+			SavedAbility.AbilityStatus = PhosphorASC->GetStatusFromAbilityTag(AbilityTag);
+			SavedAbility.AbilityTag = AbilityTag;
+			SavedAbility.AbilityType = Info.AbilityType;
+
+			SaveData->SaveAbilities.Add(SavedAbility);
+		});
+		PhosphorASC->ForEachAbility(SaveAbilityDelegate);
 
 		PhosphorGameModeBase->SaveInGameProgressData(SaveData);
 	}
