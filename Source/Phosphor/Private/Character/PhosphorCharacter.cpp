@@ -7,6 +7,7 @@
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "NiagaraComponent.h"
 #include "PhosphorGameplayTags.h"
+#include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 #include "AbilitySystem/PhosphorAttributeSet.h"
 #include "AbilitySystem/Data/LevelUpInfo.h"
 #include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
@@ -57,8 +58,6 @@ void APhosphorCharacter::PossessedBy(AController* NewController)
 	InitAbilityActorInfo();
 
 	LoadProgress();
-	//TODO: Load in Attributes from disk.
-	AddCharacterAbilities();
 }
 
 void APhosphorCharacter::LoadProgress()
@@ -69,14 +68,6 @@ void APhosphorCharacter::LoadProgress()
 		ULoadScreenSaveGame* SaveData = PhosphorGameModeBase->RetrieveInGameSaveData();
 		if (SaveData == nullptr) return;
 
-		if (APhosphorPlayerState* PhosphorPlayerState = Cast<APhosphorPlayerState>(GetPlayerState()))
-		{
-			PhosphorPlayerState->SetLevel(SaveData->PlayerLevel);
-			PhosphorPlayerState->SetXP(SaveData->XP);
-			PhosphorPlayerState->SetAttributePoint(SaveData->AttributePoint);
-			PhosphorPlayerState->SetSpellPoint(SaveData->SpellPoint);
-		}
-
 		if (SaveData->bFirstTimeLogIn)
 		{
 			InitializeDefaultAttribute();
@@ -84,7 +75,16 @@ void APhosphorCharacter::LoadProgress()
 		}
 		else
 		{
+			//TODO: Load in Attributes from disk.
 			
+			if (APhosphorPlayerState* PhosphorPlayerState = Cast<APhosphorPlayerState>(GetPlayerState()))
+			{
+				PhosphorPlayerState->SetLevel(SaveData->PlayerLevel);
+				PhosphorPlayerState->SetXP(SaveData->XP);
+				PhosphorPlayerState->SetAttributePoint(SaveData->AttributePoint);
+				PhosphorPlayerState->SetSpellPoint(SaveData->SpellPoint);
+			}
+			UPhosphorAbilitySystemLibrary::InitializeDefaultAbilitiesFromSaveData(this, AbilitySystemComponent, SaveData);
 		}
 	}
 }

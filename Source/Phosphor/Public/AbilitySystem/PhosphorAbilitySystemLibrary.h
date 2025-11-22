@@ -8,6 +8,7 @@
 #include "Data/CharacterClassInfo.h"
 #include "PhosphorAbilitySystemLibrary.generated.h"
 
+class ULoadScreenSaveGame;
 struct FGameplayTag;
 struct FDamageEffectParams;
 class UAbilityInfo;
@@ -42,6 +43,9 @@ public:
 	/*Ability System Class Default*/
 	UFUNCTION(BlueprintCallable, Category = "PhosphorAbilitySystemLibrary|CharacterClassDefaults")
 	static void InitializeDefaultAbilities(const UObject* WorldContextObject,ECharacterClass CharacterClass,float Level,UAbilitySystemComponent* ASC);
+
+	UFUNCTION(BlueprintCallable, Category = "PhosphorAbilitySystemLibrary|CharacterClassDefaults")
+	static void InitializeDefaultAbilitiesFromSaveData(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, ULoadScreenSaveGame* SaveGame);
 
 	UFUNCTION(BlueprintCallable, Category = "PhosphorAbilitySystemLibrary|CharacterClassDefaults")
 	static void GiveStartUpAbilities(const UObject* WorldContextObject,UAbilitySystemComponent* ASC,ECharacterClass CharacterClass);

@@ -8,8 +8,8 @@
 #include "PhosphorPlayerState.generated.h"
 
 class ULevelUpInfo;
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChenged, int32 /*StateValue*/)
-
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChanged, int32 /*StateValue*/)
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnLevelChanged, int32 /*StateValue*/, bool /*bLevelUp*/)
 /**
  * 
  */
@@ -29,10 +29,10 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULevelUpInfo> LevelUpInfo;
 	
-	FOnPlayerStateChenged OnXPChangedDelegate;
-	FOnPlayerStateChenged OnLevelChangedDelegate;
-	FOnPlayerStateChenged OnAttributePointChangedDelegate;
-	FOnPlayerStateChenged OnSpellPointChangedDelegate;
+	FOnPlayerStateChanged OnXPChangedDelegate;
+	FOnLevelChanged OnLevelChangedDelegate;
+	FOnPlayerStateChanged OnAttributePointChangedDelegate;
+	FOnPlayerStateChanged OnSpellPointChangedDelegate;
 
 	FORCEINLINE int32 GetPlayerLevel()const {return Level;}
 	FORCEINLINE int32 GetPlayerXP()const {return XP;}

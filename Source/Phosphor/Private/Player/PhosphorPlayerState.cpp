@@ -33,7 +33,7 @@ UAbilitySystemComponent* APhosphorPlayerState::GetAbilitySystemComponent() const
 
 void APhosphorPlayerState::OnRep_Level(int32 OldLevel)
 {
-	OnLevelChangedDelegate.Broadcast(Level);
+	OnLevelChangedDelegate.Broadcast(Level, true);
 }
 
 void APhosphorPlayerState::OnRep_XP(int32 OldXP)
@@ -61,7 +61,7 @@ void APhosphorPlayerState::SetXP(const int32 NewXP)
 void APhosphorPlayerState::SetLevel(const int32 NewLevel)
 {
 	Level=NewLevel;
-	OnLevelChangedDelegate.Broadcast(Level);
+	OnLevelChangedDelegate.Broadcast(Level, false);
 }
 
 void APhosphorPlayerState::SetAttributePoint(const int32 NewAttributePoint)
@@ -85,7 +85,7 @@ void APhosphorPlayerState::AddToXP(const int32 AddXP)
 void APhosphorPlayerState::AddToLevel(const int32 AddLevel)
 {
 	Level+=AddLevel;
-	OnLevelChangedDelegate.Broadcast(Level);
+	OnLevelChangedDelegate.Broadcast(Level, true);
 }
 
 void APhosphorPlayerState::AddToAttributePoint(const int32 AddAttributePoint)

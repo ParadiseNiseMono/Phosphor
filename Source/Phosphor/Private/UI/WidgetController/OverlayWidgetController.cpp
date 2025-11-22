@@ -24,9 +24,9 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	GetPhosphorPS()->OnXPChangedDelegate.AddUObject(this,&UOverlayWidgetController::OnXPChanged);
 
 	GetPhosphorPS()->OnLevelChangedDelegate.AddLambda(
-		[this](int32 NewLevel)
+		[this](int32 NewLevel, bool bIsLevelUp)
 	{
-		OnPlayerLevelChangedDelegate.Broadcast(NewLevel);
+		OnPlayerLevelChangedDelegate.Broadcast(NewLevel, bIsLevelUp);
 	});
 	
 
