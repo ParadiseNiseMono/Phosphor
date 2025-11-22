@@ -19,8 +19,8 @@ APhosphorProjectile::APhosphorProjectile()
 	PrimaryActorTick.bCanEverTick =false;
 
 	bReplicates = true;
-	SphereComponent=CreateDefaultSubobject<USphereComponent>("SphereComponent");
-	SetRootComponent(SphereComponent);
+	SphereComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
+	SphereComponent->SetupAttachment(GetRootComponent());
 	SphereComponent->SetCollisionObjectType(ECC_Projectile);
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SphereComponent->SetCollisionResponseToAllChannels(ECR_Ignore);

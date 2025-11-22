@@ -47,6 +47,8 @@ void APhosphorGameModeBase::SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotInd
 	
 	LoadScreenSaveGame->PlayerName = LoadSlot->GetPlayerName();
 
+	LoadScreenSaveGame->PlayerStartTag = LoadSlot->PlayerStartTag;
+
 	UGameplayStatics::SaveGameToSlot(LoadScreenSaveGame, LoadSlot->GetLoadSlotName(), SlotIndex);
 }
 

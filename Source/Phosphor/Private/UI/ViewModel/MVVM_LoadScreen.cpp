@@ -38,6 +38,8 @@ void UMVVM_LoadScreen::NewSlotButtonPressed(int32 Slot, const FString& EnteredNa
 	LoadSlots[Slot]->SetMapName(PhosphorGameMode->DefaultMapName);
 	LoadSlots[Slot]->SlotStatus = Taken;
 	LoadSlots[Slot]->SetPlayerName(EnteredName);
+	LoadSlots[Slot]->PlayerStartTag = PhosphorGameMode->DefaultPlayerStartTag;
+	
 	PhosphorGameMode->SaveSlotData(LoadSlots[Slot], Slot);
 
 	LoadSlots[Slot]->InitializeSlot();
@@ -84,6 +86,10 @@ void UMVVM_LoadScreen::DeleteButtonPressed()
 void UMVVM_LoadScreen::PlayButtonPressed()
 {
 	APhosphorGameModeBase* PhosphorGameMode = Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(this));
+
+	UPhosphorGameInstance* PhosphorGameInstance = Cast<UPhosphorGameInstance>(PhosphorGameMode->GetGameInstance());
+	PhosphorGameInstance->PlayerStartTag = SelectedSlot->PlayerStartTag;
+	
 	if (IsValid(SelectedSlot))
 	{
 		PhosphorGameMode->TravelToMap(SelectedSlot);
@@ -101,6 +107,7 @@ void UMVVM_LoadScreen::LoadData()
 		LoadSlot.Value->SetPlayerName(SaveGameObject->PlayerName);
 		LoadSlot.Value->SlotStatus = SaveGameObject->SaveSlotStatus;
 		LoadSlot.Value->SetMapName(SaveGameObject->MapName);
+		LoadSlot.Value->PlayerStartTag = SaveGameObject->PlayerStartTag;
 		LoadSlot.Value->InitializeSlot();
 	}
 }
