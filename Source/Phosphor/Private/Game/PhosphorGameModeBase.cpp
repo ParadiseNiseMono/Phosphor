@@ -46,6 +46,14 @@ void APhosphorGameModeBase::DeleteSlot(const FString& SlotName, const int32 Slot
 	}
 }
 
+void APhosphorGameModeBase::TravelToMap(UMVVM_LoadSlot* LoadSlot)
+{
+	const FString LoadSlotName = LoadSlot->GetLoadSlotName();
+	const int32	SlotIndex = LoadSlot->SlotIndex;
+	
+	UGameplayStatics::OpenLevelBySoftObjectPtr(LoadSlot, Maps.FindChecked(LoadSlot->GetMapName()));
+}
+
 void APhosphorGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
