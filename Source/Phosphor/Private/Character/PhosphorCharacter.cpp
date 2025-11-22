@@ -76,7 +76,10 @@ void APhosphorCharacter::LoadProgress()
 		}
 		else
 		{
-			//TODO: Load in Attributes from disk.
+			if (UPhosphorAbilitySystemComponent* PhosphorASC = Cast<UPhosphorAbilitySystemComponent>(AbilitySystemComponent))
+			{
+				PhosphorASC->AddCharacterAbilitiesFromSaveData(SaveData);
+			}
 			
 			if (APhosphorPlayerState* PhosphorPlayerState = Cast<APhosphorPlayerState>(GetPlayerState()))
 			{
@@ -269,6 +272,7 @@ void APhosphorCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
 
 		UPhosphorAbilitySystemComponent* PhosphorASC = Cast<UPhosphorAbilitySystemComponent>(AbilitySystemComponent);
 		FForEachAbility SaveAbilityDelegate;
+		SaveData->SaveAbilities.Empty();
 		SaveAbilityDelegate.BindLambda([this, PhosphorASC, SaveData](const FGameplayAbilitySpec& Spec)
 		{
 			const FGameplayTag AbilityTag = PhosphorASC->GetAbilityTagFromSpec(Spec);
@@ -283,7 +287,7 @@ void APhosphorCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
 			SavedAbility.AbilityTag = AbilityTag;
 			SavedAbility.AbilityType = Info.AbilityType;
 
-			SaveData->SaveAbilities.Add(SavedAbility);
+			SaveData->SaveAbilities.AddUnique(SavedAbility);
 		});
 		PhosphorASC->ForEachAbility(SaveAbilityDelegate);
 

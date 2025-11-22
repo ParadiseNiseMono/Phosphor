@@ -4,6 +4,7 @@
 #include "AbilitySystem/Passive/PassiveNiagaraComponent.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "PhosphorGameplayTags.h"
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "AbilitySystem/PhosphorAbilitySystemLibrary.h"
 #include "Interaction/CombatInterface.h"
@@ -20,6 +21,7 @@ void UPassiveNiagaraComponent::BeginPlay()
 	if (UPhosphorAbilitySystemComponent* PhosphorASC= Cast<UPhosphorAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner())))
 	{
 		PhosphorASC->ActivatePassiveEffect.AddUObject(this, &UPassiveNiagaraComponent::OnPassiveActivate);
+		ActivateIfEquipped(PhosphorASC);
 	}
 	else if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetOwner()))
 	{
@@ -28,6 +30,7 @@ void UPassiveNiagaraComponent::BeginPlay()
 			if (UPhosphorAbilitySystemComponent* PhosphorASC= Cast<UPhosphorAbilitySystemComponent>(ASC))
 			{
 				PhosphorASC->ActivatePassiveEffect.AddUObject(this, &UPassiveNiagaraComponent::OnPassiveActivate);
+				ActivateIfEquipped(PhosphorASC);
 			}
 		});
 	}
@@ -44,6 +47,17 @@ void UPassiveNiagaraComponent::OnPassiveActivate(const FGameplayTag& AbilityTag,
 		else
 		{
 			Deactivate();
+		}
+	}
+}
+
+void UPassiveNiagaraComponent::ActivateIfEquipped(UPhosphorAbilitySystemComponent* PhosphorASC)
+{
+	if (PhosphorASC->bStartupAbilitiesGiven)
+	{
+		if (PhosphorASC->GetStatusFromAbilityTag(PassiveSpellTag).MatchesTagExact(FPhosphorGameplayTags::Get().Abilities_Status_Equipped))
+		{
+			Activate();
 		}
 	}
 }
