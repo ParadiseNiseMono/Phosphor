@@ -7,6 +7,7 @@
 #include "AbilitySystem/PhosphorAbilitySystemComponent.h"
 #include "NiagaraComponent.h"
 #include "PhosphorGameplayTags.h"
+#include "AbilitySystem/PhosphorAttributeSet.h"
 #include "AbilitySystem/Data/LevelUpInfo.h"
 #include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Camera/CameraComponent.h"
@@ -219,6 +220,17 @@ void APhosphorCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
 		if (SaveData == nullptr) return;
 
 		SaveData->PlayerStartTag = CheckpointTag;
+		if (APhosphorPlayerState* PhosphorPlayerState = Cast<APhosphorPlayerState>(GetPlayerState()))
+		{
+			SaveData->PlayerLevel = PhosphorPlayerState->GetPlayerLevel();
+			SaveData->XP = PhosphorPlayerState->GetPlayerXP();
+			SaveData->SpellPoints = PhosphorPlayerState->GetPlayerSpellPoint();
+			SaveData->AttributePoints = PhosphorPlayerState->GetPlayerAttributePoint();
+		}
+		SaveData->Strength = UPhosphorAttributeSet::GetStrengthAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Intelligence = UPhosphorAttributeSet::GetIntelligenceAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Resilience = UPhosphorAttributeSet::GetResilienceAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Vigor = UPhosphorAttributeSet::GetVigorAttribute().GetNumericValue(GetAttributeSet());
 
 		PhosphorGameModeBase->SaveInGameProgressData(SaveData);
 	}
