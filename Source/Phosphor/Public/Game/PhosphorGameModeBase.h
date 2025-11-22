@@ -19,6 +19,9 @@ class PHOSPHOR_API APhosphorGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 public:
+
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+	
 	UPROPERTY(EditDefaultsOnly,Category="Character Class Defaults")
 	TObjectPtr<UCharacterClassInfo> CharacterClassInfo;
 
@@ -41,6 +44,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSoftObjectPtr<UWorld> DefaultMap;
+
+	UPROPERTY(EditDefaultsOnly)
+	FName DefaultPlayerStartTag;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TMap<FString, TSoftObjectPtr<UWorld>> Maps;
