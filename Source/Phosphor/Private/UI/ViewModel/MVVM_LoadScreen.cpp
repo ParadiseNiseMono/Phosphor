@@ -31,7 +31,8 @@ void UMVVM_LoadScreen::NewSlotButtonPressed(int32 Slot, const FString& EnteredNa
 {
 	APhosphorGameModeBase* PhosphorGameMode = Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(this));
 
-	LoadSlots[Slot]->PlayerName = EnteredName;
+	LoadSlots[Slot]->SlotStatus = Taken;
+	LoadSlots[Slot]->SetPlayerName(EnteredName);
 	PhosphorGameMode->SaveSlotData(LoadSlots[Slot], Slot);
 
 	LoadSlots[Slot]->InitializeSlot();
@@ -45,6 +46,20 @@ void UMVVM_LoadScreen::NewGameButtonPressed(int32 Slot)
 void UMVVM_LoadScreen::SelectButtonPressed(int32 Slot)
 {
 	
+}
+
+void UMVVM_LoadScreen::LoadData()
+{
+	APhosphorGameModeBase* PhosphorGameMode = Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(this));
+	
+	for (const TTuple<int32, UMVVM_LoadSlot*> LoadSlot : LoadSlots)
+	{
+		ULoadScreenSaveGame* SaveGameObject = PhosphorGameMode->GetSaveSlotData(LoadSlot.Key, LoadSlot.Value->GetLoadSlotName());
+
+		LoadSlot.Value->SetPlayerName(SaveGameObject->PlayerName);
+		LoadSlot.Value->SlotStatus = SaveGameObject->SaveSlotStatus;
+		LoadSlot.Value->InitializeSlot();
+	}
 }
 
 void UMVVM_LoadScreen::SetNumLoadSlots(const int32 InNumLoadSlots)

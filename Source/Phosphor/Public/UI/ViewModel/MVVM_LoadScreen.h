@@ -34,6 +34,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SelectButtonPressed(int32 Slot);
 
+	void LoadData();
+
 	void SetNumLoadSlots(const int32 InNumLoadSlots);
 	int32 GetNumLoadSlots() const { return NumLoadSlots; };
 private:

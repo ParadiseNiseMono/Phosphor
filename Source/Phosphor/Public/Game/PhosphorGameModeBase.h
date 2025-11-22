@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "PhosphorGameModeBase.generated.h"
 
+class ULoadScreenSaveGame;
 class USaveGame;
 class UMVVM_LoadSlot;
 class UCharacterClassInfo;
@@ -26,6 +27,8 @@ public:
 
 	void SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotIndex);
 
+	ULoadScreenSaveGame* GetSaveSlotData(const int32 SlotIndex, const FString& SlotName); 
+ 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USaveGame> LoadScreenSaveGameClass;
 };
