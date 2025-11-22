@@ -42,6 +42,9 @@ public:
 	UPROPERTY()
 	FName PlayerStartTag;
 
+	UPROPERTY()
+	bool bFirstTimeLogIn = true;
+
 	/*Player*/
 
 	UPROPERTY()
@@ -51,10 +54,10 @@ public:
 	int32 XP = 0;
 	
 	UPROPERTY()
-	int32 SpellPoints = 0;
+	int32 SpellPoint = 0;
 
 	UPROPERTY()
-	int32 AttributePoints = 0;
+	int32 AttributePoint = 0;
 
 	/*Attributes*/
 

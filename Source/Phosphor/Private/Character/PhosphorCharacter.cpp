@@ -55,7 +55,38 @@ void APhosphorCharacter::PossessedBy(AController* NewController)
 	
 	//init ability actor for the server
 	InitAbilityActorInfo();
+
+	LoadProgress();
+	//TODO: Load in Attributes from disk.
 	AddCharacterAbilities();
+}
+
+void APhosphorCharacter::LoadProgress()
+{
+	APhosphorGameModeBase* PhosphorGameModeBase = Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (PhosphorGameModeBase)
+	{
+		ULoadScreenSaveGame* SaveData = PhosphorGameModeBase->RetrieveInGameSaveData();
+		if (SaveData == nullptr) return;
+
+		if (APhosphorPlayerState* PhosphorPlayerState = Cast<APhosphorPlayerState>(GetPlayerState()))
+		{
+			PhosphorPlayerState->SetLevel(SaveData->PlayerLevel);
+			PhosphorPlayerState->SetXP(SaveData->XP);
+			PhosphorPlayerState->SetAttributePoint(SaveData->AttributePoint);
+			PhosphorPlayerState->SetSpellPoint(SaveData->SpellPoint);
+		}
+
+		if (SaveData->bFirstTimeLogIn)
+		{
+			InitializeDefaultAttribute();
+			AddCharacterAbilities();
+		}
+		else
+		{
+			
+		}
+	}
 }
 
 void APhosphorCharacter::OnRep_PlayerState()
@@ -224,13 +255,15 @@ void APhosphorCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
 		{
 			SaveData->PlayerLevel = PhosphorPlayerState->GetPlayerLevel();
 			SaveData->XP = PhosphorPlayerState->GetPlayerXP();
-			SaveData->SpellPoints = PhosphorPlayerState->GetPlayerSpellPoint();
-			SaveData->AttributePoints = PhosphorPlayerState->GetPlayerAttributePoint();
+			SaveData->SpellPoint = PhosphorPlayerState->GetPlayerSpellPoint();
+			SaveData->AttributePoint = PhosphorPlayerState->GetPlayerAttributePoint();
 		}
 		SaveData->Strength = UPhosphorAttributeSet::GetStrengthAttribute().GetNumericValue(GetAttributeSet());
 		SaveData->Intelligence = UPhosphorAttributeSet::GetIntelligenceAttribute().GetNumericValue(GetAttributeSet());
 		SaveData->Resilience = UPhosphorAttributeSet::GetResilienceAttribute().GetNumericValue(GetAttributeSet());
 		SaveData->Vigor = UPhosphorAttributeSet::GetVigorAttribute().GetNumericValue(GetAttributeSet());
+
+		SaveData->bFirstTimeLogIn = false;
 
 		PhosphorGameModeBase->SaveInGameProgressData(SaveData);
 	}
@@ -263,7 +296,6 @@ void APhosphorCharacter::InitAbilityActorInfo()
 			PhosphorHUD->InitOverlay(PhosphorPlayerController,PhosphorPlayerState,AbilitySystemComponent,AttributeSet);
 		}
 	}
-	InitializeDefaultAttribute();
 }
 
 
