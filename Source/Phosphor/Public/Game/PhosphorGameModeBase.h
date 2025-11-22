@@ -27,8 +27,22 @@ public:
 
 	void SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotIndex);
 
-	ULoadScreenSaveGame* GetSaveSlotData(const int32 SlotIndex, const FString& SlotName); 
+	ULoadScreenSaveGame* GetSaveSlotData(const int32 SlotIndex, const FString& SlotName);
+
+	static void DeleteSlot(const FString& SlotName, const int32 SlotIndex);
  
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USaveGame> LoadScreenSaveGameClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	FString DefaultMapName;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSoftObjectPtr<UWorld> DefaultMap;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TMap<FString, TSoftObjectPtr<UWorld>> Maps;
+
+protected:
+	virtual void BeginPlay() override;
 };

@@ -11,12 +11,15 @@ void UMVVM_LoadScreen::InitializeLoadSlots()
 {
 	LoadSlot_0 = NewObject<UMVVM_LoadSlot>(this, LoadSlotViewModelClass);
 	LoadSlot_0->SetLoadSlotName("LoadSlot_0");
+	LoadSlot_0->SlotIndex = 0;
 	LoadSlots.Add(0, LoadSlot_0);
 	LoadSlot_1 = NewObject<UMVVM_LoadSlot>(this, LoadSlotViewModelClass);
 	LoadSlot_1->SetLoadSlotName("LoadSlot_1");
+	LoadSlot_1->SlotIndex = 1;
 	LoadSlots.Add(1, LoadSlot_1);
 	LoadSlot_2 = NewObject<UMVVM_LoadSlot>(this, LoadSlotViewModelClass);
 	LoadSlot_2->SetLoadSlotName("LoadSlot_2");
+	LoadSlot_2->SlotIndex = 2;
 	LoadSlots.Add(2, LoadSlot_2);
 
 	SetNumLoadSlots(LoadSlots.Num());
@@ -31,6 +34,7 @@ void UMVVM_LoadScreen::NewSlotButtonPressed(int32 Slot, const FString& EnteredNa
 {
 	APhosphorGameModeBase* PhosphorGameMode = Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(this));
 
+	LoadSlots[Slot]->SetMapName(PhosphorGameMode->DefaultMapName);
 	LoadSlots[Slot]->SlotStatus = Taken;
 	LoadSlots[Slot]->SetPlayerName(EnteredName);
 	PhosphorGameMode->SaveSlotData(LoadSlots[Slot], Slot);
@@ -57,6 +61,18 @@ void UMVVM_LoadScreen::SelectButtonPressed(int32 Slot)
 			LoadSlot.Value->EnableSelectSlotButton.Broadcast(true);
 		}
 	}
+	SelectedSlot = LoadSlots[Slot];
+}
+
+void UMVVM_LoadScreen::DeleteButtonPressed()
+{
+	if (IsValid(SelectedSlot))
+	{
+		APhosphorGameModeBase::DeleteSlot(SelectedSlot->GetLoadSlotName(), SelectedSlot->SlotIndex);
+		SelectedSlot->SlotStatus = Vacant;
+		SelectedSlot->InitializeSlot();
+		SelectedSlot->EnableSelectSlotButton.Broadcast(true);
+	}
 }
 
 void UMVVM_LoadScreen::LoadData()
@@ -69,6 +85,7 @@ void UMVVM_LoadScreen::LoadData()
 
 		LoadSlot.Value->SetPlayerName(SaveGameObject->PlayerName);
 		LoadSlot.Value->SlotStatus = SaveGameObject->SaveSlotStatus;
+		LoadSlot.Value->SetMapName(SaveGameObject->MapName);
 		LoadSlot.Value->InitializeSlot();
 	}
 }

@@ -16,6 +16,7 @@ void APhosphorGameModeBase::SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotInd
 	USaveGame* SaveGameObject = UGameplayStatics::CreateSaveGameObject(LoadScreenSaveGameClass);
 	ULoadScreenSaveGame* LoadScreenSaveGame = Cast<ULoadScreenSaveGame>(SaveGameObject);
 	LoadScreenSaveGame->SaveSlotStatus = Taken;
+	LoadScreenSaveGame->MapName = LoadSlot->GetMapName();
 	
 	LoadScreenSaveGame->PlayerName = LoadSlot->GetPlayerName();
 
@@ -35,4 +36,19 @@ ULoadScreenSaveGame* APhosphorGameModeBase::GetSaveSlotData(const int32 SlotInde
 	}
 	ULoadScreenSaveGame* LoadScreenSaveGame = Cast<ULoadScreenSaveGame>(SaveGameObject);
 	return LoadScreenSaveGame;
+}
+
+void APhosphorGameModeBase::DeleteSlot(const FString& SlotName, const int32 SlotIndex)
+{
+	if (UGameplayStatics::DoesSaveGameExist(SlotName, SlotIndex))
+	{
+		UGameplayStatics::DeleteGameInSlot(SlotName, SlotIndex);
+	}
+}
+
+void APhosphorGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Maps.Add(DefaultMapName, DefaultMap);
 }
