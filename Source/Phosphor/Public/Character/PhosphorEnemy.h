@@ -25,8 +25,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	
 	/*HighlightInterface*/
-	virtual void HighLightActor() override;
-	virtual void UnHighLightActor() override;
+	virtual void HighLightActor_Implementation() override;
+	virtual void UnHighLightActor_Implementation() override;
 	/*end HighlightInterface*/
 
 	/*Combat Interface*/

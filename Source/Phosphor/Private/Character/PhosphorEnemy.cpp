@@ -48,7 +48,7 @@ void APhosphorEnemy::PossessedBy(AController* NewController)
 	PhosphorAIController->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"),CharacterClass != ECharacterClass::Warrior);
 }
 
-void APhosphorEnemy::HighLightActor()
+void APhosphorEnemy::HighLightActor_Implementation()
 {
 	GetMesh()->SetRenderCustomDepth(true);
 	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
@@ -57,7 +57,7 @@ void APhosphorEnemy::HighLightActor()
 	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
 }
 
-void APhosphorEnemy::UnHighLightActor()
+void APhosphorEnemy::UnHighLightActor_Implementation()	
 {
 	GetMesh()->SetRenderCustomDepth(false);
 	Weapon->SetRenderCustomDepth(false);

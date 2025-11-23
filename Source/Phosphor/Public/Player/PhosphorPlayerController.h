@@ -21,6 +21,13 @@ struct FInputActionValue;
 class IEnemyInterface;
 class UPhosphorAbilitySystemComponent;
 
+enum class ETargetingStatus : uint8
+{
+	TargetingEnemy,
+	TargetingNonEnemy,
+	NotTargeting
+};
+
 class USplineComponent;
 UCLASS()
 class PHOSPHOR_API APhosphorPlayerController : public APlayerController
@@ -58,9 +65,12 @@ private:
 
 	void CursorTrace();
 	
-	TScriptInterface<IHighlightInterface> LastActor;
-	TScriptInterface<IHighlightInterface> ThisActor;
+	TObjectPtr<AActor> LastActor;
+	TObjectPtr<AActor> ThisActor;
 	FHitResult CursorHit;
+
+	static void HighlightActor(AActor* InActor);
+	static void UnHighlightActor(AActor* InActor);
 
 	void AbilityInputTagPressed(FGameplayTag InputTag);
 	void AbilityInputTagReleased(FGameplayTag InputTag);
@@ -75,11 +85,12 @@ private:
 	UPhosphorAbilitySystemComponent* GetASC();
 
 	
-	FVector CachedDestination=FVector::ZeroVector;
-	float FollowTime=0.0f;
-	float ShortPressThreshold=0.5f;
-	bool bAutoRunning=false;
-	bool bTargeting=false;
+	FVector CachedDestination = FVector::ZeroVector;
+	float FollowTime = 0.0f;
+	float ShortPressThreshold = 0.5f;
+	bool bAutoRunning = false;
+
+	ETargetingStatus TargetingStatus = ETargetingStatus::NotTargeting;
 
 	UPROPERTY(EditDefaultsOnly)
 	float AutoRunAcceptanceRadius=50.0f;

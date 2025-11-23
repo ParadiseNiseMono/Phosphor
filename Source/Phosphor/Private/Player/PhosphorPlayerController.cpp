@@ -13,9 +13,11 @@
 #include "Actor/MagicCircle.h"
 #include "Components/DecalComponent.h"
 #include "Components/SplineComponent.h"
+#include "EntitySystem/MovieSceneEntityManager.h"
 #include "GameFramework/Character.h"
 
 #include "Input/PhosphorInputComponent.h"
+#include "Interaction/EnemyInterface.h"
 #include "Interaction/HighlightInterface.h"
 #include "Phosphor/Phosphor.h"
 #include "UI/Widget/DamageTextComponent.h"
@@ -127,8 +129,8 @@ void APhosphorPlayerController::CursorTrace()
 
 	if (GetASC() && GetASC() -> HasMatchingGameplayTag(FPhosphorGameplayTags::Get().Player_Block_CursorTrace))
 	{
-		if (LastActor) LastActor->UnHighLightActor();
-		if (ThisActor) ThisActor->UnHighLightActor();
+		UnHighlightActor(LastActor);
+		UnHighlightActor(ThisActor);
 		LastActor = nullptr;
 		ThisActor = nullptr;
 		return;
@@ -139,22 +141,35 @@ void APhosphorPlayerController::CursorTrace()
 	if (!CursorHit.bBlockingHit) return;
 
 	LastActor=ThisActor;
-	ThisActor=CursorHit.GetActor();
+	if (IsValid(CursorHit.GetActor()) && CursorHit.GetActor()->Implements<UHighlightInterface>())
+	{
+		ThisActor = CursorHit.GetActor();
+	}
+	else
+	{
+		ThisActor = nullptr;
+	}
 	
-	if (LastActor==nullptr)
+	if (LastActor!=ThisActor)
 	{
-		if (ThisActor!=nullptr)ThisActor->HighLightActor();
-	}else if(LastActor!=nullptr)
+		UnHighlightActor(LastActor);
+		HighlightActor(ThisActor);
+	}
+}
+
+void APhosphorPlayerController::HighlightActor(AActor* InActor)
+{
+	if (IsValid(InActor) && InActor->Implements<UHighlightInterface>())
 	{
-		if (ThisActor==nullptr)LastActor->UnHighLightActor();
-		else
-		{
-			if (LastActor!=ThisActor)
-			{
-				LastActor->UnHighLightActor();
-				ThisActor->HighLightActor();
-			}
-		}
+		IHighlightInterface::Execute_HighLightActor(InActor);
+	}
+}
+
+void APhosphorPlayerController::UnHighlightActor(AActor* InActor)
+{
+	if (IsValid(InActor) && InActor->Implements<UHighlightInterface>())
+	{
+		IHighlightInterface::Execute_UnHighLightActor(InActor);
 	}
 }
 
@@ -166,8 +181,15 @@ void APhosphorPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 	}
 	if (InputTag.MatchesTagExact(FPhosphorGameplayTags::Get().InputTag_LMB))
 	{
-		bTargeting=ThisActor ? true : false;
-		bAutoRunning=false;
+		if (IsValid(ThisActor))
+		{
+			TargetingStatus = ThisActor->Implements<UEnemyInterface>() ? ETargetingStatus::TargetingEnemy : ETargetingStatus::TargetingNonEnemy;
+			bAutoRunning=false;
+		}
+		else
+		{
+			TargetingStatus = ETargetingStatus::NotTargeting;
+		}
 	}
 	if(GetASC()) GetASC()->AbilityInputTagPressed(InputTag);
 }
@@ -184,10 +206,10 @@ void APhosphorPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		return;
 	}
 	if (GetASC())GetASC()->AbilityInputTagReleased(InputTag);
-	if (!bTargeting&&!bShiftKeyPressed)
+	if (TargetingStatus != ETargetingStatus::TargetingEnemy && !bShiftKeyPressed)
 	{
 		APawn* ControlledPawn = GetPawn();
-		if (FollowTime<=ShortPressThreshold&&ControlledPawn)
+		if (FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
 			if ( UNavigationPath* NavigationPath= UNavigationSystemV1::FindPathToLocationSynchronously(this,ControlledPawn->GetActorLocation(),CachedDestination))
 			{
@@ -205,7 +227,7 @@ void APhosphorPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
 		}
 		FollowTime=0.0f;
-		bTargeting=false;
+		TargetingStatus = ETargetingStatus::NotTargeting;
 	}
 }
 
@@ -220,7 +242,7 @@ void APhosphorPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 		if (GetASC())GetASC()->AbilityInputTagHeld(InputTag);
 		return;
 	}
-	if (bTargeting||bShiftKeyPressed)
+	if (TargetingStatus == ETargetingStatus::TargetingEnemy || bShiftKeyPressed)
 	{
 		if (GetASC())GetASC()->AbilityInputTagHeld(InputTag);
 	}
