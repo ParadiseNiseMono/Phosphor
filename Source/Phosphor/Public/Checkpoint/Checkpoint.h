@@ -19,6 +19,11 @@ class PHOSPHOR_API ACheckpoint : public APlayerStart, public ISaveInterface
 public:
 	ACheckpoint(const FObjectInitializer& ObjectInitializer);
 
+	/*SaveGameInterface*/
+	virtual bool ShouldLoadTransform_Implementation() override { return false; }
+	virtual void LoadActor_Implementation() override;
+	/*End SaveGameInterface*/
+
 	UPROPERTY(BlueprintReadOnly, SaveGame)
 	bool bReached = false;
 

@@ -9,6 +9,7 @@
 #include "GameFramework/PlayerStart.h"
 #include "Interaction/SaveInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "Phosphor/PhosphorLogChannels.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "UI/ViewModel/MVVM_LoadSlot.h"
 
@@ -154,6 +155,51 @@ void APhosphorGameModeBase::SaveWorldState(UWorld* World)
 		}
 
 		UGameplayStatics::SaveGameToSlot(SaveGame, PhosphorGI->LoadSlotName, PhosphorGI->LoadSlotIndex);
+	}
+}
+
+void APhosphorGameModeBase::LoadWorldState(UWorld* World)
+{
+	FString WorldName = World->GetMapName();
+	WorldName.RemoveFromStart(World->StreamingLevelsPrefix);
+
+	UPhosphorGameInstance* PhosphorGI = Cast<UPhosphorGameInstance>(GetGameInstance());
+	check(PhosphorGI);
+
+	if (UGameplayStatics::DoesSaveGameExist(PhosphorGI->LoadSlotName, PhosphorGI->LoadSlotIndex))
+	{
+
+		ULoadScreenSaveGame* SaveGame = Cast<ULoadScreenSaveGame>(UGameplayStatics::LoadGameFromSlot(PhosphorGI->LoadSlotName, PhosphorGI->LoadSlotIndex));
+		if (SaveGame == nullptr)
+		{
+			UE_LOG(LogPhosphor, Warning, TEXT("LoadWorldState: Can't load save game!"));
+			return;
+		}
+		
+		for (FActorIterator ActorIt(World); ActorIt; ++ActorIt)
+		{
+			AActor* Actor = *ActorIt;
+
+			if (!Actor->Implements<USaveInterface>()) continue;
+
+			for (FSavedActor SavedActor : SaveGame->GetSavedMapWithMapName(WorldName).SavedActors)
+			{
+				if (SavedActor.ActorName == Actor->GetFName())
+				{
+					if (ISaveInterface::Execute_ShouldLoadTransform(Actor))
+					{
+						Actor->SetActorTransform(SavedActor.Transform);
+					}
+
+					FMemoryReader MemoryReader(SavedActor.Bytes);
+
+					FObjectAndNameAsStringProxyArchive Archive(MemoryReader, true);
+					Actor->Serialize(Archive);// converts binary bytes back into variables
+
+					ISaveInterface::Execute_LoadActor(Actor);
+				}
+			}
+		}
 	}
 }
 

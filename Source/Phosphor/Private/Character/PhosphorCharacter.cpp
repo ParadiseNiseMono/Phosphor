@@ -1,4 +1,4 @@
-// copyright Paradise_NiseMono
+	// copyright Paradise_NiseMono
 
 
 #include "Character/PhosphorCharacter.h"
@@ -57,8 +57,13 @@ void APhosphorCharacter::PossessedBy(AController* NewController)
 	
 	//init ability actor for the server
 	InitAbilityActorInfo();
-
+	
 	LoadProgress();
+
+	if (APhosphorGameModeBase* PhosphorGameModeBase = Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(this)))
+	{
+		PhosphorGameModeBase->LoadWorldState(GetWorld());
+	}
 }
 
 void APhosphorCharacter::LoadProgress()
