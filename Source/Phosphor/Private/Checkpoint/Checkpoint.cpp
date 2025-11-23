@@ -47,7 +47,11 @@ void ACheckpoint::OnSphereOverlap(UPrimitiveComponent* OverlappedComp, AActor* O
 		bReached = true;
 		if (APhosphorGameModeBase* PhosphorGM = Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(this)))
 		{
-			PhosphorGM->SaveWorldState(GetWorld());
+			const UWorld* World = GetWorld();
+			FString MapName = World->GetMapName();
+			MapName.RemoveFromStart(World->StreamingLevelsPrefix);
+			
+			PhosphorGM->SaveWorldState(GetWorld(), MapName);
 		}
 		IPlayerInterface::Execute_SaveProgress(OtherActor, PlayerStartTag);
 		

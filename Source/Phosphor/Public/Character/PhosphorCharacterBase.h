@@ -102,7 +102,8 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Combat")
 	float BaseWalkSpeed=600.0f;
-	
+
+	UPROPERTY(BlueprintReadOnly)
 	bool bDead=false;
 
 	UPROPERTY()

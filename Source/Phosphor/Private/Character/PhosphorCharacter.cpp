@@ -307,7 +307,24 @@ int32 APhosphorCharacter::GetPlayerLevel_Implementation()
 	return PhosphorPlayerState->GetPlayerLevel();
 }
 
-void APhosphorCharacter::InitAbilityActorInfo()
+void APhosphorCharacter::Die(const FVector& InDeathImpulse)
+{
+	Super::Die(InDeathImpulse);
+
+	FTimerDelegate DeathDelegate;
+	DeathDelegate.BindLambda([this]()
+	{
+		APhosphorGameModeBase* PhosphorGM = Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(this));
+		if (PhosphorGM)
+		{
+			PhosphorGM->PlayerDead(this);
+		}
+	});
+	GetWorldTimerManager().SetTimer(DeathTimer, DeathDelegate, DeathTime, false);
+	TopDownCameraComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+}
+
+	void APhosphorCharacter::InitAbilityActorInfo()
 {
 	APhosphorPlayerState* PhosphorPlayerState=GetPlayerState<APhosphorPlayerState>();
 	check(PhosphorPlayerState);

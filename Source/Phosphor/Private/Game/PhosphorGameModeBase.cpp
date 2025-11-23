@@ -12,6 +12,7 @@
 #include "Phosphor/PhosphorLogChannels.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "UI/ViewModel/MVVM_LoadSlot.h"
+#include "GameFramework/Character.h"
 
 AActor* APhosphorGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
 {
@@ -52,6 +53,8 @@ void APhosphorGameModeBase::SaveSlotData(UMVVM_LoadSlot* LoadSlot, int32 SlotInd
 	LoadScreenSaveGame->PlayerName = LoadSlot->GetPlayerName();
 
 	LoadScreenSaveGame->PlayerStartTag = LoadSlot->PlayerStartTag;
+
+	LoadScreenSaveGame->MapAssetName = LoadSlot->MapAssetName;
 
 	UGameplayStatics::SaveGameToSlot(LoadScreenSaveGame, LoadSlot->GetLoadSlotName(), SlotIndex);
 }
@@ -219,6 +222,15 @@ FString APhosphorGameModeBase::GetMapNameFromMapAssetName(const FString& MapName
 		}
 	}
 	return FString();
+}
+
+void APhosphorGameModeBase::PlayerDead(ACharacter* DeadCharacter)
+{
+	ULoadScreenSaveGame* SaveGame = RetrieveInGameSaveData();
+	if (!IsValid(SaveGame)) return;
+
+	UGameplayStatics::OpenLevel(DeadCharacter, FName(SaveGame->MapAssetName));
+	
 }
 
 void APhosphorGameModeBase::BeginPlay()

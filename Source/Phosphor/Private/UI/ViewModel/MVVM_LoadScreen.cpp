@@ -45,6 +45,7 @@ void UMVVM_LoadScreen::NewSlotButtonPressed(int32 Slot, const FString& EnteredNa
 	LoadSlots[Slot]->SetPlayerName(EnteredName);
 	LoadSlots[Slot]->SetPlayerLevel(1);
 	LoadSlots[Slot]->PlayerStartTag = PhosphorGameMode->DefaultPlayerStartTag;
+	LoadSlots[Slot]->MapAssetName = PhosphorGameMode->DefaultMap.ToSoftObjectPath().GetAssetName();
 	
 	PhosphorGameMode->SaveSlotData(LoadSlots[Slot], Slot);
 
