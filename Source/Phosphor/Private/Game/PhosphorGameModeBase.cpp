@@ -3,10 +3,13 @@
 
 #include "Game/PhosphorGameModeBase.h"
 
+#include "EngineUtils.h"
 #include "Game/LoadScreenSaveGame.h"
 #include "Game/PhosphorGameInstance.h"
 #include "GameFramework/PlayerStart.h"
+#include "Interaction/SaveInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "UI/ViewModel/MVVM_LoadSlot.h"
 
 AActor* APhosphorGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
@@ -102,6 +105,56 @@ void APhosphorGameModeBase::SaveInGameProgressData(ULoadScreenSaveGame* SaveObje
 	PhosphorGameInstance->PlayerStartTag = SaveObject->PlayerStartTag;
 
 	UGameplayStatics::SaveGameToSlot(SaveObject, InGameLoadSlotName, InGameLoadSlotIndex);
+}
+
+void APhosphorGameModeBase::SaveWorldState(UWorld* World)
+{
+	FString WorldName = World->GetMapName();
+	WorldName.RemoveFromStart(World->StreamingLevelsPrefix);
+
+	UPhosphorGameInstance* PhosphorGI = Cast<UPhosphorGameInstance>(GetGameInstance());
+	check(PhosphorGI);
+
+	if (ULoadScreenSaveGame* SaveGame = GetSaveSlotData(PhosphorGI->LoadSlotIndex, PhosphorGI->LoadSlotName))
+	{
+		if (!SaveGame->HasMap(WorldName))
+		{
+			FSavedMap NewSavedMap;
+			NewSavedMap.MapAssetName = WorldName;
+			SaveGame->SavedMaps.Add(NewSavedMap);
+		}
+		FSavedMap SavedMap = SaveGame->GetSavedMapWithMapName(WorldName);
+		SavedMap.SavedActors.Empty();
+
+		for (FActorIterator ActorIt(World); ActorIt; ++ActorIt)
+		{
+			AActor* Actor = *ActorIt;
+
+			if (!IsValid(Actor) || !Actor->Implements<USaveInterface>()) continue;
+
+			FSavedActor SavedActor;
+			SavedActor.ActorName = Actor->GetFName();
+			SavedActor.Transform = Actor->GetTransform();
+
+			FMemoryWriter MemoryWriter(SavedActor.Bytes);
+
+			FObjectAndNameAsStringProxyArchive Archive(MemoryWriter, true);
+
+			Actor->Serialize(Archive);
+
+			SavedMap.SavedActors.AddUnique(SavedActor);
+		}
+
+		for (FSavedMap& MapToReplace : SaveGame->SavedMaps)
+		{
+			if (MapToReplace.MapAssetName == WorldName)
+			{
+				MapToReplace = SavedMap;
+			}
+		}
+
+		UGameplayStatics::SaveGameToSlot(SaveGame, PhosphorGI->LoadSlotName, PhosphorGI->LoadSlotIndex);
+	}
 }
 
 void APhosphorGameModeBase::BeginPlay()
