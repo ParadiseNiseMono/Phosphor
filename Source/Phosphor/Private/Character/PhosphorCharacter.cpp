@@ -322,6 +322,16 @@ void APhosphorCharacter::Die(const FVector& InDeathImpulse)
 	});
 	GetWorldTimerManager().SetTimer(DeathTimer, DeathDelegate, DeathTime, false);
 	TopDownCameraComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	if (UPhosphorAbilitySystemComponent* PhosphorASC = Cast<UPhosphorAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		const FPhosphorGameplayTags& GameplayTags = FPhosphorGameplayTags::Get();
+		FGameplayTagContainer BlockTags;
+		BlockTags.AddTag(GameplayTags.Player_Block_CursorTrace);
+		BlockTags.AddTag(GameplayTags.Player_Block_InputHeld);
+		BlockTags.AddTag(GameplayTags.Player_Block_InputPressed);
+		BlockTags.AddTag(GameplayTags.Player_Block_InputReleased);
+		PhosphorASC->AddLooseGameplayTags(BlockTags);
+	}
 }
 
 	void APhosphorCharacter::InitAbilityActorInfo()

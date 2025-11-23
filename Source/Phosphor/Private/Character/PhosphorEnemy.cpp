@@ -76,6 +76,7 @@ void APhosphorEnemy::Die(const FVector& InDeathImpulse)
 	{
 		PhosphorAIController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"),true);
 	}
+	SpawnLoot();
 	Super::Die(InDeathImpulse);
 }
 
