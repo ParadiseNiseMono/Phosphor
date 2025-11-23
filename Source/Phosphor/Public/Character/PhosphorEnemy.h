@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Character/PhosphorCharacterBase.h"
 #include "Interaction/EnemyInterface.h"
+#include "Interaction/HighlightInterface.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "PhosphorEnemy.generated.h"
 
@@ -15,7 +16,7 @@ class APhosphorAIController;
  * 
  */
 UCLASS()
-class PHOSPHOR_API APhosphorEnemy : public APhosphorCharacterBase,public IEnemyInterface
+class PHOSPHOR_API APhosphorEnemy : public APhosphorCharacterBase,public IEnemyInterface,public IHighlightInterface
 {
 	GENERATED_BODY()
 
@@ -23,10 +24,10 @@ public:
 	APhosphorEnemy();
 	virtual void PossessedBy(AController* NewController) override;
 	
-	/*EnemyInterface*/
+	/*HighlightInterface*/
 	virtual void HighLightActor() override;
 	virtual void UnHighLightActor() override;
-	/*end EnemyInterface*/
+	/*end HighlightInterface*/
 
 	/*Combat Interface*/
 	FORCEINLINE virtual int32 GetPlayerLevel_Implementation() override {return Level;};

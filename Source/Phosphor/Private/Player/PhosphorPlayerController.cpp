@@ -16,7 +16,7 @@
 #include "GameFramework/Character.h"
 
 #include "Input/PhosphorInputComponent.h"
-#include "Interaction/EnemyInterface.h"
+#include "Interaction/HighlightInterface.h"
 #include "Phosphor/Phosphor.h"
 #include "UI/Widget/DamageTextComponent.h"
 
