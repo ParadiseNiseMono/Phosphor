@@ -35,7 +35,7 @@ public:
 	ULoadScreenSaveGame* RetrieveInGameSaveData();
 	void SaveInGameProgressData(ULoadScreenSaveGame* SaveObject);
 
-	void SaveWorldState(UWorld* World);
+	void SaveWorldState(UWorld* World, const FString& DestinationMapAssetName = FString(""));
 	void LoadWorldState(UWorld* World);
  
 	UPROPERTY(EditDefaultsOnly)
@@ -53,6 +53,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TMap<FString, TSoftObjectPtr<UWorld>> Maps;
 
+	FString GetMapNameFromMapAssetName(const FString& MapName) const;
 protected:
 	virtual void BeginPlay() override;
 };

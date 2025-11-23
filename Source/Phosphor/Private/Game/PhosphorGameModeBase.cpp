@@ -108,7 +108,7 @@ void APhosphorGameModeBase::SaveInGameProgressData(ULoadScreenSaveGame* SaveObje
 	UGameplayStatics::SaveGameToSlot(SaveObject, InGameLoadSlotName, InGameLoadSlotIndex);
 }
 
-void APhosphorGameModeBase::SaveWorldState(UWorld* World)
+void APhosphorGameModeBase::SaveWorldState(UWorld* World, const FString& DestinationMapAssetName)
 {
 	FString WorldName = World->GetMapName();
 	WorldName.RemoveFromStart(World->StreamingLevelsPrefix);
@@ -118,6 +118,12 @@ void APhosphorGameModeBase::SaveWorldState(UWorld* World)
 
 	if (ULoadScreenSaveGame* SaveGame = GetSaveSlotData(PhosphorGI->LoadSlotIndex, PhosphorGI->LoadSlotName))
 	{
+		if (DestinationMapAssetName != FString(""))
+		{
+			SaveGame->MapAssetName = DestinationMapAssetName;
+			SaveGame->MapName = GetMapNameFromMapAssetName(DestinationMapAssetName);
+		}
+		
 		if (!SaveGame->HasMap(WorldName))
 		{
 			FSavedMap NewSavedMap;
@@ -201,6 +207,18 @@ void APhosphorGameModeBase::LoadWorldState(UWorld* World)
 			}
 		}
 	}
+}
+
+FString APhosphorGameModeBase::GetMapNameFromMapAssetName(const FString& MapName) const
+{
+	for (auto& Map : Maps)
+	{
+		if (Map.Value.ToSoftObjectPath().GetAssetName() == MapName)
+		{
+			return Map.Key;
+		}
+	}
+	return FString();
 }
 
 void APhosphorGameModeBase::BeginPlay()
