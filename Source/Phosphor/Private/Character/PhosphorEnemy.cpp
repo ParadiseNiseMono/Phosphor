@@ -31,6 +31,10 @@ APhosphorEnemy::APhosphorEnemy()
 	
 	HealthBar=CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent());
+	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
+	GetMesh()->MarkRenderStateDirty();
+	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
+	Weapon->MarkRenderStateDirty();
 
 	BaseWalkSpeed=300.0f;
 }
@@ -51,16 +55,18 @@ void APhosphorEnemy::PossessedBy(AController* NewController)
 void APhosphorEnemy::HighLightActor_Implementation()
 {
 	GetMesh()->SetRenderCustomDepth(true);
-	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
-	
 	Weapon->SetRenderCustomDepth(true);
-	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
 }
 
 void APhosphorEnemy::UnHighLightActor_Implementation()	
 {
 	GetMesh()->SetRenderCustomDepth(false);
 	Weapon->SetRenderCustomDepth(false);
+}
+
+void APhosphorEnemy::SetMoveToLocation_Implementation(FVector& OutDestination)
+{
+	
 }
 
 void APhosphorEnemy::Die(const FVector& InDeathImpulse)

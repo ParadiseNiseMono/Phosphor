@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerStart.h"
+#include "Interaction/HighlightInterface.h"
 #include "Interaction/SaveInterface.h"
+#include "Phosphor/Phosphor.h"
 #include "Checkpoint.generated.h"
 
 class USphereComponent;
@@ -12,7 +14,7 @@ class USphereComponent;
  * 
  */
 UCLASS()
-class PHOSPHOR_API ACheckpoint : public APlayerStart, public ISaveInterface
+class PHOSPHOR_API ACheckpoint : public APlayerStart, public ISaveInterface, public IHighlightInterface
 {
 	GENERATED_BODY()
 
@@ -39,13 +41,25 @@ protected:
 
 	virtual void BeginPlay() override;
 
+	/*Highlight Interface*/
+	virtual void SetMoveToLocation_Implementation(FVector& OutDestination) override;
+	virtual void HighLightActor_Implementation() override;
+	virtual void UnHighLightActor_Implementation() override;
+	/*End Highlight Interface*/
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void CheckPointReached(UMaterialInstanceDynamic* DynamicMaterialInstance);
 
 	void HandleGrowEffects();
 
+	UPROPERTY(EditDefaultsOnly)
+	int32 CustomDepthStencilOverride = CUSTOM_DEPTH_TAN;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMeshComponent> CheckpointMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> MoveToComponent;
 private:
 
 	UPROPERTY(VisibleAnywhere)

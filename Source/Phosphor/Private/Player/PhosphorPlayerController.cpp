@@ -13,7 +13,6 @@
 #include "Actor/MagicCircle.h"
 #include "Components/DecalComponent.h"
 #include "Components/SplineComponent.h"
-#include "EntitySystem/MovieSceneEntityManager.h"
 #include "GameFramework/Character.h"
 
 #include "Input/PhosphorInputComponent.h"
@@ -211,7 +210,15 @@ void APhosphorPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		APawn* ControlledPawn = GetPawn();
 		if (FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
-			if ( UNavigationPath* NavigationPath= UNavigationSystemV1::FindPathToLocationSynchronously(this,ControlledPawn->GetActorLocation(),CachedDestination))
+			if (IsValid(ThisActor) && ThisActor->Implements<UHighlightInterface>())
+			{
+				IHighlightInterface::Execute_SetMoveToLocation(ThisActor, CachedDestination);
+			}
+			else if (GetASC() && !GetASC()->HasMatchingGameplayTag(FPhosphorGameplayTags::Get().Player_Block_InputReleased))
+			{
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
+			}
+			if ( UNavigationPath* NavigationPath = UNavigationSystemV1::FindPathToLocationSynchronously(this,ControlledPawn->GetActorLocation(),CachedDestination))
 			{
 				Spline->ClearSplinePoints();
 				for (const FVector& PointLocation:NavigationPath->PathPoints)
@@ -220,11 +227,10 @@ void APhosphorPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 				}
 				if (!NavigationPath->PathPoints.IsEmpty())
 				{
-					CachedDestination=NavigationPath->PathPoints.Last();
-					bAutoRunning=true;
+					CachedDestination = NavigationPath->PathPoints.Last();
+					bAutoRunning = true;
 				}
 			}
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
 		}
 		FollowTime=0.0f;
 		TargetingStatus = ETargetingStatus::NotTargeting;
