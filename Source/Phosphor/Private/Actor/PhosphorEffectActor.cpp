@@ -6,17 +6,50 @@
 #include "AbilitySystemInterface.h"
 #include "AbilitySystem/PhosphorAttributeSet.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 APhosphorEffectActor::APhosphorEffectActor()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>("SceneComponent"));
+}
+
+void APhosphorEffectActor::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	RunningTime += DeltaTime;
+	const float SinePeriod = 2 * PI / SinePeriodConstant;
+	if (RunningTime > SinePeriod)
+	{
+		RunningTime = 0;
+	}
+	ItemMovement(DeltaTime);
 }
 
 void APhosphorEffectActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	InitialLocation = GetActorLocation();
+	CalculatedLocation = InitialLocation;
+	CalculatedRotation = GetActorRotation();
+}
+
+void APhosphorEffectActor::StartSinusoidalMovement()
+{
+	bSinusoidalMovement = true;
+
+	InitialLocation = GetActorLocation();
+	CalculatedLocation = InitialLocation;
+}
+
+void APhosphorEffectActor::StartRotation()
+{
+	bRotates = true;
+
+	CalculatedRotation = GetActorRotation();
 }
 
 void APhosphorEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> EffectToApply)
@@ -90,6 +123,20 @@ void APhosphorEffectActor::OnEndOverlap(AActor* TargetActor)
 		{
 			ActiveEventHandles.FindAndRemoveChecked(Handle);
 		}
+	}
+}
+
+void APhosphorEffectActor::ItemMovement(float DeltaTime)
+{
+	if (bRotates)
+	{
+		const FRotator DeltaRotation = FRotator(0.0f,DeltaTime * RotationRate,0.0f);
+		CalculatedRotation = UKismetMathLibrary::ComposeRotators(CalculatedRotation, DeltaRotation);
+	}
+	if (bSinusoidalMovement)
+	{
+		const float Sine = SineAmplitude * FMath::Sin(RunningTime * SinePeriodConstant);
+		CalculatedLocation = InitialLocation + FVector(0.f, 0.f, Sine);
 	}
 }
 
