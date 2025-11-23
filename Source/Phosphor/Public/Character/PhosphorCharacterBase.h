@@ -62,6 +62,8 @@ public:
 	UPROPERTY(EditAnywhere, Category="Combat")
 	TArray<FTaggedMontage> AttackMontages;
 
+	void SetCharacterClass(const ECharacterClass InClass) { CharacterClass = InClass; }
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;

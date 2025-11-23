@@ -34,6 +34,11 @@ UMVVM_LoadSlot* UMVVM_LoadScreen::GetLoadSlotViewModelByIndex(int32 Index) const
 void UMVVM_LoadScreen::NewSlotButtonPressed(int32 Slot, const FString& EnteredName)
 {
 	APhosphorGameModeBase* PhosphorGameMode = Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (!IsValid(PhosphorGameMode))
+	{
+		GEngine->AddOnScreenDebugMessage(Slot, 5.0f, FColor::Red, FString("Please switch to single play"));
+		return;
+	}
 
 	LoadSlots[Slot]->SetMapName(PhosphorGameMode->DefaultMapName);
 	LoadSlots[Slot]->SlotStatus = Taken;
@@ -102,7 +107,7 @@ void UMVVM_LoadScreen::PlayButtonPressed()
 void UMVVM_LoadScreen::LoadData()
 {
 	APhosphorGameModeBase* PhosphorGameMode = Cast<APhosphorGameModeBase>(UGameplayStatics::GetGameMode(this));
-	
+	if (!IsValid(PhosphorGameMode)) return;
 	for (const TTuple<int32, UMVVM_LoadSlot*> LoadSlot : LoadSlots)
 	{
 		ULoadScreenSaveGame* SaveGameObject = PhosphorGameMode->GetSaveSlotData(LoadSlot.Key, LoadSlot.Value->GetLoadSlotName());
